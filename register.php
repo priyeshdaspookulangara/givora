@@ -12,7 +12,6 @@ $sponsor_param = $_GET['sponsor'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sponsor_id = trim($_POST['sponsor_id'] ?? '');
-    $placement_parent_id = trim($_POST['placement_parent_id'] ?? '');
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -45,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($error)) {
-            // Matrix Auto Placement: find open position starting under placement_parent_id (or sponsor_id if empty)
-            $start_parent = !empty($placement_parent_id) ? $placement_parent_id : $sponsor_id;
-            $placement_info = findMatrixPlacement($pdo, $start_parent);
+            // AUTOMATIC 3-MATRIX TREE AUTO-PLACEMENT (BFS Spillover starting under sponsor)
+            // Placement Parent is AUTO-FILL / AUTO-DETERMINED by system matrix logic.
+            $placement_info = findMatrixPlacement($pdo, $sponsor_id);
 
             $placement_parent = $placement_info['parent_id'];
             $matrix_position = $placement_info['position'];
@@ -129,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span class="text-white font-semibold"><?php echo str_replace('_', ' ₹', $registered_info['package_type']); ?></span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-400">Placed Under:</span>
-                    <span class="text-white"><?php echo htmlspecialchars($registered_info['placement_parent']); ?> (Pos #<?php echo $registered_info['matrix_position']; ?>)</span>
+                    <span class="text-gray-400">Auto Matrix Placement:</span>
+                    <span class="text-white">Placed under <span class="text-gold font-bold"><?php echo htmlspecialchars($registered_info['placement_parent']); ?></span> (Position #<?php echo $registered_info['matrix_position']; ?>)</span>
                 </div>
             </div>
             <div class="pt-4">
@@ -168,13 +167,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="text-xs text-gray-500 mt-1">Leave blank for root company sponsor GT100000.</p>
                 </div>
 
-                <!-- Placement Parent ID -->
+                <!-- Auto-Fill Matrix Placement Note -->
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Placement Parent ID (Optional)
+                        3-Matrix Placement Parent
                     </label>
-                    <input type="text" name="placement_parent_id" placeholder="e.g., GT100001" value="<?php echo htmlspecialchars($_POST['placement_parent_id'] ?? ''); ?>" class="w-full bg-darkbg border border-gold/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold">
-                    <p class="text-xs text-gray-500 mt-1">Auto-assigned into first available slot if left blank.</p>
+                    <div class="w-full bg-darkbg/60 border border-gold/20 rounded-xl px-4 py-3 text-gold text-xs font-semibold flex items-center space-x-2">
+                        <i class="fas fa-sitemap text-gold"></i>
+                        <span>Auto-Fill Spillover (Next 3 members placed automatically under parent node)</span>
+                    </div>
                 </div>
 
                 <!-- Name -->
@@ -207,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="md:col-span-2 mt-4">
                     <button type="submit" class="w-full btn-gold py-4 rounded-xl text-lg font-bold shadow-xl flex items-center justify-center space-x-2">
                         <i class="fas fa-user-check"></i>
-                        <span>Register & Activate Member Account</span>
+                        <span>Register & Auto-Place Account</span>
                     </button>
                 </div>
             </form>
