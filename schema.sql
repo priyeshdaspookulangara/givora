@@ -49,13 +49,14 @@ CREATE TABLE IF NOT EXISTS wallets (
     balance DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     user_wallet_60 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     company_wallet_40 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    p2_reserve_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(50) NOT NULL,
-    type ENUM('Direct_Referral', 'Matrix_Income_P1', 'Matrix_Income_P2', 'Withdrawal_Request', 'Admin_Adjustment') NOT NULL,
+    type ENUM('Direct_Referral', 'Matrix_Income_P1', 'Matrix_Income_P2', 'Phase_2_Reserve', 'Phase_2_Joining_Fee', 'Withdrawal_Request', 'Admin_Adjustment') NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
     wallet_type ENUM('User_Wallet', 'Company_Wallet', 'Main') NOT NULL DEFAULT 'Main',
     status ENUM('Credit', 'Debit', 'Pending', 'Approved') NOT NULL DEFAULT 'Credit',

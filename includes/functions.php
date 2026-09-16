@@ -153,7 +153,30 @@ function checkAndPromoteToPhase2($pdo, $member_id) {
     $stmt->execute([$member_id]);
     $child_count = $stmt->fetchColumn();
 
+    ensureWalletExists($pdo, $member_id);
+    $stmt = $pdo->prepare("SELECT p2_reserve_wallet FROM wallets WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $reserve_bal = (float)($stmt->fetchColumn() ?: 0.00);
+
+    // Member qualifies for Phase 2 when Phase 1 matrix (3 direct placements) is completed
     if ($child_count >= 3) {
+        // Ensure Phase 2 joining fee reserve (₹15,000) is filled upon Phase 1 completion
+        if ($reserve_bal < 15000.00) {
+            $add_reserve = 15000.00 - $reserve_bal;
+            $stmt = $pdo->prepare("UPDATE wallets SET p2_reserve_wallet = 15000.00 WHERE member_id = ?");
+            $stmt->execute([$member_id]);
+
+            $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Phase_2_Reserve', ?, 'Main', 'Credit', ?)");
+            $stmt->execute([$member_id, $add_reserve, "Phase 2 Joining Fee Reserved from Phase 1 Completion"]);
+        }
+
+        // Deduct ₹15,000 as Phase 2 Joining Fee from p2_reserve_wallet
+        $stmt = $pdo->prepare("UPDATE wallets SET p2_reserve_wallet = p2_reserve_wallet - 15000.00 WHERE member_id = ?");
+        $stmt->execute([$member_id]);
+
+        $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Phase_2_Joining_Fee', 15000.00, 'Main', 'Debit', 'Phase 2 Joining Fee deducted from L5 Reserve')");
+        $stmt->execute([$member_id]);
+
         // Find Phase 2 placement
         $p2_placement = findMatrixPlacementP2($pdo, 'GT100000');
 
@@ -161,8 +184,8 @@ function checkAndPromoteToPhase2($pdo, $member_id) {
         $stmt = $pdo->prepare("UPDATE members SET p2_status = 'Active', p2_placement_parent_id = ?, p2_matrix_position = ?, p2_created_at = NOW() WHERE member_id = ?");
         $stmt->execute([$p2_placement['parent_id'], $p2_placement['position'], $member_id]);
 
-        // Distribute Phase 2 Matrix Commissions
-        $package_amount = ($member['package_type'] === 'Leadership_15000') ? 15000 : 5000;
+        // Distribute Phase 2 Matrix Commissions (₹15,000 joining fee basis)
+        $package_amount = 15000.00;
         $level_percentages = [0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.005];
 
         $curr_p2_parent = $p2_placement['parent_id'];
@@ -203,7 +226,7 @@ function generateEpinCode() {
 
 // Wallet initialization
 function ensureWalletExists($pdo, $member_id) {
-    $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
+    $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
     $stmt->execute([$member_id]);
 }
 
@@ -253,18 +276,62 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
         $company_part = $commission_amount * 0.40;
 
         ensureWalletExists($pdo, $curr_parent);
-
-        // Update parent wallet
-        $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
-        $stmt->execute([$commission_amount, $user_part, $company_part, $curr_parent]);
-
-        // Log transactions
         $level_num = $level + 1;
-        $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
-        $stmt->execute([$curr_parent, $user_part, "Phase 1 Matrix L{$level_num} Commission (60%) from " . $new_member_id]);
 
-        $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
-        $stmt->execute([$curr_parent, $company_part, "Phase 1 Matrix L{$level_num} Commission (40%) from " . $new_member_id]);
+        // Level 5 Phase 1 matrix commission ($level === 4): Reserve for Phase 2 Joining Fee (p2_reserve_wallet) up to ₹15,000
+        if ($level === 4) {
+            $stmt = $pdo->prepare("SELECT p2_reserve_wallet FROM wallets WHERE member_id = ?");
+            $stmt->execute([$curr_parent]);
+            $curr_reserve = (float)($stmt->fetchColumn() ?: 0.00);
+
+            if ($curr_reserve < 15000.00 && $curr_parent !== 'GT100000') {
+                $needed = 15000.00 - $curr_reserve;
+                $reserve_amt = min($commission_amount, $needed);
+                $excess_amt = $commission_amount - $reserve_amt;
+
+                // Credit Phase 2 reserve
+                $stmt = $pdo->prepare("UPDATE wallets SET p2_reserve_wallet = p2_reserve_wallet + ? WHERE member_id = ?");
+                $stmt->execute([$reserve_amt, $curr_parent]);
+
+                $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Phase_2_Reserve', ?, 'Main', 'Credit', ?)");
+                $stmt->execute([$curr_parent, $reserve_amt, "Phase 2 Joining Fee Reserved from Level 5 downline " . $new_member_id]);
+
+                // Any excess above ₹15,000 reserve target goes to standard 60:40 split
+                if ($excess_amt > 0) {
+                    $user_part_ex = $excess_amt * 0.60;
+                    $company_part_ex = $excess_amt * 0.40;
+
+                    $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
+                    $stmt->execute([$excess_amt, $user_part_ex, $company_part_ex, $curr_parent]);
+
+                    $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
+                    $stmt->execute([$curr_parent, $user_part_ex, "Phase 1 Matrix L5 Commission (60%) from " . $new_member_id]);
+
+                    $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
+                    $stmt->execute([$curr_parent, $company_part_ex, "Phase 1 Matrix L5 Commission (40%) from " . $new_member_id]);
+                }
+            } else {
+                // Reserve target reached or is Root
+                $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
+                $stmt->execute([$commission_amount, $user_part, $company_part, $curr_parent]);
+
+                $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
+                $stmt->execute([$curr_parent, $user_part, "Phase 1 Matrix L{$level_num} Commission (60%) from " . $new_member_id]);
+
+                $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
+                $stmt->execute([$curr_parent, $company_part, "Phase 1 Matrix L{$level_num} Commission (40%) from " . $new_member_id]);
+            }
+        } else {
+            // Levels 1-4 & 6-7: Regular 60:40 wallet split
+            $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
+            $stmt->execute([$commission_amount, $user_part, $company_part, $curr_parent]);
+
+            $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
+            $stmt->execute([$curr_parent, $user_part, "Phase 1 Matrix L{$level_num} Commission (60%) from " . $new_member_id]);
+
+            $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
+            $stmt->execute([$curr_parent, $company_part, "Phase 1 Matrix L{$level_num} Commission (40%) from " . $new_member_id]);
+        }
 
         // Fetch next parent up
         $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");

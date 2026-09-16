@@ -211,3 +211,60 @@
 [Wed Sep 16 09:52:04 2026] 127.0.0.1:45374 Accepted
 [Wed Sep 16 09:52:04 2026] 127.0.0.1:45374 [200]: GET /customer/teams.php
 [Wed Sep 16 09:52:04 2026] 127.0.0.1:45374 Closing
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50412 Accepted
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50412 [200]: POST /register.php
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50412 Closing
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50424 Accepted
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50424 [200]: POST /register.php
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50424 Closing
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50430 Accepted
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50430 [200]: POST /register.php
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50430 Closing
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50432 Accepted
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50432 [200]: POST /register.php
+[Wed Sep 16 10:10:27 2026] 127.0.0.1:50432 Closing
+[Wed Sep 16 10:10:55 2026] 127.0.0.1:39618 Accepted
+[Wed Sep 16 10:10:55 2026] 127.0.0.1:39618 [200]: GET /admin_login.php
+[Wed Sep 16 10:10:55 2026] 127.0.0.1:39618 Closing
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35036 Accepted
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35036 [302]: POST /admin_login.php
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35036 Closing
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35044 Accepted
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35044 [200]: GET /admin/index.php
+[Wed Sep 16 10:10:56 2026] 127.0.0.1:35044 Closing
+[Wed Sep 16 10:10:57 2026] 127.0.0.1:35046 Accepted
+[Wed Sep 16 10:10:57 2026] 127.0.0.1:35046 [200]: GET /admin/epins.php
+[Wed Sep 16 10:10:57 2026] 127.0.0.1:35046 Closing
+[Wed Sep 16 10:10:58 2026] 127.0.0.1:35048 Accepted
+[Wed Sep 16 10:10:58 2026] 127.0.0.1:35048 [200]: POST /admin/epins.php
+[Wed Sep 16 10:10:58 2026] 127.0.0.1:35048 Closing
+[Wed Sep 16 10:10:59 2026] 127.0.0.1:35052 Accepted
+[Wed Sep 16 10:10:59 2026] 127.0.0.1:35052 [200]: GET /register.php
+[Wed Sep 16 10:10:59 2026] 127.0.0.1:35052 Closing
+[Wed Sep 16 10:11:00 2026] 127.0.0.1:35058 Accepted
+[Wed Sep 16 10:11:00 2026] 127.0.0.1:35058 [200]: POST /register.php
+[Wed Sep 16 10:11:00 2026] 127.0.0.1:35058 Closing
+[Wed Sep 16 10:11:01 2026] 127.0.0.1:35060 Accepted
+[Wed Sep 16 10:11:01 2026] 127.0.0.1:35060 [200]: GET /register.php
+[Wed Sep 16 10:11:01 2026] 127.0.0.1:35060 Closing
+[Wed Sep 16 10:11:02 2026] 127.0.0.1:35074 Accepted
+[Wed Sep 16 10:11:02 2026] 127.0.0.1:35074 [200]: POST /register.php
+[Wed Sep 16 10:11:02 2026] 127.0.0.1:35074 Closing
+[Wed Sep 16 10:11:03 2026] 127.0.0.1:35078 Accepted
+[Wed Sep 16 10:11:03 2026] 127.0.0.1:35078 [200]: GET /register.php
+[Wed Sep 16 10:11:03 2026] 127.0.0.1:35078 Closing
+[Wed Sep 16 10:11:04 2026] 127.0.0.1:35094 Accepted
+[Wed Sep 16 10:11:04 2026] 127.0.0.1:35094 [200]: POST /register.php
+[Wed Sep 16 10:11:04 2026] 127.0.0.1:35094 Closing
+[Wed Sep 16 10:11:05 2026] 127.0.0.1:35100 Accepted
+[Wed Sep 16 10:11:05 2026] 127.0.0.1:35100 [200]: GET /login.php
+[Wed Sep 16 10:11:05 2026] 127.0.0.1:35100 Closing
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36190 Accepted
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36190 [302]: POST /login.php
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36190 Closing
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36204 Accepted
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36204 [200]: GET /customer/dashboard.php
+[Wed Sep 16 10:11:06 2026] 127.0.0.1:36204 Closing
+[Wed Sep 16 10:11:07 2026] 127.0.0.1:36210 Accepted
+[Wed Sep 16 10:11:07 2026] 127.0.0.1:36210 [200]: GET /customer/teams.php
+[Wed Sep 16 10:11:07 2026] 127.0.0.1:36210 Closing

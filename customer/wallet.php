@@ -72,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Wallet Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Lifetime Total Balance -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Total Lifetime Inflow</span>
@@ -84,14 +84,23 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
             <span class="text-xs uppercase tracking-wider text-green-400 font-bold">User Wallet (60% Withdrawable)</span>
             <div class="text-3xl font-extrabold text-green-400 mt-2">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
-            <p class="text-xs text-green-500/80 mt-2">Eligible for instant withdrawal request (Min ₹500)</p>
+            <p class="text-xs text-green-500/80 mt-2">Eligible for instant withdrawal (Min ₹500)</p>
         </div>
 
         <!-- Company Wallet (40%) -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
             <span class="text-xs uppercase tracking-wider text-amber-400 font-bold">Company Wallet (40% Reserve)</span>
             <div class="text-3xl font-extrabold text-amber-400 mt-2">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
-            <p class="text-xs text-amber-500/80 mt-2">Company reinvestment & product liquidity fund</p>
+            <p class="text-xs text-amber-500/80 mt-2">Company reinvestment & liquidity fund</p>
+        </div>
+
+        <!-- Phase 2 Joining Reserve Wallet (₹15,000 Target) -->
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+            <span class="text-xs uppercase tracking-wider text-purple-400 font-bold"><i class="fas fa-crown mr-1"></i> Phase 2 Joining Reserve</span>
+            <div class="text-3xl font-extrabold text-purple-300 mt-2">₹<?php echo number_format($wallet['p2_reserve_wallet'], 2); ?></div>
+            <p class="text-xs text-purple-400/80 mt-2">
+                Target: ₹15,000 (Reserved from L5 Matrix Income)
+            </p>
         </div>
     </div>
 

@@ -15,6 +15,9 @@ $total_user_wallet_balance = $stmt->fetchColumn() ?: 0.00;
 $stmt = $pdo->query("SELECT SUM(company_wallet_40) FROM wallets");
 $total_company_wallet_balance = $stmt->fetchColumn() ?: 0.00;
 
+$stmt = $pdo->query("SELECT SUM(p2_reserve_wallet) FROM wallets");
+$total_p2_reserve_balance = $stmt->fetchColumn() ?: 0.00;
+
 $stmt = $pdo->query("SELECT SUM(amount) FROM withdrawals WHERE status = 'Approved'");
 $total_payouts_approved = $stmt->fetchColumn() ?: 0.00;
 
@@ -31,7 +34,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Central Accounting Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <span class="text-xs font-semibold text-gray-400 uppercase">Total Gross Inflow</span>
             <div class="text-3xl font-extrabold gold-gradient-text mt-2">₹<?php echo number_format($total_inflow, 2); ?></div>
@@ -48,6 +51,12 @@ require_once __DIR__ . '/../includes/header.php';
             <span class="text-xs font-semibold text-amber-400 uppercase">Company Reserves Pool (40%)</span>
             <div class="text-3xl font-extrabold text-amber-400 mt-2">₹<?php echo number_format($total_company_wallet_balance, 2); ?></div>
             <p class="text-xs text-amber-500/80 mt-2">Retention reserve for corporate & inventory</p>
+        </div>
+
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+            <span class="text-xs font-semibold text-purple-400 uppercase">Phase 2 Joining Reserves</span>
+            <div class="text-3xl font-extrabold text-purple-300 mt-2">₹<?php echo number_format($total_p2_reserve_balance, 2); ?></div>
+            <p class="text-xs text-purple-400/80 mt-2">Reserved L5 matrix income for Phase 2 entry</p>
         </div>
 
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-blue-500">
