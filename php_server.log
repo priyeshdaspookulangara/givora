@@ -1,0 +1,42 @@
+[Wed Sep 16 04:43:09 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed Sep 16 04:43:11 2026] 127.0.0.1:38754 Accepted
+[Wed Sep 16 04:43:11 2026] 127.0.0.1:38754 [200]: HEAD /index.php
+[Wed Sep 16 04:43:11 2026] 127.0.0.1:38754 Closing
+[Wed Sep 16 04:44:02 2026] 127.0.0.1:60368 Accepted
+[Wed Sep 16 04:44:02 2026] 127.0.0.1:60368 [200]: GET /admin_login.php
+[Wed Sep 16 04:44:02 2026] 127.0.0.1:60368 Closing
+[Wed Sep 16 04:44:04 2026] 127.0.0.1:60374 Accepted
+[Wed Sep 16 04:44:04 2026] PHP Warning:  Cannot modify header information - headers already sent by (output started at /app/includes/header.php:106) in /app/admin_login.php on line 23
+[Wed Sep 16 04:44:04 2026] 127.0.0.1:60374 [200]: POST /admin_login.php
+[Wed Sep 16 04:44:04 2026] 127.0.0.1:60374 Closing
+[Wed Sep 16 04:44:05 2026] 127.0.0.1:60376 Accepted
+[Wed Sep 16 04:44:05 2026] 127.0.0.1:60376 [200]: GET /admin/epins.php
+[Wed Sep 16 04:44:05 2026] 127.0.0.1:60376 Closing
+[Wed Sep 16 04:44:06 2026] 127.0.0.1:60382 Accepted
+[Wed Sep 16 04:44:06 2026] 127.0.0.1:60382 [200]: POST /admin/epins.php
+[Wed Sep 16 04:44:06 2026] 127.0.0.1:60382 Closing
+[Wed Sep 16 04:44:07 2026] 127.0.0.1:60388 Accepted
+[Wed Sep 16 04:44:07 2026] 127.0.0.1:60388 [200]: GET /register.php
+[Wed Sep 16 04:44:07 2026] 127.0.0.1:60388 Closing
+[Wed Sep 16 04:44:08 2026] 127.0.0.1:60396 Accepted
+[Wed Sep 16 04:44:08 2026] 127.0.0.1:60396 [200]: POST /register.php
+[Wed Sep 16 04:44:08 2026] 127.0.0.1:60396 Closing
+[Wed Sep 16 04:44:09 2026] 127.0.0.1:60410 Accepted
+[Wed Sep 16 04:44:09 2026] 127.0.0.1:60410 [200]: GET /login.php
+[Wed Sep 16 04:44:09 2026] 127.0.0.1:60410 Closing
+[Wed Sep 16 04:44:10 2026] 127.0.0.1:60412 Accepted
+[Wed Sep 16 04:44:10 2026] 127.0.0.1:60412 [200]: GET /admin/members.php
+[Wed Sep 16 04:44:10 2026] 127.0.0.1:60412 Closing
+[Wed Sep 16 04:44:11 2026] 127.0.0.1:60414 Accepted
+[Wed Sep 16 04:44:11 2026] 127.0.0.1:60414 [200]: GET /login.php
+[Wed Sep 16 04:44:11 2026] 127.0.0.1:60414 Closing
+[Wed Sep 16 04:44:12 2026] 127.0.0.1:55378 Accepted
+[Wed Sep 16 04:44:12 2026] PHP Warning:  Cannot modify header information - headers already sent by (output started at /app/includes/header.php:106) in /app/login.php on line 23
+[Wed Sep 16 04:44:12 2026] 127.0.0.1:55378 [200]: POST /login.php
+[Wed Sep 16 04:44:12 2026] 127.0.0.1:55378 Closing
+[Wed Sep 16 04:44:13 2026] 127.0.0.1:55384 Accepted
+[Wed Sep 16 04:44:13 2026] 127.0.0.1:55384 [200]: GET /customer/dashboard.php
+[Wed Sep 16 04:44:13 2026] 127.0.0.1:55384 Closing
+[Wed Sep 16 04:44:14 2026] 127.0.0.1:55396 Accepted
+[Wed Sep 16 04:44:14 2026] 127.0.0.1:55396 [200]: GET /customer/teams.php
+[Wed Sep 16 04:44:14 2026] 127.0.0.1:55396 Closing
