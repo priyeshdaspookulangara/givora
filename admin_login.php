@@ -11,15 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please enter both Username and Password.";
     } else {
         $pdo = getDBConnection();
-        $stmt = $pdo->prepare("SELECT * FROM admins WHERE username = ? AND password = ?");
-        $stmt->execute([$username, $password]);
+        $stmt = $pdo->prepare("SELECT * FROM admins WHERE username = ?");
+        $stmt->execute([$username]);
         $admin = $stmt->fetch();
 
         if ($admin) {
-            $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_username'] = $admin['username'];
-            header("Location: /admin/index.php");
-            exit;
+            $password_valid = ($password === $admin['password']) ||
+                              (function_exists('password_verify') && password_verify($password, $admin['password']));
+
+            if ($password_valid) {
+                $_SESSION['admin_id'] = $admin['id'];
+                $_SESSION['admin_username'] = $admin['username'];
+                header("Location: " . getBaseUrl() . "/admin/index.php");
+                exit;
+            } else {
+                $error = "Invalid administrator credentials.";
+            }
         } else {
             $error = "Invalid administrator credentials.";
         }
