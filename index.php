@@ -3,31 +3,92 @@ $page_title = "Home - Direct Selling Utility Matrix";
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-b from-darkbg via-darkcard to-darkbg pt-16 pb-24 overflow-hidden border-b border-gold/20">
-    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#c5a059_1px,transparent_1px)] [background-size:16px_16px]"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center max-w-3xl mx-auto">
-            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gold/10 text-gold border border-gold/30 mb-6 uppercase tracking-wider">
-                Givora Traders LLP Official Network
-            </span>
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-                Empowering Communities, Building Brighter Futures — <span class="gold-gradient-text">Together We Rise.</span>
-            </h1>
-            <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
-                Join India's premier utility direct-selling enterprise. Harness the power of Household Synergy Utility Distribution combined with our revolutionary 3-Matrix compensation model.
-            </p>
-            <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/register.php" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
-                    <span>Get Started Today</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <a href="/business_plan.php" class="border border-gold/40 text-gold hover:bg-gold/10 px-8 py-4 rounded-xl text-lg font-semibold transition flex items-center justify-center space-x-2">
-                    <i class="fas fa-gem"></i>
-                    <span>Explore Business Plan</span>
-                </a>
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<!-- Hero Carousel Section -->
+<section class="relative bg-darkbg overflow-hidden border-b border-gold/20">
+    <div class="swiper heroSwiper">
+        <div class="swiper-wrapper">
+            <!-- Slide 1: General Vision -->
+            <div class="swiper-slide py-20 lg:py-28 bg-gradient-to-b from-darkbg via-darkcard to-darkbg relative">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#c5a059_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-4xl">
+                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gold/10 text-gold border border-gold/30 mb-6 uppercase tracking-wider">
+                        Givora Traders LLP Official Enterprise
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                        Empowering Communities, Building Brighter Futures — <span class="gold-gradient-text">Together We Rise.</span>
+                    </h1>
+                    <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
+                        Join India's premier utility direct-selling enterprise. Harness the power of Household Synergy Utility Distribution combined with our revolutionary 3-Matrix compensation model.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="/register.php" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
+                            <span>Get Started Today</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <a href="/business_plan.php" class="border border-gold/40 text-gold hover:bg-gold/10 px-8 py-4 rounded-xl text-lg font-semibold transition flex items-center justify-center space-x-2">
+                            <i class="fas fa-gem"></i>
+                            <span>Explore Business Plan</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Household Synergy Utility -->
+            <div class="swiper-slide py-20 lg:py-28 bg-gradient-to-r from-darkbg via-gold/10 to-darkbg relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-4xl">
+                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gold/20 text-goldlight border border-gold/40 mb-6 uppercase tracking-wider">
+                        Essential Utility Packs
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                        Household Synergy <span class="gold-gradient-text">Utility Ecosystem</span>
+                    </h1>
+                    <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
+                        High-quality, daily-use household products delivered straight to your doorstep across India with 100% value assurance on every package tier.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="/about.php" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
+                            <span>Discover Products</span>
+                            <i class="fas fa-box-open"></i>
+                        </a>
+                        <a href="/register.php?package=Foundation_5000" class="border border-gold/40 text-gold hover:bg-gold/10 px-8 py-4 rounded-xl text-lg font-semibold transition flex items-center justify-center space-x-2">
+                            <span>Join ₹5,000 Tier</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: 3-Matrix Tree & 60:40 Wallet Split -->
+            <div class="swiper-slide py-20 lg:py-28 bg-gradient-to-b from-darkcard via-darkbg to-darkcard relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-4xl">
+                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gold/10 text-gold border border-gold/30 mb-6 uppercase tracking-wider">
+                        3x7 Matrix Compensation
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                        Automated <span class="gold-gradient-text">60:40 Wallet Split</span> Income
+                    </h1>
+                    <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
+                        Instant direct referral bonuses and 7-level matrix payouts automatically routed into 60% withdrawable user wallet & 40% company reserve.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="/register.php?package=Leadership_15000" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
+                            <span>Join Leadership ₹15,000</span>
+                            <i class="fas fa-crown"></i>
+                        </a>
+                        <a href="/login.php" class="border border-gold/40 text-gold hover:bg-gold/10 px-8 py-4 rounded-xl text-lg font-semibold transition flex items-center justify-center space-x-2">
+                            <span>Member Dashboard</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Carousel Pagination & Navigation -->
+        <div class="swiper-pagination !bottom-6"></div>
+        <div class="swiper-button-next !text-gold !w-12 !h-12 bg-darkcard/80 border border-gold/30 rounded-full after:!text-xl hover:bg-gold hover:!text-darkbg transition"></div>
+        <div class="swiper-button-prev !text-gold !w-12 !h-12 bg-darkcard/80 border border-gold/30 rounded-full after:!text-xl hover:bg-gold hover:!text-darkbg transition"></div>
     </div>
 </section>
 
@@ -148,5 +209,47 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </section>
+
+<!-- Swiper JS Script -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var swiper = new Swiper(".heroSwiper", {
+            loop: true,
+            autoplay: {
+                delay: 4500,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            effect: "fade",
+            fadeEffect: {
+                crossFade: true
+            }
+        });
+    });
+</script>
+
+<!-- Swiper Pagination Custom Styling -->
+<style>
+    .swiper-pagination-bullet {
+        background: #c5a059 !important;
+        opacity: 0.4;
+        width: 12px;
+        height: 12px;
+    }
+    .swiper-pagination-bullet-active {
+        opacity: 1;
+        width: 28px;
+        border-radius: 6px;
+        background: #f3e5ab !important;
+    }
+</style>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
