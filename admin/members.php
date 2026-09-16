@@ -79,6 +79,7 @@ $login_url = getBaseUrl() . "/login.php";
                         <th class="p-3">Password (Plain)</th>
                         <th class="p-3">Sponsor / Parent</th>
                         <th class="p-3">Package</th>
+                        <th class="p-3">Phase Status</th>
                         <th class="p-3">Joined Date</th>
                         <th class="p-3 text-center">WhatsApp Greeting</th>
                     </tr>
@@ -117,6 +118,14 @@ $login_url = getBaseUrl() . "/login.php";
                                 <span class="px-2 py-1 rounded bg-gold/10 text-gold font-bold">
                                     <?php echo str_replace('_', ' ₹', $m['package_type']); ?>
                                 </span>
+                            </td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400 font-bold block mb-1">P1: Active</span>
+                                <?php if ($m['p2_status'] === 'Active'): ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 block"><i class="fas fa-crown text-[9px] mr-0.5"></i> P2: Active</span>
+                                <?php else: ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-gray-500/20 text-gray-400 font-semibold block">P2: Pending</span>
+                                <?php endif; ?>
                             </td>
                             <td class="p-3 font-mono text-gray-400"><?php echo date('d M Y', strtotime($m['created_at'])); ?></td>
                             <td class="p-3 text-center">

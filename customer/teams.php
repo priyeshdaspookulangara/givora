@@ -65,6 +65,14 @@ function getDownlineList($pdo, $root_member_id, $max_level = 7) {
 $matrix_tree = buildMatrixTree($pdo, $member['member_id'], 1, 3);
 $downline_list = getDownlineList($pdo, $member['member_id'], 7);
 
+// Fetch Phase 2 children if member is active in Phase 2
+$p2_children = [];
+if ($member['p2_status'] === 'Active') {
+    $stmt = $pdo->prepare("SELECT member_id, name, package_type, p2_matrix_position, p2_created_at FROM members WHERE p2_placement_parent_id = ? AND p2_status = 'Active' ORDER BY p2_matrix_position ASC");
+    $stmt->execute([$member['member_id']]);
+    $p2_children = $stmt->fetchAll();
+}
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -75,6 +83,35 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="text-xs text-gray-400 mt-1">Showing 3x3 visual matrix representation and complete 7-level tabular downline.</p>
         </div>
         <a href="/customer/dashboard.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10">← Dashboard</a>
+    </div>
+
+    <!-- Phase 2 Matrix Promotion Banner -->
+    <div class="bg-gradient-to-r from-amber-900/40 via-darkcard to-gold/20 p-6 rounded-2xl gold-border-glow mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border border-gold/30">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs uppercase font-extrabold tracking-widest px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Phase 2 Matrix Status</span>
+                <?php if ($member['p2_status'] === 'Active'): ?>
+                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-green-500/20 text-green-400">PROMOTED & ACTIVE</span>
+                <?php else: ?>
+                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">PENDING PHASE 1 COMPLETION</span>
+                <?php endif; ?>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-2">
+                <?php if ($member['p2_status'] === 'Active'): ?>
+                    <i class="fas fa-crown text-gold mr-1.5"></i> Congratulations! You are in Phase 2 Matrix.
+                <?php else: ?>
+                    Complete your Phase 1 matrix (3 direct placements) to automatically qualify for Phase 2 Matrix!
+                <?php endif; ?>
+            </h3>
+            <p class="text-xs text-gray-400 mt-1">When 3 members fill your Phase 1 matrix, you are instantly spillover-placed into the global Phase 2 Matrix to earn Phase 2 commissions.</p>
+        </div>
+        <?php if ($member['p2_status'] === 'Active'): ?>
+            <div class="text-right flex-shrink-0">
+                <div class="text-xs text-gray-400">Phase 2 Placement Parent</div>
+                <div class="text-sm font-bold font-mono text-gold"><?php echo htmlspecialchars($member['p2_placement_parent_id'] ?: 'GT100000 (Root)'); ?></div>
+                <div class="text-xs text-gray-400 mt-0.5">Position #<?php echo htmlspecialchars($member['p2_matrix_position']); ?></div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Visual 3-Matrix Representation -->

@@ -198,8 +198,16 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
                     <span class="text-white font-mono"><?php echo htmlspecialchars($member['used_epin']); ?></span>
                 </div>
                 <div class="flex justify-between border-b border-gold/10 pb-2">
-                    <span class="text-gray-400">Account Status:</span>
-                    <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 font-bold"><?php echo htmlspecialchars($member['status']); ?></span>
+                    <span class="text-gray-400">Phase 1 Status:</span>
+                    <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 font-bold">Active</span>
+                </div>
+                <div class="flex justify-between border-b border-gold/10 pb-2">
+                    <span class="text-gray-400">Phase 2 Matrix Status:</span>
+                    <?php if ($member['p2_status'] === 'Active'): ?>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30"><i class="fas fa-crown mr-1"></i> Promoted (Active)</span>
+                    <?php else: ?>
+                        <span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-semibold">Pending Completion (<?php echo $direct_matrix_children; ?>/3)</span>
+                    <?php endif; ?>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Joined Date:</span>

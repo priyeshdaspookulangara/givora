@@ -33,9 +33,14 @@ CREATE TABLE IF NOT EXISTS members (
     package_type ENUM('Foundation_5000', 'Leadership_15000') NOT NULL,
     profile_image VARCHAR(255) DEFAULT NULL,
     status ENUM('Active', 'Inactive') NOT NULL DEFAULT 'Active',
+    p2_status ENUM('Inactive', 'Active') NOT NULL DEFAULT 'Inactive',
+    p2_placement_parent_id VARCHAR(20) DEFAULT NULL,
+    p2_matrix_position INT DEFAULT NULL,
+    p2_created_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_sponsor (sponsor_id),
-    INDEX idx_parent (placement_parent_id)
+    INDEX idx_parent (placement_parent_id),
+    INDEX idx_p2_parent (p2_placement_parent_id)
 );
 
 CREATE TABLE IF NOT EXISTS wallets (
@@ -75,8 +80,8 @@ VALUES ('admin', 'admin123')
 ON DUPLICATE KEY UPDATE id=id;
 
 -- Initial Company Root Member for matrix top
-INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status)
-VALUES ('GT100000', NULL, NULL, NULL, 'Givora Root', 'root@givoratraders.com', '9999999999', 'root123', 'SYSTEM_ROOT_EPIN', 'Leadership_15000', 'Active')
+INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, p2_status)
+VALUES ('GT100000', NULL, NULL, NULL, 'Givora Root', 'root@givoratraders.com', '9999999999', 'root123', 'SYSTEM_ROOT_EPIN', 'Leadership_15000', 'Active', 'Active')
 ON DUPLICATE KEY UPDATE id=id;
 
 INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40)
