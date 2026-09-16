@@ -9,6 +9,13 @@ if ($is_member) {
     require_once __DIR__ . '/functions.php';
     $logged_member = getLoggedInMember();
 }
+
+$script_uri = $_SERVER['REQUEST_URI'] ?? '';
+$is_customer_section = (strpos($script_uri, '/customer/') !== false);
+$is_admin_section = (strpos($script_uri, '/admin/') !== false);
+$is_sidebar_layout = $is_customer_section || $is_admin_section;
+
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en" class="dark">
@@ -62,10 +69,155 @@ if ($is_member) {
             background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 100%);
             box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
         }
+        .sidebar-item-active {
+            background: rgba(197, 160, 89, 0.15);
+            color: #f3e5ab;
+            border-left: 4px solid #c5a059;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
-    <!-- Navbar -->
+
+<?php if ($is_sidebar_layout): ?>
+    <!-- Sidebar Layout Container -->
+    <div class="min-h-screen flex flex-col md:flex-row bg-darkbg w-full">
+        <!-- Sidebar Backdrop for Mobile -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden md:hidden"></div>
+
+        <!-- Left Sidebar Aside -->
+        <aside id="sidebar-menu" class="fixed md:static inset-y-0 left-0 w-64 bg-darkcard border-r border-gold/20 flex flex-col justify-between z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0">
+            <div>
+                <!-- Brand Logo Header -->
+                <div class="h-20 px-6 flex items-center border-b border-gold/20">
+                    <a href="/index.php" class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-golddark to-goldlight flex items-center justify-center font-bold text-darkbg text-lg shadow-lg">
+                            G
+                        </div>
+                        <span class="text-xl font-extrabold gold-gradient-text tracking-wide">GIVORA <span class="text-[10px] text-gold/70 block tracking-widest font-normal">TRADERS LLP</span></span>
+                    </a>
+                </div>
+
+                <!-- User Profile / Admin Badge -->
+                <div class="p-4 mx-3 my-4 rounded-xl bg-darkbg/80 border border-gold/20 flex items-center space-x-3">
+                    <?php if ($is_customer_section && $logged_member): ?>
+                        <div class="w-10 h-10 rounded-full border border-gold bg-darkcard flex items-center justify-center text-gold text-lg font-bold flex-shrink-0 overflow-hidden">
+                            <?php if (!empty($logged_member['profile_image'])): ?>
+                                <img src="<?php echo htmlspecialchars($logged_member['profile_image']); ?>" class="w-full h-full object-cover">
+                            <?php else: ?>
+                                <i class="fas fa-user"></i>
+                            <?php endif; ?>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-sm font-bold text-white truncate"><?php echo htmlspecialchars($logged_member['name']); ?></div>
+                            <div class="text-xs text-gold font-mono truncate"><?php echo htmlspecialchars($logged_member['member_id']); ?></div>
+                        </div>
+                    <?php else: ?>
+                        <div class="w-10 h-10 rounded-full border border-gold bg-darkcard flex items-center justify-center text-gold text-lg font-bold flex-shrink-0">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Admin Master</div>
+                            <div class="text-xs text-gold font-mono">Control Console</div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Navigation Sidebar Links -->
+                <nav class="px-3 space-y-1">
+                    <?php if ($is_customer_section): ?>
+                        <a href="/customer/dashboard.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'dashboard.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-chart-line w-5 text-gold"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/customer/profile.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'profile.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-user-edit w-5 text-gold"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/customer/teams.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'teams.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-sitemap w-5 text-gold"></i>
+                            <span>My Matrix Team</span>
+                        </a>
+                        <a href="/customer/pins.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'pins.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-ticket-alt w-5 text-gold"></i>
+                            <span>My ePINs</span>
+                        </a>
+                        <a href="/customer/wallet.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'wallet.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-wallet w-5 text-gold"></i>
+                            <span>Wallet & Payout</span>
+                        </a>
+                        <a href="/customer/reports.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'reports.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-file-invoice-dollar w-5 text-gold"></i>
+                            <span>Earning Reports</span>
+                        </a>
+                    <?php else: // Admin Section ?>
+                        <a href="/admin/index.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'index.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-tachometer-alt w-5 text-gold"></i>
+                            <span>Admin Overview</span>
+                        </a>
+                        <a href="/admin/members.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'members.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-users w-5 text-gold"></i>
+                            <span>Members & Greetings</span>
+                        </a>
+                        <a href="/admin/epins.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'epins.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-key w-5 text-gold"></i>
+                            <span>ePIN Generator</span>
+                        </a>
+                        <a href="/admin/wallet.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'wallet.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-money-check-alt w-5 text-gold"></i>
+                            <span>Withdrawal Requests</span>
+                        </a>
+                        <a href="/admin/financials.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'financials.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-balance-scale w-5 text-gold"></i>
+                            <span>Financial Master Ledger</span>
+                        </a>
+                        <a href="/admin/reports.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'reports.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-chart-pie w-5 text-gold"></i>
+                            <span>System Reports</span>
+                        </a>
+                    <?php endif; ?>
+                </nav>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="p-4 border-t border-gold/20 space-y-2">
+                <a href="/index.php" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold text-gray-400 hover:text-gold border border-gold/20 hover:bg-gold/10 transition">
+                    <i class="fas fa-globe"></i>
+                    <span>Visit Public Website</span>
+                </a>
+                <a href="/logout.php" class="flex items-center space-x-2 px-4 py-2.5 rounded-lg text-xs font-bold text-red-400 hover:bg-red-500/10 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area with Top Navigation Bar -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Top Dashboard Header -->
+            <header class="h-20 bg-darkcard border-b border-gold/20 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
+                <div class="flex items-center space-x-4">
+                    <!-- Mobile Hamburger Button -->
+                    <button onclick="toggleSidebar()" class="md:hidden text-gold text-2xl p-2 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg sm:text-xl font-bold text-white truncate">
+                        <?php echo isset($page_title) ? $page_title : "Portal Overview"; ?>
+                    </h2>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="/index.php" class="hidden sm:inline-block text-xs font-semibold text-gold border border-gold/30 px-3 py-1.5 rounded-lg hover:bg-gold/10">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="/logout.php" class="text-xs font-bold text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-500/10">
+                        Logout
+                    </a>
+                </div>
+            </header>
+
+            <main class="flex-grow p-4 sm:p-8">
+<?php else: ?>
+    <!-- Public Navbar for Website Pages -->
     <nav class="bg-darkcard border-b border-gold/20 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
@@ -140,3 +292,15 @@ if ($is_member) {
         });
     </script>
     <main class="flex-grow">
+<?php endif; ?>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-menu');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar && backdrop) {
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+    }
+}
+</script>

@@ -35,10 +35,10 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
 ?>
 
 <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Top Customer Nav Bar -->
-    <div class="bg-darkcard border border-gold/20 rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+    <!-- Top Member Greeting Card -->
+    <div class="bg-gradient-to-r from-darkcard via-darkcard to-gold/10 border border-gold/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 gold-border-glow">
         <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gold bg-darkbg flex items-center justify-center text-gold text-xl font-bold">
+            <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-gold bg-darkbg flex items-center justify-center text-gold text-2xl font-bold flex-shrink-0">
                 <?php if (!empty($member['profile_image'])): ?>
                     <img src="<?php echo htmlspecialchars($member['profile_image']); ?>" class="w-full h-full object-cover" alt="Profile">
                 <?php else: ?>
@@ -46,18 +46,22 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
                 <?php endif; ?>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white"><?php echo htmlspecialchars($member['name']); ?></h1>
-                <p class="text-xs text-gold">Member ID: <span class="font-mono text-white font-semibold"><?php echo htmlspecialchars($member['member_id']); ?></span> | Tier: <span class="font-semibold text-goldlight"><?php echo str_replace('_', ' ₹', $member['package_type']); ?></span></p>
+                <h1 class="text-2xl font-bold text-white">Welcome, <?php echo htmlspecialchars($member['name']); ?>!</h1>
+                <p class="text-xs text-gold mt-1">
+                    Member ID: <span class="font-mono text-white font-bold bg-gold/20 px-2 py-0.5 rounded border border-gold/30"><?php echo htmlspecialchars($member['member_id']); ?></span> |
+                    Package: <span class="font-semibold text-goldlight"><?php echo str_replace('_', ' ₹', $member['package_type']); ?></span>
+                </p>
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 text-sm">
-            <a href="/customer/dashboard.php" class="px-4 py-2 rounded-lg bg-gold/20 border border-gold text-gold font-medium"><i class="fas fa-chart-line mr-1.5"></i> Dashboard</a>
-            <a href="/customer/profile.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-user-edit mr-1.5"></i> Profile</a>
-            <a href="/customer/teams.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-sitemap mr-1.5"></i> My Matrix Team</a>
-            <a href="/customer/pins.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-ticket-alt mr-1.5"></i> My ePINs</a>
-            <a href="/customer/wallet.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-wallet mr-1.5"></i> Wallet & Payout</a>
-            <a href="/customer/reports.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-file-invoice-dollar mr-1.5"></i> Reports</a>
+        <div class="flex items-center space-x-3">
+            <a href="/customer/profile.php" class="btn-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1">
+                <i class="fas fa-user-edit"></i>
+                <span>Edit Profile</span>
+            </a>
+            <a href="/customer/wallet.php" class="bg-darkbg border border-gold/30 text-gold px-4 py-2 rounded-xl text-xs font-bold hover:bg-gold/10">
+                <i class="fas fa-wallet"></i> Wallet
+            </a>
         </div>
     </div>
 

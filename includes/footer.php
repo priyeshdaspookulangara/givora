@@ -1,5 +1,14 @@
     </main>
-    <!-- Footer -->
+<?php if ($is_sidebar_layout): ?>
+            <!-- Dashboard Sidebar Footer -->
+            <footer class="bg-darkcard border-t border-gold/10 px-6 py-4 text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <p>&copy; <?php echo date('Y'); ?> Givora Traders LLP. All rights reserved.</p>
+                <p>3-Matrix Compensation Portal</p>
+            </footer>
+        </div>
+    </div>
+<?php else: ?>
+    <!-- Public Footer -->
     <footer class="bg-darkcard border-t border-gold/20 mt-16 text-gray-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -50,5 +59,6 @@
             </div>
         </div>
     </footer>
+<?php endif; ?>
 </body>
 </html>
