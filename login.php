@@ -4,22 +4,33 @@ require_once __DIR__ . '/includes/functions.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $member_id = trim($_POST['member_id'] ?? '');
+    $member_id = strtoupper(trim($_POST['member_id'] ?? ''));
     $password = trim($_POST['password'] ?? '');
 
     if (empty($member_id) || empty($password)) {
         $error = "Please enter both Member ID and Password.";
     } else {
         $pdo = getDBConnection();
-        $stmt = $pdo->prepare("SELECT * FROM members WHERE member_id = ? AND password = ?");
-        $stmt->execute([$member_id, $password]);
+        $stmt = $pdo->prepare("SELECT * FROM members WHERE member_id = ?");
+        $stmt->execute([$member_id]);
         $member = $stmt->fetch();
 
         if ($member) {
-            $_SESSION['member_id'] = $member['member_id'];
-            $_SESSION['member_name'] = $member['name'];
-            header("Location: /customer/dashboard.php");
-            exit;
+            $password_valid = ($password === $member['password']) ||
+                              (function_exists('password_verify') && password_verify($password, $member['password']));
+
+            if ($password_valid) {
+                if (isset($member['status']) && $member['status'] === 'Inactive') {
+                    $error = "Your account is currently inactive. Please contact customer support.";
+                } else {
+                    $_SESSION['member_id'] = $member['member_id'];
+                    $_SESSION['member_name'] = $member['name'];
+                    header("Location: " . getBaseUrl() . "/customer/dashboard.php");
+                    exit;
+                }
+            } else {
+                $error = "Invalid Member ID or Password. Please try again.";
+            }
         } else {
             $error = "Invalid Member ID or Password. Please try again.";
         }
