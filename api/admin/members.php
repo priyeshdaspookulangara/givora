@@ -31,7 +31,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $members = $stmt->fetchAll();
 
-// Add WhatsApp greeting link to each member
+// Add WhatsApp greeting link and matrix tree URL to each member
 $baseUrl = getBaseUrl();
 foreach ($members as &$m) {
     $login_url = $baseUrl . "/login.php";
@@ -39,6 +39,7 @@ foreach ($members as &$m) {
     $clean_phone = preg_replace('/[^0-9]/', '', $m['phone']);
     $m['whatsapp_url'] = "https://wa.me/" . $clean_phone . "?text=" . urlencode($message);
     $m['whatsapp_text'] = $message;
+    $m['matrix_tree_url'] = $baseUrl . "/admin/matrix_tree.php?member_id=" . $m['member_id'];
 }
 
 sendJsonResponse(true, 'Admin members list fetched successfully.', [

@@ -103,7 +103,12 @@ $login_url = getBaseUrl() . "/login.php";
                         $wa_url = "https://wa.me/" . (!empty($phone_digits) ? $phone_digits : "") . "?text=" . urlencode($wa_text);
                     ?>
                         <tr class="hover:bg-gold/5 transition">
-                            <td class="p-3 font-mono font-extrabold text-gold text-sm"><?php echo htmlspecialchars($m['member_id']); ?></td>
+                            <td class="p-3 font-mono font-extrabold text-gold text-sm">
+                                <div><?php echo htmlspecialchars($m['member_id']); ?></div>
+                                <a href="/admin/matrix_tree.php?member_id=<?php echo $m['member_id']; ?>" class="mt-1 text-[10px] text-gold border border-gold/40 px-2 py-0.5 rounded hover:bg-gold/10 inline-block font-sans">
+                                    <i class="fas fa-sitemap mr-0.5"></i> View Matrix Tree
+                                </a>
+                            </td>
                             <td class="p-3">
                                 <div class="font-bold text-white"><?php echo htmlspecialchars($m['name']); ?></div>
                                 <div class="text-gray-400 text-[11px]"><i class="fas fa-phone text-gold/70 mr-1"></i><?php echo htmlspecialchars($m['phone']); ?></div>
