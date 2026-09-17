@@ -20,7 +20,29 @@ if ($method === 'GET') {
     $name = trim($input['name'] ?? $member['name']);
     $email = trim($input['email'] ?? $member['email']);
     $phone = trim($input['phone'] ?? $member['phone']);
-    $password = trim($input['password'] ?? '');
+    $password = trim($input['password'] ?? $member['password']);
+
+    // Extended Address & Location Fields
+    $address_line = trim($input['address_line'] ?? $member['address_line'] ?? '');
+    $place = trim($input['place'] ?? $member['place'] ?? '');
+    $city = trim($input['city'] ?? $member['city'] ?? '');
+    $pincode = trim($input['pincode'] ?? $member['pincode'] ?? '');
+    $state = trim($input['state'] ?? $member['state'] ?? 'Kerala');
+
+    // KYC & Bank Fields
+    $pan_number = strtoupper(trim($input['pan_number'] ?? $member['pan_number'] ?? ''));
+    $aadhaar_number = trim($input['aadhaar_number'] ?? $member['aadhaar_number'] ?? '');
+    $bank_name = trim($input['bank_name'] ?? $member['bank_name'] ?? '');
+    $bank_account_number = trim($input['bank_account_number'] ?? $member['bank_account_number'] ?? '');
+    $ifsc_code = strtoupper(trim($input['ifsc_code'] ?? $member['ifsc_code'] ?? ''));
+
+    // Determine KYC status
+    $kyc_status = $member['kyc_status'] ?? 'Pending';
+    if (!empty($address_line) && !empty($city) && !empty($pincode) && !empty($pan_number) && !empty($aadhaar_number) && !empty($bank_name) && !empty($bank_account_number) && !empty($ifsc_code)) {
+        if ($kyc_status === 'Pending' || $kyc_status === 'Rejected') {
+            $kyc_status = 'Submitted';
+        }
+    }
 
     // Profile image upload handling (multipart form)
     $profile_image = $member['profile_image'];
@@ -44,13 +66,13 @@ if ($method === 'GET') {
         }
     }
 
-    if (!empty($password)) {
-        $stmt = $pdo->prepare("UPDATE members SET name = ?, email = ?, phone = ?, password = ?, profile_image = ? WHERE member_id = ?");
-        $stmt->execute([$name, $email, $phone, $password, $profile_image, $member_id]);
-    } else {
-        $stmt = $pdo->prepare("UPDATE members SET name = ?, email = ?, phone = ?, profile_image = ? WHERE member_id = ?");
-        $stmt->execute([$name, $email, $phone, $profile_image, $member_id]);
-    }
+    $stmt = $pdo->prepare("UPDATE members SET name = ?, email = ?, phone = ?, password = ?, profile_image = ?, address_line = ?, place = ?, city = ?, pincode = ?, state = ?, pan_number = ?, aadhaar_number = ?, bank_name = ?, bank_account_number = ?, ifsc_code = ?, kyc_status = ? WHERE member_id = ?");
+    $stmt->execute([
+        $name, $email, $phone, $password, $profile_image,
+        $address_line, $place, $city, $pincode, $state,
+        $pan_number, $aadhaar_number, $bank_name, $bank_account_number, $ifsc_code,
+        $kyc_status, $member_id
+    ]);
 
     // Fetch updated member record
     $stmt = $pdo->prepare("SELECT * FROM members WHERE member_id = ?");

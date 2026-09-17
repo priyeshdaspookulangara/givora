@@ -15,16 +15,21 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = floatval($_POST['amount'] ?? 0);
 
-    // Fetch current user wallet balance
-    $stmt = $pdo->prepare("SELECT user_wallet_60 FROM wallets WHERE member_id = ?");
-    $stmt->execute([$member['member_id']]);
-    $current_user_wallet = floatval($stmt->fetchColumn() ?: 0);
-
-    if ($amount < 500) {
+    // Enforce KYC Check
+    $kyc_status = $member['kyc_status'] ?? 'Pending';
+    if ($kyc_status !== 'Approved') {
+        $error = "KYC Verification Required! Please complete and submit your profile address, PAN, Aadhaar, and bank account details on the Profile page to unlock payout withdrawals.";
+    } elseif ($amount < 500) {
         $error = "Minimum withdrawal request amount is ₹500.";
-    } elseif ($amount > $current_user_wallet) {
-        $error = "Insufficient User Wallet balance. Available: ₹" . number_format($current_user_wallet, 2);
     } else {
+        // Fetch current user wallet balance
+        $stmt = $pdo->prepare("SELECT user_wallet_60 FROM wallets WHERE member_id = ?");
+        $stmt->execute([$member['member_id']]);
+        $current_user_wallet = floatval($stmt->fetchColumn() ?: 0);
+
+        if ($amount > $current_user_wallet) {
+            $error = "Insufficient User Wallet balance. Available: ₹" . number_format($current_user_wallet, 2);
+        } else {
         try {
             $pdo->beginTransaction();
 
@@ -45,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (Exception $e) {
             $pdo->rollBack();
             $error = "Withdrawal request failed: " . $e->getMessage();
+        }
         }
     }
 }
@@ -108,6 +114,16 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Withdrawal Request Form -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <h2 class="text-lg font-bold text-white mb-4 border-b border-gold/10 pb-2"><i class="fas fa-hand-holding-usd text-gold mr-2"></i> Request Payout / Withdrawal</h2>
+
+            <?php if (($member['kyc_status'] ?? 'Pending') !== 'Approved'): ?>
+                <div class="mb-6 p-4 rounded-xl bg-amber-900/30 border border-amber-500/40 text-amber-300 text-xs flex flex-col gap-2">
+                    <div class="font-bold flex items-center gap-2 text-sm">
+                        <i class="fas fa-exclamation-triangle text-amber-400"></i> KYC Verification Required
+                    </div>
+                    <p class="text-gray-300">You must fill your address, PAN, Aadhaar, and bank account details on your profile page before requesting cash withdrawals.</p>
+                    <a href="/customer/profile.php" class="text-gold font-bold underline hover:text-white mt-1">Complete Profile & KYC Now →</a>
+                </div>
+            <?php endif; ?>
 
             <?php if (!empty($success)): ?>
                 <div class="mb-4 p-3 rounded-xl bg-green-900/30 border border-green-500/50 text-green-300 text-xs">

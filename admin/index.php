@@ -37,6 +37,7 @@ $total_system_inflow = $stmt->fetchColumn() ?: 0.00;
         <div class="flex flex-wrap gap-2 text-sm">
             <a href="/admin/index.php" class="px-4 py-2 rounded-lg bg-gold/20 border border-gold text-gold font-medium"><i class="fas fa-chart-pie mr-1"></i> Overview</a>
             <a href="/admin/members.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-users mr-1"></i> Members</a>
+            <a href="/admin/kyc.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-user-check mr-1"></i> KYC Reviews</a>
             <a href="/admin/epins.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-key mr-1"></i> ePIN Generator</a>
             <a href="/admin/wallet.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-university mr-1"></i> Financials & Payouts</a>
             <a href="/admin/reports.php" class="px-4 py-2 rounded-lg bg-darkbg border border-gold/20 text-gray-300 hover:text-gold transition"><i class="fas fa-file-alt mr-1"></i> Audit Reports</a>
