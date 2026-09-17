@@ -75,6 +75,17 @@ CREATE TABLE IF NOT EXISTS withdrawals (
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS api_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_type ENUM('member', 'admin') NOT NULL,
+    user_id VARCHAR(50) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_token (token),
+    INDEX idx_user (user_id, user_type)
+);
+
 -- Initial Admin Account
 INSERT INTO admins (username, password)
 VALUES ('admin', 'admin123')
