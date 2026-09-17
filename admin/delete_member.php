@@ -58,8 +58,12 @@ try {
     $stmt = $pdo->prepare("DELETE FROM wallets WHERE member_id = ?");
     $stmt->execute([$member_id]);
 
-    $stmt = $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ? AND user_type = 'member'");
-    $stmt->execute([$member_id]);
+    try {
+        $stmt = $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ? AND user_type = 'member'");
+        $stmt->execute([$member_id]);
+    } catch (Exception $tokenErr) {
+        // Ignore if api_tokens table has not been migrated on target database
+    }
 
     // 4. Delete member record
     $stmt = $pdo->prepare("DELETE FROM members WHERE member_id = ?");
