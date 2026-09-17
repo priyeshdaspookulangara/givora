@@ -40,6 +40,25 @@ $login_url = getBaseUrl() . "/login.php";
         <a href="/admin/index.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10 self-start md:self-auto">← Admin Overview</a>
     </div>
 
+    <!-- Flash Messages -->
+    <?php if (!empty($_SESSION['admin_msg_success'])): ?>
+        <div class="mb-6 p-4 rounded-xl bg-green-900/30 border border-green-500/50 text-green-300 text-xs flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-400 text-base mr-3"></i>
+                <span><?php echo htmlspecialchars($_SESSION['admin_msg_success']); unset($_SESSION['admin_msg_success']); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($_SESSION['admin_msg_error'])): ?>
+        <div class="mb-6 p-4 rounded-xl bg-red-900/30 border border-red-500/50 text-red-300 text-xs flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle text-red-400 text-base mr-3"></i>
+                <span><?php echo htmlspecialchars($_SESSION['admin_msg_error']); unset($_SESSION['admin_msg_error']); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <!-- Search & Filter Form -->
     <div class="bg-darkcard p-6 rounded-2xl gold-border-glow mb-8">
         <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -134,10 +153,18 @@ $login_url = getBaseUrl() . "/login.php";
                             </td>
                             <td class="p-3 font-mono text-gray-400"><?php echo date('d M Y', strtotime($m['created_at'])); ?></td>
                             <td class="p-3 text-center">
-                                <a href="<?php echo $wa_url; ?>" target="_blank" class="px-3 py-1.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-xs inline-flex items-center space-x-1.5 shadow">
-                                    <i class="fab fa-whatsapp text-sm"></i>
-                                    <span>Send Greeting</span>
-                                </a>
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a href="<?php echo $wa_url; ?>" target="_blank" class="px-2.5 py-1.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-[11px] inline-flex items-center space-x-1 shadow">
+                                        <i class="fab fa-whatsapp text-xs"></i>
+                                        <span>Greeting</span>
+                                    </a>
+                                    <?php if ($m['member_id'] !== 'GT100000'): ?>
+                                        <a href="/admin/delete_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to permanently delete member <?php echo htmlspecialchars($m['name']); ?> (<?php echo $m['member_id']; ?>)? All associated wallets, commissions, and transaction logs will be permanently deleted!');" class="px-2.5 py-1.5 rounded-xl bg-red-600/80 hover:bg-red-600 text-white font-bold text-[11px] inline-flex items-center space-x-1 shadow border border-red-500/40">
+                                            <i class="fas fa-trash text-xs"></i>
+                                            <span>Delete</span>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; endif; ?>
