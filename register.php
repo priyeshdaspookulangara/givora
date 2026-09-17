@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($error)) {
-            // AUTOMATIC 3-MATRIX TREE AUTO-PLACEMENT (BFS Spillover starting under sponsor)
+            // AUTOMATIC 3-MATRIX TREE AUTO-PLACEMENT (Global level-by-level BFS Spillover starting from Root GT100000)
             // Placement Parent is AUTO-FILL / AUTO-DETERMINED by system matrix logic.
-            $placement_info = findMatrixPlacement($pdo, $sponsor_id);
+            $placement_info = findMatrixPlacement($pdo, 'GT100000');
 
             $placement_parent = $placement_info['parent_id'];
             $matrix_position = $placement_info['position'];

@@ -48,19 +48,11 @@ function generateMemberId($pdo) {
     return $member_id;
 }
 
-// Matrix Placement Logic (3-matrix)
-// Finds the next open placement under $start_parent_id using Breadth-First Search (BFS)
-function findMatrixPlacement($pdo, $start_parent_id) {
-    if (empty($start_parent_id)) {
-        $start_parent_id = 'GT100000'; // Default root
-    }
-
-    // Verify start parent exists
-    $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
-    $stmt->execute([$start_parent_id]);
-    if (!$stmt->fetch()) {
-        $start_parent_id = 'GT100000';
-    }
+// Matrix Placement Logic (Global 3-matrix)
+// Finds the next open placement across the entire company matrix using Breadth-First Search (BFS) starting from Root GT100000
+function findMatrixPlacement($pdo, $start_parent_id = 'GT100000') {
+    // Global company 3-matrix auto-spillover always starts level-by-level left-to-right BFS from Root 'GT100000'
+    $start_parent_id = 'GT100000';
 
     $queue = [$start_parent_id];
     $visited = [];

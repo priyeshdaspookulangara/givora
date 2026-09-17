@@ -35,8 +35,8 @@ if (!$stmt->fetch()) {
     $sponsor_id = 'GT100000';
 }
 
-// 3. Determine Matrix Placement
-$placement = findMatrixPlacement($pdo, !empty($placement_parent_id) ? $placement_parent_id : $sponsor_id);
+// 3. Determine Matrix Placement (Global Level-by-Level Auto Fill from Root GT100000)
+$placement = findMatrixPlacement($pdo, 'GT100000');
 $actual_parent_id = $placement['parent_id'];
 $matrix_pos = $placement['position'];
 
