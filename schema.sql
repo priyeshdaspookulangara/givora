@@ -93,8 +93,8 @@ ON DUPLICATE KEY UPDATE id=id;
 
 -- Initial Company Root Member for matrix top
 INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, p2_status)
-VALUES ('GT100000', NULL, NULL, NULL, 'Givora Root', 'root@givoratraders.com', '9999999999', 'root123', 'SYSTEM_ROOT_EPIN', 'Leadership_15000', 'Active', 'Active')
-ON DUPLICATE KEY UPDATE id=id;
+VALUES ('GT100000', NULL, NULL, NULL, 'Givora Root', 'root@givoratraders.com', '9999999999', 'root123', 'SYSTEM_ROOT_EPIN', 'Foundation_5000', 'Active', 'Active')
+ON DUPLICATE KEY UPDATE id=id, package_type='Foundation_5000';
 
 INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40)
 VALUES ('GT100000', 0.00, 0.00, 0.00)
