@@ -19,6 +19,16 @@ $stmt = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? 
 $stmt->execute([$member_id]);
 $total_earnings = (float)($stmt->fetchColumn() ?: 0.00);
 
+// Direct Referral Income
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type = 'Direct_Referral'");
+$stmt->execute([$member_id]);
+$direct_referral_income = (float)($stmt->fetchColumn() ?: 0.00);
+
+// Matrix Level Income
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type LIKE 'Matrix_Income%'");
+$stmt->execute([$member_id]);
+$matrix_level_income = (float)($stmt->fetchColumn() ?: 0.00);
+
 // Total Direct Referrals Count
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmt->execute([$member_id]);
@@ -46,6 +56,8 @@ sendJsonResponse(true, 'Dashboard stats fetched successfully.', [
         'p2_reserve_wallet' => (float)$wallet['p2_reserve_wallet'],
         'p2_reserve_target' => 15000.00,
         'total_earnings' => $total_earnings,
+        'direct_referral_income' => $direct_referral_income,
+        'matrix_level_income' => $matrix_level_income,
         'total_withdrawn' => $total_withdrawn
     ],
     'matrix_stats' => [

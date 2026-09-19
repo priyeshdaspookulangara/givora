@@ -20,6 +20,16 @@ $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmt->execute([$member['member_id']]);
 $total_direct_referrals = $stmt->fetchColumn();
 
+// Calculate Direct Referral Income
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral' AND status = 'Credit'");
+$stmt->execute([$member['member_id']]);
+$direct_referral_income = $stmt->fetchColumn() ?: 0.00;
+
+// Calculate Matrix Level Income
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND status = 'Credit'");
+$stmt->execute([$member['member_id']]);
+$matrix_level_income = $stmt->fetchColumn() ?: 0.00;
+
 // Total Matrix Team Count under this parent recursively or down levels
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE placement_parent_id = ?");
 $stmt->execute([$member['member_id']]);
@@ -82,7 +92,7 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
         <!-- Total Earnings -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <div class="flex items-center justify-between mb-2">
@@ -91,44 +101,56 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
                     <i class="fas fa-coins"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold gold-gradient-text">₹<?php echo number_format($total_earnings, 2); ?></div>
-            <p class="text-xs text-gray-500 mt-2">Combined Direct + Matrix Bonus</p>
+            <div class="text-2xl font-extrabold gold-gradient-text">₹<?php echo number_format($total_earnings, 2); ?></div>
+            <p class="text-xs text-gray-500 mt-2">Combined Gross Income</p>
+        </div>
+
+        <!-- Direct Referral Income -->
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-blue-500">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold uppercase text-blue-400">Direct Referral Bonus</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-extrabold text-blue-400">₹<?php echo number_format($direct_referral_income, 2); ?></div>
+            <p class="text-xs text-gray-400 mt-2"><?php echo $total_direct_referrals; ?> Directly Sponsored Member(s)</p>
+        </div>
+
+        <!-- Matrix Level Income -->
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold uppercase text-purple-400">Matrix Level Income</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-extrabold text-purple-300">₹<?php echo number_format($matrix_level_income, 2); ?></div>
+            <p class="text-xs text-gray-400 mt-2">Auto Spillover Matrix Earnings</p>
         </div>
 
         <!-- User Wallet (60%) -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-gray-400">User Wallet (60%)</span>
+                <span class="text-xs font-semibold uppercase text-green-400">User Wallet (60%)</span>
                 <div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center text-lg">
                     <i class="fas fa-wallet"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-green-400">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
-            <p class="text-xs text-green-500/80 mt-2">Available for Withdrawal (Min ₹500)</p>
+            <div class="text-2xl font-extrabold text-green-400">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
+            <p class="text-xs text-green-500/80 mt-2">Withdrawable (Min ₹500)</p>
         </div>
 
         <!-- Company Wallet (40%) -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
+        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-gray-400">Company Wallet (40%)</span>
+                <span class="text-xs font-semibold uppercase text-amber-400">Company Wallet (40%)</span>
                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
                     <i class="fas fa-building"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-amber-400">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
-            <p class="text-xs text-amber-500/80 mt-2">Company Reserve Allocation</p>
-        </div>
-
-        <!-- Direct Referrals -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-gray-400">Direct Referrals</span>
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
-                    <i class="fas fa-users"></i>
-                </div>
-            </div>
-            <div class="text-3xl font-extrabold text-white"><?php echo $total_direct_referrals; ?></div>
-            <p class="text-xs text-gray-500 mt-2">Directly Sponsored Members</p>
+            <div class="text-2xl font-extrabold text-amber-400">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
+            <p class="text-xs text-amber-500/80 mt-2">Company Reserve Fund</p>
         </div>
     </div>
 

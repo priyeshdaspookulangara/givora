@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div>
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Mobile 1 Carrier / Operator *</label>
                             <select name="operator_1" id="operator_1" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
-                                <option value="Airtel">Jio</option>
+                                <option value="Jio">Jio</option>
                                 <option value="Airtel">Airtel</option>
                                 <option value="Vi">Vi (Vodafone Idea)</option>
                                 <option value="BSNL">BSNL</option>
