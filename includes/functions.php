@@ -226,8 +226,12 @@ function generateEpinCode() {
 
 // Wallet initialization
 function ensureWalletExists($pdo, $member_id) {
-    $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
+    $stmt = $pdo->prepare("SELECT id FROM wallets WHERE member_id = ?");
     $stmt->execute([$member_id]);
+    if (!$stmt->fetch()) {
+        $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00)");
+        $stmt->execute([$member_id]);
+    }
 }
 
 // Commission & Bonus Processing
