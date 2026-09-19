@@ -232,7 +232,7 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
                     <?php if ($member['p2_status'] === 'Active'): ?>
                         <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30"><i class="fas fa-crown mr-1"></i> Promoted (Active)</span>
                     <?php else: ?>
-                        <span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-semibold">Pending Completion (<?php echo $direct_matrix_children; ?>/3)</span>
+                        <span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-semibold">Pending 6 Levels Completion</span>
                     <?php endif; ?>
                 </div>
                 <div class="flex justify-between">

@@ -100,10 +100,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php if ($member['p2_status'] === 'Active'): ?>
                     <i class="fas fa-crown text-gold mr-1.5"></i> Congratulations! You are in Phase 2 Matrix.
                 <?php else: ?>
-                    Complete your Phase 1 matrix (3 direct placements) to automatically qualify for Phase 2 Matrix!
+                    Complete 6 matrix levels under you to automatically qualify for Phase 2 Matrix!
                 <?php endif; ?>
             </h3>
-            <p class="text-xs text-gray-400 mt-1">When 3 members fill your Phase 1 matrix, you are instantly spillover-placed into the global Phase 2 Matrix to earn Phase 2 commissions.</p>
+            <p class="text-xs text-gray-400 mt-1">When all 6 levels under your Phase 1 matrix tree are completed, you are instantly spillover-placed into the global Phase 2 Matrix to earn Phase 2 commissions.</p>
         </div>
         <?php if ($member['p2_status'] === 'Active'): ?>
             <div class="text-right flex-shrink-0">

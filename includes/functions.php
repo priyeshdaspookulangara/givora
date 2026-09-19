@@ -137,6 +137,30 @@ function findMatrixPlacementP2($pdo, $start_parent_id = 'GT100000') {
     return ['parent_id' => 'GT100000', 'position' => 1];
 }
 
+// Check if a member has completed specified number of full matrix levels under them
+function hasCompletedMatrixLevels($pdo, $member_id, $required_levels = 6) {
+    if (empty($member_id) || $member_id === 'GT100000') return false;
+
+    $current_level_parents = [$member_id];
+
+    for ($level = 1; $level <= $required_levels; $level++) {
+        $expected_children_count = count($current_level_parents) * 3;
+        $in_clause = implode(',', array_fill(0, count($current_level_parents), '?'));
+
+        $stmt = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id IN ($in_clause)");
+        $stmt->execute($current_level_parents);
+        $next_level_children = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (count($next_level_children) < $expected_children_count) {
+            return false;
+        }
+
+        $current_level_parents = $next_level_children;
+    }
+
+    return true;
+}
+
 // Phase 2 Auto-Promotion Check
 function checkAndPromoteToPhase2($pdo, $member_id) {
     if (empty($member_id) || $member_id === 'GT100000') return;
@@ -148,18 +172,13 @@ function checkAndPromoteToPhase2($pdo, $member_id) {
 
     if (!$member || $member['p2_status'] === 'Active') return;
 
-    // Count Phase 1 direct matrix children (3-matrix completion)
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE placement_parent_id = ?");
-    $stmt->execute([$member_id]);
-    $child_count = $stmt->fetchColumn();
-
     ensureWalletExists($pdo, $member_id);
     $stmt = $pdo->prepare("SELECT p2_reserve_wallet FROM wallets WHERE member_id = ?");
     $stmt->execute([$member_id]);
     $reserve_bal = (float)($stmt->fetchColumn() ?: 0.00);
 
-    // Member qualifies for Phase 2 when Phase 1 matrix (3 direct placements) is completed
-    if ($child_count >= 3) {
+    // Member qualifies for Phase 2 when 6 levels under them in Phase 1 matrix are completed
+    if (hasCompletedMatrixLevels($pdo, $member_id, 6)) {
         // Ensure Phase 2 joining fee reserve (₹15,000) is filled upon Phase 1 completion
         if ($reserve_bal < 15000.00) {
             $add_reserve = 15000.00 - $reserve_bal;
