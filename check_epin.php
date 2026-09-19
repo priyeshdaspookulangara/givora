@@ -1,0 +1,32 @@
+<?php
+header('Content-Type: application/json');
+require_once __DIR__ . '/includes/functions.php';
+
+$epin_code = trim($_GET['epin'] ?? '');
+
+if (empty($epin_code)) {
+    echo json_encode(['valid' => false, 'message' => 'ePIN code is required.']);
+    exit;
+}
+
+$pdo = getDBConnection();
+$stmt = $pdo->prepare("SELECT epin_code, package_type, status FROM epins WHERE epin_code = ?");
+$stmt->execute([$epin_code]);
+$epin = $stmt->fetch();
+
+if (!$epin) {
+    echo json_encode(['valid' => false, 'message' => 'Invalid ePIN code.']);
+    exit;
+}
+
+if ($epin['status'] !== 'Unused') {
+    echo json_encode(['valid' => false, 'message' => 'This ePIN has already been used.']);
+    exit;
+}
+
+echo json_encode([
+    'valid' => true,
+    'epin_code' => $epin['epin_code'],
+    'package_type' => $epin['package_type'],
+    'is_recharge_bundle' => ($epin['package_type'] === 'Recharge_Bundle_5400')
+]);

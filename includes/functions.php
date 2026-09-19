@@ -48,11 +48,19 @@ function generateMemberId($pdo) {
     return $member_id;
 }
 
-// Matrix Placement Logic (Global 3-matrix)
-// Finds the next open placement across the entire company matrix using Breadth-First Search (BFS) starting from Root GT100000
-function findMatrixPlacement($pdo, $start_parent_id = 'GT100000') {
-    // Global company 3-matrix auto-spillover always starts level-by-level left-to-right BFS from Root 'GT100000'
-    $start_parent_id = 'GT100000';
+// Matrix Placement Logic (3-matrix)
+// Finds the next open placement under $start_parent_id using Breadth-First Search (BFS)
+function findMatrixPlacement($pdo, $start_parent_id) {
+    if (empty($start_parent_id)) {
+        $start_parent_id = 'GT100000'; // Default root
+    }
+
+    // Verify start parent exists
+    $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
+    $stmt->execute([$start_parent_id]);
+    if (!$stmt->fetch()) {
+        $start_parent_id = 'GT100000';
+    }
 
     $queue = [$start_parent_id];
     $visited = [];
@@ -335,4 +343,46 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
     if (!empty($direct_placement_parent)) {
         checkAndPromoteToPhase2($pdo, $direct_placement_parent);
     }
+}
+
+// Recharge Bundle Subscription Helper
+function createRechargeSubscription($pdo, $member_id, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name) {
+    // Plan starts 24 hours after registration date/time
+    $start_date = date('Y-m-d H:i:s', strtotime('+24 hours'));
+
+    $stmt = $pdo->prepare("INSERT INTO recharge_subscriptions (member_id, used_epin, mobile_1, operator_1, mobile_2, operator_2, gas_provider, gas_consumer_number, gas_customer_name, status, start_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)");
+    $stmt->execute([
+        $member_id,
+        $epin_code,
+        $mobile_1,
+        $operator_1,
+        $mobile_2,
+        $operator_2,
+        $gas_provider,
+        $gas_consumer_number,
+        $gas_customer_name,
+        $start_date
+    ]);
+
+    $subscription_id = $pdo->lastInsertId();
+
+    // Create 6 terms for Mobile 1, Mobile 2 (every 28 days starting at start_date) and Gas (6 terms)
+    for ($term = 1; $term <= 6; $term++) {
+        $days_offset = ($term - 1) * 28;
+        $due_date = date('Y-m-d H:i:s', strtotime("{$start_date} + {$days_offset} days"));
+
+        // Mobile 1 term
+        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_1', ?, ?, 'Scheduled')");
+        $stmt->execute([$subscription_id, $term, $due_date]);
+
+        // Mobile 2 term
+        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_2', ?, ?, 'Scheduled')");
+        $stmt->execute([$subscription_id, $term, $due_date]);
+
+        // Gas term (6 terms, requested on user demand)
+        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Gas', ?, NULL, 'Scheduled')");
+        $stmt->execute([$subscription_id, $term]);
+    }
+
+    return $subscription_id;
 }

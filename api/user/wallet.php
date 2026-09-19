@@ -43,12 +43,6 @@ if ($method === 'GET') {
     $input = getJsonInput();
     $amount = (float)($input['amount'] ?? 0.00);
 
-    // Enforce KYC
-    $kyc_status = $member['kyc_status'] ?? 'Pending';
-    if ($kyc_status !== 'Approved') {
-        sendJsonResponse(false, 'KYC Verification Required. Complete address, PAN, Aadhaar, and bank details on your profile before requesting withdrawals.', null, 403);
-    }
-
     if ($amount < 500.00) {
         sendJsonResponse(false, 'Minimum withdrawal request amount is ₹500.00.', null, 400);
     }

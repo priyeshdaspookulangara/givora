@@ -141,6 +141,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <i class="fas fa-ticket-alt w-5 text-gold"></i>
                             <span>My ePINs</span>
                         </a>
+                        <a href="/customer/recharge.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'recharge.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-bolt w-5 text-gold"></i>
+                            <span>My Recharge Bundle</span>
+                        </a>
                         <a href="/customer/wallet.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'wallet.php' ? 'sidebar-item-active font-bold' : ''; ?>">
                             <i class="fas fa-wallet w-5 text-gold"></i>
                             <span>Wallet & Payout</span>
@@ -161,6 +165,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a href="/admin/epins.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'epins.php' ? 'sidebar-item-active font-bold' : ''; ?>">
                             <i class="fas fa-key w-5 text-gold"></i>
                             <span>ePIN Generator</span>
+                        </a>
+                        <a href="/admin/recharges.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'recharges.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-charging-station w-5 text-gold"></i>
+                            <span>Recharge Subscriptions</span>
                         </a>
                         <a href="/admin/wallet.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'wallet.php' ? 'sidebar-item-active font-bold' : ''; ?>">
                             <i class="fas fa-money-check-alt w-5 text-gold"></i>
