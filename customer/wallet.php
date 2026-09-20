@@ -72,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Wallet Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Lifetime Total Balance -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Total Lifetime Inflow</span>
@@ -80,18 +80,11 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="text-xs text-gray-500 mt-2">Cumulative gross income received</p>
         </div>
 
-        <!-- User Wallet (60%) -->
+        <!-- User Wallet -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
-            <span class="text-xs uppercase tracking-wider text-green-400 font-bold">User Wallet (60% Withdrawable)</span>
+            <span class="text-xs uppercase tracking-wider text-green-400 font-bold">User Wallet (Withdrawable)</span>
             <div class="text-3xl font-extrabold text-green-400 mt-2">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
             <p class="text-xs text-green-500/80 mt-2">Eligible for instant withdrawal (Min ₹500)</p>
-        </div>
-
-        <!-- Company Wallet (40%) -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
-            <span class="text-xs uppercase tracking-wider text-amber-400 font-bold">Company Wallet (40% Reserve)</span>
-            <div class="text-3xl font-extrabold text-amber-400 mt-2">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
-            <p class="text-xs text-amber-500/80 mt-2">Company reinvestment & liquidity fund</p>
         </div>
 
         <!-- Phase 2 Joining Reserve Wallet (₹15,000 Target) -->

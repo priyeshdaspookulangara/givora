@@ -92,7 +92,7 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Earnings -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <div class="flex items-center justify-between mb-2">
@@ -129,28 +129,16 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
             <p class="text-xs text-gray-400 mt-2">Auto Spillover Matrix Earnings</p>
         </div>
 
-        <!-- User Wallet (60%) -->
+        <!-- User Wallet -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-green-400">User Wallet (60%)</span>
+                <span class="text-xs font-semibold uppercase text-green-400">User Wallet</span>
                 <div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center text-lg">
                     <i class="fas fa-wallet"></i>
                 </div>
             </div>
             <div class="text-2xl font-extrabold text-green-400">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
             <p class="text-xs text-green-500/80 mt-2">Withdrawable (Min ₹500)</p>
-        </div>
-
-        <!-- Company Wallet (40%) -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-amber-400">Company Wallet (40%)</span>
-                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
-                    <i class="fas fa-building"></i>
-                </div>
-            </div>
-            <div class="text-2xl font-extrabold text-amber-400">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
-            <p class="text-xs text-amber-500/80 mt-2">Company Reserve Fund</p>
         </div>
     </div>
 
