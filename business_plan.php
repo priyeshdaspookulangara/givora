@@ -28,8 +28,8 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-amber-400 font-bold">₹200</span>
                 </li>
                 <li class="flex justify-between">
-                    <span>Matrix Matrix Width / Depth:</span>
-                    <span class="text-white font-bold">3 x 7 Matrix</span>
+                    <span>Phase 1 Matrix Width / Depth:</span>
+                    <span class="text-white font-bold">3 x 6 Matrix</span>
                 </li>
             </ul>
         </div>
@@ -51,8 +51,8 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-amber-400 font-bold">₹600</span>
                 </li>
                 <li class="flex justify-between">
-                    <span>Matrix Matrix Width / Depth:</span>
-                    <span class="text-white font-bold">3 x 7 Matrix</span>
+                    <span>Phase 1 Matrix Width / Depth:</span>
+                    <span class="text-white font-bold">3 x 6 Matrix</span>
                 </li>
             </ul>
         </div>
