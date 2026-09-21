@@ -278,27 +278,34 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
         }
     }
 
-    // 2. 3-Matrix Level Income (Up to 7 levels up the matrix parent chain)
-    // Level commissions: L1: 5%, L2: 4%, L3: 3%, L4: 2%, L5: 1.5%, L6: 1%, L7: 0.5%
-    $level_percentages = [0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.005];
+    // 2. Phase 1 3-Matrix Level Income (Up to 6 levels up the matrix parent chain)
+    // Fixed Level Commissions per member activation:
+    // Level 1: ₹150, Level 2: ₹200, Level 3: ₹400, Level 4: ₹600, Level 5: ₹800, Level 6: ₹1000
+    $phase1_level_commissions = [
+        1 => 150.00,
+        2 => 200.00,
+        3 => 400.00,
+        4 => 600.00,
+        5 => 800.00,
+        6 => 1000.00
+    ];
 
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
     $stmt->execute([$new_member_id]);
     $direct_placement_parent = $stmt->fetchColumn();
     $curr_parent = $direct_placement_parent;
 
-    for ($level = 0; $level < count($level_percentages); $level++) {
+    for ($level_num = 1; $level_num <= count($phase1_level_commissions); $level_num++) {
         if (empty($curr_parent)) break;
 
-        $commission_amount = $package_amount * $level_percentages[$level];
+        $commission_amount = $phase1_level_commissions[$level_num];
         $user_part = $commission_amount * 0.60;
         $company_part = $commission_amount * 0.40;
 
         ensureWalletExists($pdo, $curr_parent);
-        $level_num = $level + 1;
 
-        // Level 5 Phase 1 matrix commission ($level === 4): Reserve for Phase 2 Joining Fee (p2_reserve_wallet) up to ₹15,000
-        if ($level === 4) {
+        // Level 5 Phase 1 matrix commission ($level_num === 5): Reserve for Phase 2 Joining Fee (p2_reserve_wallet) up to ₹15,000
+        if ($level_num === 5) {
             $stmt = $pdo->prepare("SELECT p2_reserve_wallet FROM wallets WHERE member_id = ?");
             $stmt->execute([$curr_parent]);
             $curr_reserve = (float)($stmt->fetchColumn() ?: 0.00);
@@ -341,7 +348,7 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
                 $stmt->execute([$curr_parent, $company_part, "Phase 1 Matrix L{$level_num} Commission (40%) from " . $new_member_id]);
             }
         } else {
-            // Levels 1-4 & 6-7: Regular 60:40 wallet split
+            // Levels 1-4 & 6: Regular 60:40 wallet split
             $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
             $stmt->execute([$commission_amount, $user_part, $company_part, $curr_parent]);
 

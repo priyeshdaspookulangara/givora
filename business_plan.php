@@ -60,68 +60,61 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- 3-Matrix Breakdown Table -->
     <div class="bg-darkcard rounded-2xl gold-border-glow p-8 mb-16 overflow-x-auto">
-        <h2 class="text-2xl font-bold text-white mb-4">3-Matrix Commission Matrix (Levels 1 to 7)</h2>
-        <p class="text-sm text-gray-400 mb-6">Every level fills horizontally up to 3 members per parent node. Commissions are automatically distributed on activation.</p>
+        <h2 class="text-2xl font-bold text-white mb-4">Phase 1 3-Matrix Commission Schedule (Levels 1 to 6)</h2>
+        <p class="text-sm text-gray-400 mb-6">Every level fills horizontally up to 3 members per parent node. Fixed level commissions are automatically distributed on activation with a 60% User Wallet allocation.</p>
 
         <table class="w-full text-left text-sm text-gray-300">
             <thead class="text-xs uppercase bg-gold/10 text-gold border-b border-gold/20">
                 <tr>
                     <th class="px-4 py-3">Level</th>
-                    <th class="px-4 py-3">Max Members</th>
-                    <th class="px-4 py-3">Comm. %</th>
-                    <th class="px-4 py-3">Foundation (₹5k) / Member</th>
-                    <th class="px-4 py-3">Leadership (₹15k) / Member</th>
+                    <th class="px-4 py-3">Max Downline Members</th>
+                    <th class="px-4 py-3">Commission / Member</th>
+                    <th class="px-4 py-3">User Wallet (60%) / Member</th>
+                    <th class="px-4 py-3">Gross Total Level Income</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gold/10">
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 1</td>
                     <td class="px-4 py-3">3</td>
-                    <td class="px-4 py-3 text-gold">5.0%</td>
-                    <td class="px-4 py-3">₹250 (User: ₹150 / Co: ₹100)</td>
-                    <td class="px-4 py-3">₹750 (User: ₹450 / Co: ₹300)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹150</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹90</td>
+                    <td class="px-4 py-3 font-bold text-white">₹450</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 2</td>
                     <td class="px-4 py-3">9</td>
-                    <td class="px-4 py-3 text-gold">4.0%</td>
-                    <td class="px-4 py-3">₹200 (User: ₹120 / Co: ₹80)</td>
-                    <td class="px-4 py-3">₹600 (User: ₹360 / Co: ₹240)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹200</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹120</td>
+                    <td class="px-4 py-3 font-bold text-white">₹1,800</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 3</td>
                     <td class="px-4 py-3">27</td>
-                    <td class="px-4 py-3 text-gold">3.0%</td>
-                    <td class="px-4 py-3">₹150 (User: ₹90 / Co: ₹60)</td>
-                    <td class="px-4 py-3">₹450 (User: ₹270 / Co: ₹180)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹400</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹240</td>
+                    <td class="px-4 py-3 font-bold text-white">₹10,800</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 4</td>
                     <td class="px-4 py-3">81</td>
-                    <td class="px-4 py-3 text-gold">2.0%</td>
-                    <td class="px-4 py-3">₹100 (User: ₹60 / Co: ₹40)</td>
-                    <td class="px-4 py-3">₹300 (User: ₹180 / Co: ₹120)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹600</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹360</td>
+                    <td class="px-4 py-3 font-bold text-white">₹48,600</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 5</td>
                     <td class="px-4 py-3">243</td>
-                    <td class="px-4 py-3 text-gold">1.5%</td>
-                    <td class="px-4 py-3">₹75 (User: ₹45 / Co: ₹30)</td>
-                    <td class="px-4 py-3">₹225 (User: ₹135 / Co: ₹90)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹800</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2)</span></td>
+                    <td class="px-4 py-3 font-bold text-white">₹1,94,400</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 font-semibold text-white">Level 6</td>
                     <td class="px-4 py-3">729</td>
-                    <td class="px-4 py-3 text-gold">1.0%</td>
-                    <td class="px-4 py-3">₹50 (User: ₹30 / Co: ₹20)</td>
-                    <td class="px-4 py-3">₹150 (User: ₹90 / Co: ₹60)</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3 font-semibold text-white">Level 7</td>
-                    <td class="px-4 py-3">2,187</td>
-                    <td class="px-4 py-3 text-gold">0.5%</td>
-                    <td class="px-4 py-3">₹25 (User: ₹15 / Co: ₹10)</td>
-                    <td class="px-4 py-3">₹75 (User: ₹45 / Co: ₹30)</td>
+                    <td class="px-4 py-3 font-bold text-gold">₹1,000</td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹600</td>
+                    <td class="px-4 py-3 font-bold text-white">₹7,29,000</td>
                 </tr>
             </tbody>
         </table>
