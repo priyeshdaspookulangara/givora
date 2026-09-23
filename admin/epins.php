@@ -97,7 +97,9 @@ require_once __DIR__ . '/../includes/header.php';
                 <select name="package_type" required class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                     <option value="Foundation_5000">Foundation Tier (₹5,000)</option>
                     <option value="Leadership_15000">Leadership Tier (₹15,000)</option>
-                    <option value="Recharge_Bundle_5400">Recharge Bundle (₹5,400)</option>
+                    <option value="Recharge_1200">Mobile Recharge Package (₹1,200)</option>
+                    <option value="Gas_3000">Gas Connection Package (₹3,000)</option>
+                    <option value="Recharge_Bundle_5400">Recharge Bundle Combo (₹5,400)</option>
                 </select>
             </div>
 

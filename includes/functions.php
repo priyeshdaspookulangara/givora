@@ -416,14 +416,15 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
     }
 }
 
-// Recharge Bundle Subscription Helper
-function createRechargeSubscription($pdo, $member_id, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name) {
+// Recharge / Utility Subscription Helper
+function createRechargeSubscription($pdo, $member_id, $package_type, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name) {
     // Plan starts 24 hours after registration date/time
     $start_date = date('Y-m-d H:i:s', strtotime('+24 hours'));
 
-    $stmt = $pdo->prepare("INSERT INTO recharge_subscriptions (member_id, used_epin, mobile_1, operator_1, mobile_2, operator_2, gas_provider, gas_consumer_number, gas_customer_name, status, start_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)");
+    $stmt = $pdo->prepare("INSERT INTO recharge_subscriptions (member_id, package_type, used_epin, mobile_1, operator_1, mobile_2, operator_2, gas_provider, gas_consumer_number, gas_customer_name, status, start_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)");
     $stmt->execute([
         $member_id,
+        $package_type,
         $epin_code,
         $mobile_1,
         $operator_1,
@@ -437,22 +438,26 @@ function createRechargeSubscription($pdo, $member_id, $epin_code, $mobile_1, $op
 
     $subscription_id = $pdo->lastInsertId();
 
-    // Create 6 terms for Mobile 1, Mobile 2 (every 28 days starting at start_date) and Gas (6 terms)
+    // Create 6 terms based on specific utility package
     for ($term = 1; $term <= 6; $term++) {
         $days_offset = ($term - 1) * 28;
         $due_date = date('Y-m-d H:i:s', strtotime("{$start_date} + {$days_offset} days"));
 
-        // Mobile 1 term
-        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_1', ?, ?, 'Scheduled')");
-        $stmt->execute([$subscription_id, $term, $due_date]);
+        if ($package_type === 'Recharge_1200' || $package_type === 'Recharge_Bundle_5400') {
+            // Mobile 1 term
+            $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_1', ?, ?, 'Scheduled')");
+            $stmt->execute([$subscription_id, $term, $due_date]);
 
-        // Mobile 2 term
-        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_2', ?, ?, 'Scheduled')");
-        $stmt->execute([$subscription_id, $term, $due_date]);
+            // Mobile 2 term
+            $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_2', ?, ?, 'Scheduled')");
+            $stmt->execute([$subscription_id, $term, $due_date]);
+        }
 
-        // Gas term (6 terms, requested on user demand)
-        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Gas', ?, NULL, 'Scheduled')");
-        $stmt->execute([$subscription_id, $term]);
+        if ($package_type === 'Gas_3000' || $package_type === 'Recharge_Bundle_5400') {
+            // Gas term (6 terms, requested on user demand)
+            $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Gas', ?, NULL, 'Scheduled')");
+            $stmt->execute([$subscription_id, $term]);
+        }
     }
 
     return $subscription_id;

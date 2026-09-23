@@ -47,8 +47,8 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-white"><i class="fas fa-bolt text-gold mr-2"></i> My Recharge Bundle (₹5,400)</h1>
-            <p class="text-xs text-gray-400 mt-1">6-term Mobile Recharges (every 28 days) and Gas Refill requests starting 24 hours after plan activation.</p>
+            <h1 class="text-2xl font-bold text-white"><i class="fas fa-bolt text-gold mr-2"></i> My Utility Package Subscriptions</h1>
+            <p class="text-xs text-gray-400 mt-1">Manage 6-term Mobile Recharges (every 28 days) and Gas Refill requests starting 24 hours after plan activation.</p>
         </div>
         <a href="/customer/dashboard.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10 self-start sm:self-auto">← Dashboard</a>
     </div>
@@ -72,14 +72,14 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="w-16 h-16 bg-gold/10 text-gold rounded-full flex items-center justify-center mx-auto text-3xl border border-gold/30">
                 <i class="fas fa-bolt"></i>
             </div>
-            <h2 class="text-xl font-bold text-white">No Active Recharge Bundle Package</h2>
+            <h2 class="text-xl font-bold text-white">No Active Utility Package</h2>
             <p class="text-xs text-gray-400 leading-relaxed">
                 You are currently on the <span class="text-gold font-bold"><?php echo str_replace('_', ' ₹', $member['package_type']); ?></span> package.
-                The Recharge Bundle (₹5,400) is a dedicated utility package offering 6 terms of 2 mobile recharges and gas booking refill services.
+                Givora Traders offers standalone utility packages for Mobile Recharges (₹1,200), Gas Refills (₹3,000), and Utility Combo (₹5,400).
             </p>
             <div class="pt-2">
-                <a href="/register.php?package=Recharge_Bundle_5400" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-xs inline-block">
-                    Register Recharge Bundle Account
+                <a href="/register.php" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-xs inline-block">
+                    Register Utility Account
                 </a>
             </div>
         </div>
@@ -100,35 +100,41 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Connections Details Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-                <!-- Mobile 1 -->
-                <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
-                    <div class="flex items-center justify-between text-gold font-bold">
-                        <span><i class="fas fa-mobile-alt mr-1"></i> Mobile Connection 1</span>
-                        <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['operator_1']); ?></span>
+                <?php if (!empty($subscription['mobile_1'])): ?>
+                    <!-- Mobile 1 -->
+                    <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
+                        <div class="flex items-center justify-between text-gold font-bold">
+                            <span><i class="fas fa-mobile-alt mr-1"></i> Mobile Connection 1</span>
+                            <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['operator_1']); ?></span>
+                        </div>
+                        <div class="text-white font-mono text-base font-extrabold tracking-wider"><?php echo htmlspecialchars($subscription['mobile_1']); ?></div>
+                        <div class="text-[11px] text-gray-400">6 Terms scheduled every 28 days</div>
                     </div>
-                    <div class="text-white font-mono text-base font-extrabold tracking-wider"><?php echo htmlspecialchars($subscription['mobile_1']); ?></div>
-                    <div class="text-[11px] text-gray-400">6 Terms scheduled every 28 days</div>
-                </div>
+                <?php endif; ?>
 
-                <!-- Mobile 2 -->
-                <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
-                    <div class="flex items-center justify-between text-gold font-bold">
-                        <span><i class="fas fa-mobile-alt mr-1"></i> Mobile Connection 2</span>
-                        <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['operator_2']); ?></span>
+                <?php if (!empty($subscription['mobile_2'])): ?>
+                    <!-- Mobile 2 -->
+                    <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
+                        <div class="flex items-center justify-between text-gold font-bold">
+                            <span><i class="fas fa-mobile-alt mr-1"></i> Mobile Connection 2</span>
+                            <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['operator_2']); ?></span>
+                        </div>
+                        <div class="text-white font-mono text-base font-extrabold tracking-wider"><?php echo htmlspecialchars($subscription['mobile_2']); ?></div>
+                        <div class="text-[11px] text-gray-400">6 Terms scheduled every 28 days</div>
                     </div>
-                    <div class="text-white font-mono text-base font-extrabold tracking-wider"><?php echo htmlspecialchars($subscription['mobile_2']); ?></div>
-                    <div class="text-[11px] text-gray-400">6 Terms scheduled every 28 days</div>
-                </div>
+                <?php endif; ?>
 
-                <!-- Indian Gas Connection -->
-                <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
-                    <div class="flex items-center justify-between text-gold font-bold">
-                        <span><i class="fas fa-fire mr-1"></i> Indian Gas Connection</span>
-                        <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['gas_provider']); ?></span>
+                <?php if (!empty($subscription['gas_consumer_number'])): ?>
+                    <!-- Indian Gas Connection -->
+                    <div class="bg-darkbg p-4 rounded-xl border border-gold/15 space-y-2">
+                        <div class="flex items-center justify-between text-gold font-bold">
+                            <span><i class="fas fa-fire mr-1"></i> Indian Gas Connection</span>
+                            <span class="px-2 py-0.5 bg-gold/10 rounded text-[10px]"><?php echo htmlspecialchars($subscription['gas_provider']); ?></span>
+                        </div>
+                        <div class="text-white font-mono font-bold text-sm"><?php echo htmlspecialchars($subscription['gas_consumer_number']); ?></div>
+                        <div class="text-[11px] text-gray-400 truncate">Name: <?php echo htmlspecialchars($subscription['gas_customer_name']); ?></div>
                     </div>
-                    <div class="text-white font-mono font-bold text-sm"><?php echo htmlspecialchars($subscription['gas_consumer_number']); ?></div>
-                    <div class="text-[11px] text-gray-400 truncate">Name: <?php echo htmlspecialchars($subscription['gas_customer_name']); ?></div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
 

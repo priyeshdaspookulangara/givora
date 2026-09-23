@@ -41,9 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $package_type = $epin['package_type']; // Get package type from ePIN record
 
-        if ($package_type === 'Recharge_Bundle_5400') {
-            // Validate Recharge Bundle fields
-            if (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name)) {
+        $is_utility_package = in_array($package_type, ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+
+        if ($is_utility_package) {
+            // Validate utility fields based on specific package chosen
+            if ($package_type === 'Recharge_1200' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2))) {
+                $error = "Please fill in both Mobile 1 and Mobile 2 numbers and carriers for the Mobile Recharge Package (₹1,200).";
+            } elseif ($package_type === 'Gas_3000' && (empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
+                $error = "Please fill in all Gas connection details for the Gas Connection Package (₹3,000).";
+            } elseif ($package_type === 'Recharge_Bundle_5400' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
                 $error = "Please fill in all Recharge Bundle connection details (2 Mobile numbers with carriers and Indian Gas connection details).";
             }
         } else {
@@ -66,9 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
 
-                if ($package_type === 'Recharge_Bundle_5400') {
-                    // Recharge Bundle is completely separate from Matrix Plan: placement_parent_id & matrix_position remain NULL
-                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, 'Recharge_Bundle_5400', 'Active')");
+                if ($is_utility_package) {
+                    // Utility Packages (₹1200, ₹3000, ₹5400) are completely separate from Matrix Plan: placement_parent_id & matrix_position remain NULL
+                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, 'Active')");
                     $stmt->execute([
                         $new_member_id,
                         !empty($sponsor_id) ? $sponsor_id : 'GT100000',
@@ -76,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $email,
                         $phone,
                         $password,
-                        $epin_code
+                        $epin_code,
+                        $package_type
                     ]);
 
                     // Update ePIN status to Used
@@ -86,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Create initial wallet record
                     ensureWalletExists($pdo, $new_member_id);
 
-                    // Create Recharge Bundle Subscription and 6-term schedules
-                    createRechargeSubscription($pdo, $new_member_id, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
+                    // Create Utility Recharge Subscription and schedules
+                    createRechargeSubscription($pdo, $new_member_id, $package_type, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
 
                     $pdo->commit();
 
@@ -101,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'mobile_2' => $mobile_2,
                         'gas_provider' => $gas_provider
                     ];
-                    $success = "Registration successful! Your 6-term Recharge Bundle plan will start in 24 hours.";
+                    $success = "Registration successful! Your 6-term utility service schedule will start in 24 hours.";
                 } else {
                     // AUTOMATIC 3-MATRIX TREE AUTO-PLACEMENT
                     $placement_info = findMatrixPlacement($pdo, $sponsor_id);
@@ -267,25 +274,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" name="password" required placeholder="Create password" class="w-full bg-darkbg border border-gold/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold">
                 </div>
 
-                <!-- RECHARGE BUNDLE DETAILS SECTION (Dynamically displayed when ePIN is Recharge Bundle) -->
+                <!-- UTILITY PACKAGE DETAILS SECTION (Dynamically displayed when ePIN is a Recharge Package) -->
                 <div id="recharge_bundle_fields" class="hidden md:col-span-2 bg-darkbg/80 border border-gold/30 p-6 rounded-2xl space-y-4">
                     <div class="flex items-center space-x-2 border-b border-gold/20 pb-3">
                         <i class="fas fa-bolt text-gold text-xl"></i>
                         <div>
-                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Recharge Bundle Details (₹5,400)</h3>
-                            <p class="text-xs text-gray-400">Collect 2 Mobile connections + 1 Indian Gas connection for 6 terms starting in 24 hours.</p>
+                            <h3 id="utility_title" class="text-sm font-bold text-white uppercase tracking-wider">Utility Package Service Details</h3>
+                            <p id="utility_desc" class="text-xs text-gray-400">Collect connection details for your selected utility plan terms.</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Mobile 1 -->
-                        <div>
+                        <div id="field_mobile_1">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Mobile 1 Number *</label>
                             <input type="text" name="mobile_1" id="mobile_1" placeholder="First Mobile Number" value="<?php echo htmlspecialchars($_POST['mobile_1'] ?? ''); ?>" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                         </div>
 
                         <!-- Operator 1 -->
-                        <div>
+                        <div id="field_operator_1">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Mobile 1 Carrier / Operator *</label>
                             <select name="operator_1" id="operator_1" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                                 <option value="Jio">Jio</option>
@@ -296,13 +303,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Mobile 2 -->
-                        <div>
+                        <div id="field_mobile_2">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Mobile 2 Number *</label>
                             <input type="text" name="mobile_2" id="mobile_2" placeholder="Second Mobile Number" value="<?php echo htmlspecialchars($_POST['mobile_2'] ?? ''); ?>" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                         </div>
 
                         <!-- Operator 2 -->
-                        <div>
+                        <div id="field_operator_2">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Mobile 2 Carrier / Operator *</label>
                             <select name="operator_2" id="operator_2" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                                 <option value="Jio">Jio</option>
@@ -313,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Gas Company -->
-                        <div>
+                        <div id="field_gas_provider">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Indian Gas Provider *</label>
                             <select name="gas_provider" id="gas_provider" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                                 <option value="Indane Gas">Indane Gas (Indian Oil)</option>
@@ -323,13 +330,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Gas Consumer Number -->
-                        <div>
+                        <div id="field_gas_consumer">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Gas Consumer Number / LPG ID *</label>
                             <input type="text" name="gas_consumer_number" id="gas_consumer_number" placeholder="Consumer No / 17-digit LPG ID" value="<?php echo htmlspecialchars($_POST['gas_consumer_number'] ?? ''); ?>" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                         </div>
 
                         <!-- Gas Customer Name -->
-                        <div class="md:col-span-2">
+                        <div id="field_gas_name" class="md:col-span-2">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">Gas Connection Customer / Registered Name *</label>
                             <input type="text" name="gas_customer_name" id="gas_customer_name" placeholder="Name registered on Gas Passbook/Bill" value="<?php echo htmlspecialchars($_POST['gas_customer_name'] ?? ''); ?>" class="w-full bg-darkcard border border-gold/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                         </div>
@@ -372,14 +379,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-green-400';
                     statusSpan.classList.remove('hidden');
 
-                    if (data.is_recharge_bundle) {
+                    if (data.is_utility_package) {
                         rechargeFields.classList.remove('hidden');
                         matrixSection.classList.add('hidden');
-                        // Make recharge fields required
-                        document.getElementById('mobile_1').required = true;
-                        document.getElementById('mobile_2').required = true;
-                        document.getElementById('gas_consumer_number').required = true;
-                        document.getElementById('gas_customer_name').required = true;
+
+                        const pkg = data.package_type;
+                        const fMob1 = document.getElementById('field_mobile_1');
+                        const fOp1 = document.getElementById('field_operator_1');
+                        const fMob2 = document.getElementById('field_mobile_2');
+                        const fOp2 = document.getElementById('field_operator_2');
+                        const fGasProv = document.getElementById('field_gas_provider');
+                        const fGasCons = document.getElementById('field_gas_consumer');
+                        const fGasName = document.getElementById('field_gas_name');
+
+                        if (pkg === 'Recharge_1200') {
+                            document.getElementById('utility_title').textContent = 'Mobile Recharge Package Details (₹1,200)';
+                            document.getElementById('utility_desc').textContent = 'Collect 2 Mobile connections for 6 terms of recharges starting in 24 hours.';
+                            fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
+                            fMob2.classList.remove('hidden'); fOp2.classList.remove('hidden');
+                            fGasProv.classList.add('hidden'); fGasCons.classList.add('hidden'); fGasName.classList.add('hidden');
+
+                            document.getElementById('mobile_1').required = true;
+                            document.getElementById('mobile_2').required = true;
+                            document.getElementById('gas_consumer_number').required = false;
+                            document.getElementById('gas_customer_name').required = false;
+                        } else if (pkg === 'Gas_3000') {
+                            document.getElementById('utility_title').textContent = 'Gas Connection Package Details (₹3,000)';
+                            document.getElementById('utility_desc').textContent = 'Collect Indian Gas connection details for 6 terms of cylinder refills.';
+                            fMob1.classList.add('hidden'); fOp1.classList.add('hidden');
+                            fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
+                            fGasProv.classList.remove('hidden'); fGasCons.classList.remove('hidden'); fGasName.classList.remove('hidden');
+
+                            document.getElementById('mobile_1').required = false;
+                            document.getElementById('mobile_2').required = false;
+                            document.getElementById('gas_consumer_number').required = true;
+                            document.getElementById('gas_customer_name').required = true;
+                        } else {
+                            document.getElementById('utility_title').textContent = 'Recharge Bundle Combo Details (₹5,400)';
+                            document.getElementById('utility_desc').textContent = 'Collect 2 Mobile connections + 1 Indian Gas connection for 6 terms starting in 24 hours.';
+                            fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
+                            fMob2.classList.remove('hidden'); fOp2.classList.remove('hidden');
+                            fGasProv.classList.remove('hidden'); fGasCons.classList.remove('hidden'); fGasName.classList.remove('hidden');
+
+                            document.getElementById('mobile_1').required = true;
+                            document.getElementById('mobile_2').required = true;
+                            document.getElementById('gas_consumer_number').required = true;
+                            document.getElementById('gas_customer_name').required = true;
+                        }
                     } else {
                         rechargeFields.classList.add('hidden');
                         matrixSection.classList.remove('hidden');

@@ -24,9 +24,12 @@ if ($epin['status'] !== 'Unused') {
     exit;
 }
 
+$is_utility_package = in_array($epin['package_type'], ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+
 echo json_encode([
     'valid' => true,
     'epin_code' => $epin['epin_code'],
     'package_type' => $epin['package_type'],
-    'is_recharge_bundle' => ($epin['package_type'] === 'Recharge_Bundle_5400')
+    'is_recharge_bundle' => ($epin['package_type'] === 'Recharge_Bundle_5400'),
+    'is_utility_package' => $is_utility_package
 ]);

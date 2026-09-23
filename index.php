@@ -95,28 +95,30 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Quick Overview Cards -->
 <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white">Choose Your Growth Tier</h2>
-        <p class="mt-2 text-gray-400">Flexible entry points designed for high-yield returns and premium utility packages.</p>
+        <h2 class="text-3xl font-bold text-white">Matrix Compensation & Standalone Utility Packages</h2>
+        <p class="mt-2 text-gray-400">Choose between high-payout matrix packages or standalone utility subscriptions.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Matrix Packages -->
+    <h3 class="text-xl font-bold text-gold border-b border-gold/20 pb-3 mb-8"><i class="fas fa-sitemap mr-2"></i> 3-Matrix Earnings Compensation Tiers</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
         <!-- Foundation Tier Card -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
                     <i class="fas fa-seedling"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-gold font-bold">Entry Level</span>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Phase 1 Entry</span>
                 <h3 class="text-2xl font-bold text-white mt-1">Foundation Tier</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹5,000</span>
                     <span class="text-gray-400 text-sm"> / one-time</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Foundation Household Utility Pack</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Direct Referral Bonus Eligibility</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Matrix Level Income P1 Access</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Real-time 60:40 Wallet Split</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 100% Direct Referral Bonus (₹500 per member)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6-Level Phase 1 Fixed Commissions (₹150 to ₹1,000)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 60:40 User/Company Split on Matrix Earnings</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Auto-Promotion to Phase 2 upon 6 levels completion</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
@@ -135,16 +137,16 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center text-goldlight text-2xl mb-6 border border-gold">
                     <i class="fas fa-crown"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-goldlight font-bold">Premium Level</span>
+                <span class="text-xs uppercase tracking-widest text-goldlight font-bold">High Yield Level</span>
                 <h3 class="text-2xl font-bold text-white mt-1">Leadership Tier</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹15,000</span>
                     <span class="text-gray-400 text-sm"> / one-time</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Premium Leadership Utility Pack</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Max Direct Referral Bonus (₹1,500)</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Higher Matrix Commission Rates (P2)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Premium Direct Referral Bonus (₹1,500 per member)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Accelerated Matrix Level Earnings</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Full 3-Matrix Auto-Placement Support</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Dedicated Priority Support</li>
                 </ul>
             </div>
@@ -154,27 +156,85 @@ require_once __DIR__ . '/includes/header.php';
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- Household Synergy Card -->
+    <!-- Standalone Utility Packages -->
+    <h3 class="text-xl font-bold text-gold border-b border-gold/20 pb-3 mb-8"><i class="fas fa-bolt mr-2"></i> Standalone Utility Packages (Non-Matrix)</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Mobile Recharge Package -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
-                    <i class="fas fa-box-open"></i>
+                    <i class="fas fa-mobile-alt"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-gold font-bold">Product Ecosystem</span>
-                <h3 class="text-2xl font-bold text-white mt-1">Household Synergy</h3>
-                <p class="mt-4 text-gray-400 text-sm leading-relaxed">
-                    High quality, essential utility products distributed directly to households across India. Guaranteed value behind every registration.
-                </p>
-                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6 mt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Curated Utility Kits</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Doorstep Pan-India Delivery</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 100% Value Back Guarantee</li>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Utility Package</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Mobile Recharge</h3>
+                <div class="mt-4 mb-6">
+                    <span class="text-4xl font-extrabold gold-gradient-text">₹1,200</span>
+                    <span class="text-gray-400 text-sm"> / 6 terms</span>
+                </div>
+                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 2 Mobile Numbers Included</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms every 28 days</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Major Carriers (Jio, Airtel, Vi, BSNL)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
-                <a href="/about.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
-                    Learn About Products
+                <a href="/register.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
+                    Select Mobile Plan
+                </a>
+            </div>
+        </div>
+
+        <!-- Gas Connection Package -->
+        <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
+            <div>
+                <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Utility Package</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Gas Refill Service</h3>
+                <div class="mt-4 mb-6">
+                    <span class="text-4xl font-extrabold gold-gradient-text">₹3,000</span>
+                    <span class="text-gray-400 text-sm"> / 6 terms</span>
+                </div>
+                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Indian Gas Refill Connection</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Refill Terms on Demand</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Indane, Bharat, & HP Gas Support</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
+                </ul>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gold/10">
+                <a href="/register.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
+                    Select Gas Plan
+                </a>
+            </div>
+        </div>
+
+        <!-- Recharge Bundle Combo -->
+        <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
+            <div>
+                <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Combo Utility</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Recharge Combo</h3>
+                <div class="mt-4 mb-6">
+                    <span class="text-4xl font-extrabold gold-gradient-text">₹5,400</span>
+                    <span class="text-gray-400 text-sm"> / 6 terms</span>
+                </div>
+                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 2 Mobile Numbers + 1 Gas Connection</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms Mobile + 6 Refill Terms</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Combined Utility Discount Plan</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
+                </ul>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gold/10">
+                <a href="/register.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
+                    Select Combo Plan
                 </a>
             </div>
         </div>
