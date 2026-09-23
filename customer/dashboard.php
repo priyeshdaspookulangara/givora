@@ -218,9 +218,9 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
                 <div class="flex justify-between border-b border-gold/10 pb-2">
                     <span class="text-gray-400">Phase 2 Matrix Status:</span>
                     <?php if ($member['p2_status'] === 'Active'): ?>
-                        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30"><i class="fas fa-crown mr-1"></i> Promoted (Active)</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30"><i class="fas fa-crown mr-1"></i> Promoted to Phase 2</span>
                     <?php else: ?>
-                        <span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-semibold">Pending 6 Levels Completion</span>
+                        <span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-semibold">Phase 1 Active (Pending 6 Levels)</span>
                     <?php endif; ?>
                 </div>
                 <div class="flex justify-between">

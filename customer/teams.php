@@ -98,12 +98,12 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <h3 class="text-lg font-bold text-white mt-2">
                 <?php if ($member['p2_status'] === 'Active'): ?>
-                    <i class="fas fa-crown text-gold mr-1.5"></i> Congratulations! You are in Phase 2 Matrix.
+                    <i class="fas fa-crown text-gold mr-1.5"></i> Qualified & Promoted to Phase 2 Matrix!
                 <?php else: ?>
-                    Complete 6 matrix levels under you to automatically qualify for Phase 2 Matrix!
+                    Phase 1 Matrix Active
                 <?php endif; ?>
             </h3>
-            <p class="text-xs text-gray-400 mt-1">When all 6 levels under your Phase 1 matrix tree are completed, you are instantly spillover-placed into the global Phase 2 Matrix to earn Phase 2 commissions.</p>
+            <p class="text-xs text-gray-400 mt-1">Note: Qualification for Phase 2 Matrix requires complete 6-level downline filling (1,092 members) under your node in Phase 1.</p>
         </div>
         <?php if ($member['p2_status'] === 'Active'): ?>
             <div class="text-right flex-shrink-0">
