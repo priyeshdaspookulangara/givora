@@ -243,10 +243,60 @@ function generateEpinCode() {
     return 'GIV-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 10));
 }
 
-// Wallet initialization
+// Wallet initialization & Dynamic Sync Helper
 function ensureWalletExists($pdo, $member_id) {
     $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
     $stmt->execute([$member_id]);
+    syncMemberWallet($pdo, $member_id);
+}
+
+// Sync member wallet balance dynamically based on ledger transactions:
+// 100% Direct Referral Bonus + 60% Matrix Level Income - Withdrawals = User Wallet
+function syncMemberWallet($pdo, $member_id) {
+    if (empty($member_id)) return;
+
+    // 1. Direct Referral credits (100% User Wallet)
+    $stmt_dr = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral' AND status = 'Credit'");
+    $stmt_dr->execute([$member_id]);
+    $dr_total = (float)($stmt_dr->fetchColumn() ?: 0.00);
+
+    // 2. Matrix Level Income User Wallet credits (60% entries or direct User Wallet matrix entries)
+    $stmt_m60 = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
+    $stmt_m60->execute([$member_id]);
+    $matrix_user_total = (float)($stmt_m60->fetchColumn() ?: 0.00);
+
+    // 3. Admin adjustment credits into User Wallet
+    $stmt_adj = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Admin_Adjustment' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
+    $stmt_adj->execute([$member_id]);
+    $adj_total = (float)($stmt_adj->fetchColumn() ?: 0.00);
+
+    // 4. Pending / Approved Withdrawal Debits from User Wallet
+    $stmt_w = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Withdrawal_Request' AND status IN ('Pending', 'Approved')");
+    $stmt_w->execute([$member_id]);
+    $withdrawal_debits = (float)($stmt_w->fetchColumn() ?: 0.00);
+
+    // Calculated User Wallet = 100% Direct Referral + 60% Matrix Level + Admin Adjustments - Debits
+    $calculated_user_wallet = max(0, ($dr_total + $matrix_user_total + $adj_total) - $withdrawal_debits);
+
+    // 5. Company Wallet credits (40% Matrix Level)
+    $stmt_cw = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND wallet_type = 'Company_Wallet' AND status = 'Credit'");
+    $stmt_cw->execute([$member_id]);
+    $calculated_company_wallet = (float)($stmt_cw->fetchColumn() ?: 0.00);
+
+    // 6. Total Gross Earnings (Sum of all credit transactions for gross total)
+    $stmt_gross = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type IN ('Direct_Referral', 'Phase_2_Reserve')");
+    $stmt_gross->execute([$member_id]);
+    $direct_res_gross = (float)($stmt_gross->fetchColumn() ?: 0.00);
+
+    $stmt_m_all = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type LIKE 'Matrix_Income%'");
+    $stmt_m_all->execute([$member_id]);
+    $matrix_all_gross = (float)($stmt_m_all->fetchColumn() ?: 0.00);
+
+    $calculated_balance = $direct_res_gross + $matrix_all_gross;
+
+    // Update wallet row
+    $stmt_up = $pdo->prepare("UPDATE wallets SET user_wallet_60 = ?, company_wallet_40 = ?, balance = ? WHERE member_id = ?");
+    $stmt_up->execute([$calculated_user_wallet, $calculated_company_wallet, $calculated_balance, $member_id]);
 }
 
 // Commission & Bonus Processing
