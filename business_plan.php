@@ -17,15 +17,11 @@ require_once __DIR__ . '/includes/header.php';
             <ul class="space-y-3 text-sm text-gray-300">
                 <li class="flex justify-between border-b border-gold/10 pb-2">
                     <span>Direct Referral Bonus:</span>
-                    <span class="text-gold font-bold">10% (₹500)</span>
+                    <span class="text-gold font-bold">10% (₹500 - 100% User Wallet)</span>
                 </li>
                 <li class="flex justify-between border-b border-gold/10 pb-2">
-                    <span>User Wallet Allocation (60%):</span>
-                    <span class="text-green-400 font-bold">₹300</span>
-                </li>
-                <li class="flex justify-between border-b border-gold/10 pb-2">
-                    <span>Company Wallet Allocation (40%):</span>
-                    <span class="text-amber-400 font-bold">₹200</span>
+                    <span>Matrix Level Wallet Allocation:</span>
+                    <span class="text-green-400 font-bold">60% User / 40% Company</span>
                 </li>
                 <li class="flex justify-between">
                     <span>Phase 1 Matrix Width / Depth:</span>
@@ -40,15 +36,11 @@ require_once __DIR__ . '/includes/header.php';
             <ul class="space-y-3 text-sm text-gray-300">
                 <li class="flex justify-between border-b border-gold/10 pb-2">
                     <span>Direct Referral Bonus:</span>
-                    <span class="text-gold font-bold">10% (₹1,500)</span>
+                    <span class="text-gold font-bold">10% (₹1,500 - 100% User Wallet)</span>
                 </li>
                 <li class="flex justify-between border-b border-gold/10 pb-2">
-                    <span>User Wallet Allocation (60%):</span>
-                    <span class="text-green-400 font-bold">₹900</span>
-                </li>
-                <li class="flex justify-between border-b border-gold/10 pb-2">
-                    <span>Company Wallet Allocation (40%):</span>
-                    <span class="text-amber-400 font-bold">₹600</span>
+                    <span>Matrix Level Wallet Allocation:</span>
+                    <span class="text-green-400 font-bold">60% User / 40% Company</span>
                 </li>
                 <li class="flex justify-between">
                     <span>Phase 1 Matrix Width / Depth:</span>

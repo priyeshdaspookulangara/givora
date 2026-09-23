@@ -254,27 +254,22 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
     // Package parameters
     $package_amount = ($package_type === 'Leadership_15000') ? 15000 : 5000;
 
-    // 1. Direct Referral Bonus (10% of package)
+    // 1. Direct Referral Bonus (10% of package - 100% credited to User Wallet)
     if (!empty($sponsor_id)) {
         $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
         $stmt->execute([$sponsor_id]);
         if ($stmt->fetch()) {
             $direct_bonus = ($package_type === 'Leadership_15000') ? 1500.00 : 500.00;
-            $user_part = $direct_bonus * 0.60;
-            $company_part = $direct_bonus * 0.40;
 
             ensureWalletExists($pdo, $sponsor_id);
 
-            // Update sponsor wallet
-            $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
-            $stmt->execute([$direct_bonus, $user_part, $company_part, $sponsor_id]);
+            // Update sponsor wallet: 100% of Direct Referral Bonus goes to user_wallet_60 and balance
+            $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ? WHERE member_id = ?");
+            $stmt->execute([$direct_bonus, $direct_bonus, $sponsor_id]);
 
-            // Log transactions
+            // Log transaction
             $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Direct_Referral', ?, 'User_Wallet', 'Credit', ?)");
-            $stmt->execute([$sponsor_id, $user_part, "Direct Referral Bonus (60%) for " . $new_member_id]);
-
-            $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Direct_Referral', ?, 'Company_Wallet', 'Credit', ?)");
-            $stmt->execute([$sponsor_id, $company_part, "Direct Referral Bonus (40%) for " . $new_member_id]);
+            $stmt->execute([$sponsor_id, $direct_bonus, "Direct Referral Bonus (100%) for " . $new_member_id]);
         }
     }
 
