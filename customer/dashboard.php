@@ -92,19 +92,7 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Earnings -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-gray-400">Total Earnings</span>
-                <div class="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center text-lg">
-                    <i class="fas fa-coins"></i>
-                </div>
-            </div>
-            <div class="text-2xl font-extrabold gold-gradient-text">₹<?php echo number_format($total_earnings, 2); ?></div>
-            <p class="text-xs text-gray-500 mt-2">Combined Gross Income</p>
-        </div>
-
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Direct Referral Income -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-blue-500">
             <div class="flex items-center justify-between mb-2">
