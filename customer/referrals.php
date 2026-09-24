@@ -76,7 +76,10 @@ require_once __DIR__ . '/../includes/header.php';
                             <td class="p-3 font-mono text-gray-400"><?php echo htmlspecialchars($ref['phone']); ?></td>
                             <td class="p-3 font-semibold text-goldlight"><?php echo str_replace('_', ' ₹', $ref['package_type']); ?></td>
                             <td class="p-3 font-mono text-gray-400"><?php echo date('d M Y, H:i', strtotime($ref['created_at'])); ?></td>
-                            <td class="p-3 font-bold text-green-400">₹<?php echo number_format($ref['bonus_earned'] ?: (($ref['package_type'] === 'Leadership_15000') ? 1500 : 500), 2); ?></td>
+                            <?php
+                            $bonus_val = (float)($ref['bonus_earned'] ?: (($ref['package_type'] === 'Leadership_15000') ? 1500.00 : 500.00));
+                            ?>
+                            <td class="p-3 font-bold text-green-400">₹<?php echo number_format($bonus_val, 2); ?></td>
                         </tr>
                     <?php endforeach; endif; ?>
                 </tbody>
