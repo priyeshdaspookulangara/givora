@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Fetch all subscriptions with member details
+// Fetch all subscriptions with member details and calculate completed cycle metrics
 $filter_service = trim($_GET['service'] ?? '');
 $filter_status = trim($_GET['status'] ?? '');
 
@@ -39,6 +39,32 @@ $query = "SELECT sub.*, m.name as member_name, m.phone as member_phone, m.email 
           ORDER BY sub.id DESC";
 $subscriptions = $pdo->query($query)->fetchAll();
 
+// Calculate completed/remaining cycles for each subscription
+foreach ($subscriptions as &$sub) {
+    $sub_id = $sub['id'];
+    $stmt_sch = $pdo->prepare("SELECT term_number, status FROM recharge_schedules WHERE subscription_id = ?");
+    $stmt_sch->execute([$sub_id]);
+    $sub_schs = $stmt_sch->fetchAll(PDO::FETCH_ASSOC);
+
+    $terms = [];
+    foreach ($sub_schs as $sc) {
+        $tn = (int)$sc['term_number'];
+        if (!isset($terms[$tn])) $terms[$tn] = ['total' => 0, 'completed' => 0];
+        $terms[$tn]['total']++;
+        if ($sc['status'] === 'Completed') $terms[$tn]['completed']++;
+    }
+
+    $comp_cycles = 0;
+    foreach ($terms as $tn => $ti) {
+        if ($ti['total'] > 0 && $ti['completed'] === $ti['total']) $comp_cycles++;
+    }
+
+    $sub['completed_cycles'] = $comp_cycles;
+    $sub['current_cycle'] = min(6, $comp_cycles + 1);
+    $sub['remaining_cycles'] = max(0, 6 - $comp_cycles);
+}
+unset($sub);
+
 // Fetch schedules with filtering
 $sched_query = "SELECT rs.*, sub.member_id, sub.mobile_1, sub.operator_1, sub.mobile_2, sub.operator_2, sub.gas_provider, sub.gas_consumer_number, sub.gas_customer_name, m.name as member_name
                 FROM recharge_schedules rs
@@ -47,14 +73,18 @@ $sched_query = "SELECT rs.*, sub.member_id, sub.mobile_1, sub.operator_1, sub.mo
                 WHERE 1=1";
 $params = [];
 
+if ($filter_status === 'Upcoming_14') {
+    $two_weeks = date('Y-m-d H:i:s', strtotime('+14 days'));
+    $sched_query .= " AND rs.service_type IN ('Mobile_1', 'Mobile_2') AND rs.status = 'Scheduled' AND rs.due_date <= ?";
+    $params[] = $two_weeks;
+} elseif (!empty($filter_status)) {
+    $sched_query .= " AND rs.status = ?";
+    $params[] = $filter_status;
+}
+
 if (!empty($filter_service)) {
     $sched_query .= " AND rs.service_type = ?";
     $params[] = $filter_service;
-}
-
-if (!empty($filter_status)) {
-    $sched_query .= " AND rs.status = ?";
-    $params[] = $filter_status;
 }
 
 $sched_query .= " ORDER BY CASE WHEN rs.status = 'Requested' THEN 1 WHEN rs.status = 'Scheduled' THEN 2 ELSE 3 END, rs.due_date ASC, rs.id ASC LIMIT 100";
@@ -63,6 +93,12 @@ $stmt = $pdo->prepare($sched_query);
 $stmt->execute($params);
 $schedules = $stmt->fetchAll();
 
+// Calculate count of upcoming recharges in next 14 days
+$two_weeks_time = date('Y-m-d H:i:s', strtotime('+14 days'));
+$stmt_up_cnt = $pdo->prepare("SELECT COUNT(*) FROM recharge_schedules WHERE service_type IN ('Mobile_1', 'Mobile_2') AND status = 'Scheduled' AND due_date <= ?");
+$stmt_up_cnt->execute([$two_weeks_time]);
+$upcoming_14_cnt = (int)$stmt_up_cnt->fetchColumn();
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -70,7 +106,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-white"><i class="fas fa-charging-station text-gold mr-2"></i> Recharge Subscriptions & Orders</h1>
-            <p class="text-xs text-gray-400 mt-1">Manage 6-term Mobile Recharges and Indian Gas Refill bookings for Recharge Bundle (₹5,400) members.</p>
+            <p class="text-xs text-gray-400 mt-1">Manage 6-term Mobile Recharges (28-day cycle) and Indian Gas Refill bookings for Utility members.</p>
         </div>
         <a href="/admin/index.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10 self-start sm:self-auto">← Admin Overview</a>
     </div>
@@ -103,6 +139,16 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="bg-darkcard p-5 rounded-xl border border-gold/20 flex items-center justify-between">
             <div>
+                <div class="text-gray-400 text-xs font-semibold uppercase">Due in 14 Days (2 Weeks)</div>
+                <div class="text-2xl font-extrabold text-amber-400 mt-1"><?php echo $upcoming_14_cnt; ?></div>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+                <i class="fas fa-clock"></i>
+            </div>
+        </div>
+
+        <div class="bg-darkcard p-5 rounded-xl border border-gold/20 flex items-center justify-between">
+            <div>
                 <div class="text-gray-400 text-xs font-semibold uppercase">Gas Requests Pending</div>
                 <div class="text-2xl font-extrabold text-blue-400 mt-1">
                     <?php
@@ -118,7 +164,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="bg-darkcard p-5 rounded-xl border border-gold/20 flex items-center justify-between">
             <div>
-                <div class="text-gray-400 text-xs font-semibold uppercase">Total Recharges Processed</div>
+                <div class="text-gray-400 text-xs font-semibold uppercase">Total Fulfilled Terms</div>
                 <div class="text-2xl font-extrabold text-green-400 mt-1">
                     <?php
                     $completed_cnt = $pdo->query("SELECT COUNT(*) FROM recharge_schedules WHERE status = 'Completed'")->fetchColumn();
@@ -130,21 +176,6 @@ require_once __DIR__ . '/../includes/header.php';
                 <i class="fas fa-check-double"></i>
             </div>
         </div>
-
-        <div class="bg-darkcard p-5 rounded-xl border border-gold/20 flex items-center justify-between">
-            <div>
-                <div class="text-gray-400 text-xs font-semibold uppercase">Scheduled Future Terms</div>
-                <div class="text-2xl font-extrabold text-yellow-400 mt-1">
-                    <?php
-                    $scheduled_cnt = $pdo->query("SELECT COUNT(*) FROM recharge_schedules WHERE status = 'Scheduled'")->fetchColumn();
-                    echo $scheduled_cnt;
-                    ?>
-                </div>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-lg">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
     </div>
 
     <!-- Recharge Orders & Schedules Table -->
@@ -154,8 +185,9 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Filters -->
             <div class="flex flex-wrap items-center gap-2 text-xs">
-                <span class="text-gray-400">Filter Status:</span>
+                <span class="text-gray-400">Filter:</span>
                 <a href="/admin/recharges.php" class="px-3 py-1 rounded-lg <?php echo empty($filter_status) ? 'bg-gold text-darkbg font-bold' : 'bg-darkbg text-gray-300 border border-gold/20'; ?>">All</a>
+                <a href="/admin/recharges.php?status=Upcoming_14" class="px-3 py-1 rounded-lg <?php echo $filter_status === 'Upcoming_14' ? 'bg-amber-500 text-darkbg font-bold' : 'bg-darkbg text-amber-300 border border-amber-500/30'; ?>">Due in 14 Days</a>
                 <a href="/admin/recharges.php?status=Requested" class="px-3 py-1 rounded-lg <?php echo $filter_status === 'Requested' ? 'bg-blue-500 text-white font-bold' : 'bg-darkbg text-blue-400 border border-blue-500/20'; ?>">Gas Requested</a>
                 <a href="/admin/recharges.php?status=Scheduled" class="px-3 py-1 rounded-lg <?php echo $filter_status === 'Scheduled' ? 'bg-yellow-500 text-darkbg font-bold' : 'bg-darkbg text-yellow-400 border border-yellow-500/20'; ?>">Scheduled</a>
                 <a href="/admin/recharges.php?status=Completed" class="px-3 py-1 rounded-lg <?php echo $filter_status === 'Completed' ? 'bg-green-500 text-white font-bold' : 'bg-darkbg text-green-400 border border-green-500/20'; ?>">Completed</a>
@@ -239,9 +271,9 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <!-- Subscribers Directory Table -->
+    <!-- Subscribers Directory Table with Installment/Cycle Tracking -->
     <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
-        <h2 class="text-lg font-bold text-white mb-4"><i class="fas fa-list text-gold mr-2"></i> All Recharge Bundle Subscribers</h2>
+        <h2 class="text-lg font-bold text-white mb-4"><i class="fas fa-list text-gold mr-2"></i> All Utility Subscribers & Installment Cycles</h2>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-gray-300">
@@ -251,10 +283,10 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">Member ID</th>
                         <th class="p-3">Name</th>
                         <th class="p-3">Phone</th>
-                        <th class="p-3">Mobile 1 Connection</th>
-                        <th class="p-3">Mobile 2 Connection</th>
+                        <th class="p-3">Installment Cycles</th>
+                        <th class="p-3">Mobile Connections</th>
                         <th class="p-3">Gas Connection</th>
-                        <th class="p-3">Plan Start Date</th>
+                        <th class="p-3">Start Date</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gold/10">
@@ -268,9 +300,29 @@ require_once __DIR__ . '/../includes/header.php';
                             <td class="p-3 font-mono font-bold text-gold"><?php echo htmlspecialchars($sub['member_id']); ?></td>
                             <td class="p-3 font-bold text-white"><?php echo htmlspecialchars($sub['member_name']); ?></td>
                             <td class="p-3 font-mono text-gray-300"><?php echo htmlspecialchars($sub['member_phone']); ?></td>
-                            <td class="p-3 font-mono text-white"><?php echo htmlspecialchars($sub['mobile_1']); ?> <span class="text-gold">(<?php echo htmlspecialchars($sub['operator_1']); ?>)</span></td>
-                            <td class="p-3 font-mono text-white"><?php echo htmlspecialchars($sub['mobile_2']); ?> <span class="text-gold">(<?php echo htmlspecialchars($sub['operator_2']); ?>)</span></td>
-                            <td class="p-3 text-white"><?php echo htmlspecialchars($sub['gas_provider']); ?> - <span class="font-mono"><?php echo htmlspecialchars($sub['gas_consumer_number']); ?></span></td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 font-bold text-[11px]">
+                                    <?php echo $sub['completed_cycles']; ?>/6 Completed
+                                </span>
+                                <span class="text-[10px] text-amber-300 block mt-1 font-semibold">
+                                    Active: Term #<?php echo $sub['current_cycle']; ?> (<?php echo $sub['remaining_cycles']; ?> remaining)
+                                </span>
+                            </td>
+                            <td class="p-3 font-mono text-white">
+                                <?php if ($sub['mobile_1']): ?>
+                                    <div><?php echo htmlspecialchars($sub['mobile_1']); ?> <span class="text-gold">(<?php echo htmlspecialchars($sub['operator_1']); ?>)</span></div>
+                                <?php endif; ?>
+                                <?php if ($sub['mobile_2']): ?>
+                                    <div><?php echo htmlspecialchars($sub['mobile_2']); ?> <span class="text-gold">(<?php echo htmlspecialchars($sub['operator_2']); ?>)</span></div>
+                                <?php endif; ?>
+                            </td>
+                            <td class="p-3 text-white">
+                                <?php if ($sub['gas_consumer_number']): ?>
+                                    <?php echo htmlspecialchars($sub['gas_provider']); ?> - <span class="font-mono"><?php echo htmlspecialchars($sub['gas_consumer_number']); ?></span>
+                                <?php else: ?>
+                                    <span class="text-gray-500">-</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="p-3 font-mono text-gray-400"><?php echo date('d M Y, H:i', strtotime($sub['start_date'])); ?></td>
                         </tr>
                     <?php endforeach; endif; ?>

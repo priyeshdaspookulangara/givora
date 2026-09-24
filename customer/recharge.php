@@ -35,10 +35,51 @@ $stmt->execute([$member['member_id']]);
 $subscription = $stmt->fetch();
 
 $schedules = [];
+$completed_cycles = 0;
+$current_cycle = 1;
+$remaining_cycles = 6;
+$upcoming_2_weeks = [];
+
 if ($subscription) {
     $stmt = $pdo->prepare("SELECT * FROM recharge_schedules WHERE subscription_id = ? ORDER BY service_type ASC, term_number ASC");
     $stmt->execute([$subscription['id']]);
     $schedules = $stmt->fetchAll();
+
+    // Calculate completed cycles, current installment, and remaining installments
+    // A cycle/term is completed when all service types for that term number are Completed
+    $terms_status = [];
+    foreach ($schedules as $s) {
+        $term_num = (int)$s['term_number'];
+        if (!isset($terms_status[$term_num])) {
+            $terms_status[$term_num] = ['total' => 0, 'completed' => 0];
+        }
+        $terms_status[$term_num]['total']++;
+        if ($s['status'] === 'Completed') {
+            $terms_status[$term_num]['completed']++;
+        }
+    }
+
+    $completed_cycles = 0;
+    foreach ($terms_status as $t_num => $t_info) {
+        if ($t_info['total'] > 0 && $t_info['completed'] === $t_info['total']) {
+            $completed_cycles++;
+        }
+    }
+
+    $current_cycle = min(6, $completed_cycles + 1);
+    $remaining_cycles = max(0, 6 - $completed_cycles);
+
+    // Fetch upcoming mobile recharges due within 14 days (2 weeks)
+    $today = date('Y-m-d H:i:s');
+    $two_weeks = date('Y-m-d H:i:s', strtotime('+14 days'));
+
+    foreach ($schedules as $s) {
+        if (in_array($s['service_type'], ['Mobile_1', 'Mobile_2']) && $s['status'] === 'Scheduled' && !empty($s['due_date'])) {
+            if ($s['due_date'] <= $two_weeks) {
+                $upcoming_2_weeks[] = $s;
+            }
+        }
+    }
 }
 
 require_once __DIR__ . '/../includes/header.php';
@@ -48,7 +89,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-white"><i class="fas fa-bolt text-gold mr-2"></i> My Utility Package Subscriptions</h1>
-            <p class="text-xs text-gray-400 mt-1">Manage 6-term Mobile Recharges (every 28 days) and Gas Refill requests starting 24 hours after plan activation.</p>
+            <p class="text-xs text-gray-400 mt-1">Track 6-term Mobile Recharges (every 28 days cycle) and Gas Refill installments starting 24 hours post-registration.</p>
         </div>
         <a href="/customer/dashboard.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10 self-start sm:self-auto">← Dashboard</a>
     </div>
@@ -84,6 +125,74 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
     <?php else: ?>
+
+        <!-- Installments & Cycle Summary KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-gold">
+                <span class="text-xs font-semibold text-gray-400 uppercase">Total Package Terms</span>
+                <div class="text-2xl font-extrabold text-white mt-1">6 Terms</div>
+                <p class="text-[10px] text-gold/80 mt-1">Full Package Term Span</p>
+            </div>
+
+            <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
+                <span class="text-xs font-semibold text-green-400 uppercase">Completed Installments</span>
+                <div class="text-2xl font-extrabold text-green-400 mt-1"><?php echo $completed_cycles; ?> / 6</div>
+                <p class="text-[10px] text-green-500/80 mt-1">Fulfilled Cycles</p>
+            </div>
+
+            <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
+                <span class="text-xs font-semibold text-amber-400 uppercase">Current Installment</span>
+                <div class="text-2xl font-extrabold text-amber-300 mt-1">Term #<?php echo $current_cycle; ?></div>
+                <p class="text-[10px] text-amber-400/80 mt-1">Active Cycle in Progress</p>
+            </div>
+
+            <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+                <span class="text-xs font-semibold text-purple-400 uppercase">Remaining Installments</span>
+                <div class="text-2xl font-extrabold text-purple-300 mt-1"><?php echo $remaining_cycles; ?> Terms</div>
+                <p class="text-[10px] text-purple-400/80 mt-1">Pending Future Cycles</p>
+            </div>
+        </div>
+
+        <!-- UPCOMING RECHARGES (DUE WITHIN NEXT 14 DAYS) BANNER -->
+        <div class="bg-gradient-to-r from-amber-950/40 via-darkcard to-gold/20 border border-gold/40 p-6 rounded-2xl gold-border-glow mb-8">
+            <div class="flex items-center justify-between border-b border-gold/20 pb-3 mb-4">
+                <h3 class="text-base font-bold text-white flex items-center">
+                    <i class="fas fa-clock text-amber-400 mr-2 text-lg"></i>
+                    Upcoming Mobile Recharges (Due in Next 14 Days / 28-Day Cycle)
+                </h3>
+                <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full border border-amber-500/30">
+                    <?php echo count($upcoming_2_weeks); ?> Recharge(s) Due
+                </span>
+            </div>
+
+            <?php if (empty($upcoming_2_weeks)): ?>
+                <p class="text-xs text-gray-400 flex items-center">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    No mobile recharges due in the next 14 days. Your upcoming 28-day cycle dates are listed below.
+                </p>
+            <?php else: ?>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <?php foreach ($upcoming_2_weeks as $up):
+                        $target_num = ($up['service_type'] === 'Mobile_1') ? $subscription['mobile_1'] . ' (' . $subscription['operator_1'] . ')' : $subscription['mobile_2'] . ' (' . $subscription['operator_2'] . ')';
+                        $due_time = strtotime($up['due_date']);
+                        $days_left = ceil(($due_time - time()) / 86400);
+                    ?>
+                        <div class="bg-darkbg p-4 rounded-xl border border-amber-500/30 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-gold">Term #<?php echo $up['term_number']; ?> - <?php echo str_replace('_', ' ', $up['service_type']); ?></div>
+                                <div class="text-sm font-mono font-bold text-white mt-0.5"><?php echo htmlspecialchars($target_num); ?></div>
+                                <div class="text-[11px] text-gray-400 mt-1"><i class="fas fa-calendar-day text-amber-400 mr-1"></i> Due Date: <?php echo date('d M Y, h:i A', $due_time); ?></div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 font-extrabold text-xs rounded-lg border border-amber-500/40 inline-block">
+                                    <?php echo ($days_left <= 0) ? 'DUE TODAY' : "In {$days_left} Days"; ?>
+                                </span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <!-- Subscription Overview Header Card -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow mb-8">
