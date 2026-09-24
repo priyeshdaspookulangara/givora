@@ -5,21 +5,82 @@ checkAdminLogin();
 $page_title = "Financial Master Ledger";
 $pdo = getDBConnection();
 
+// Sync all member wallets before calculating master ledger
+$members_stmt = $pdo->query("SELECT member_id FROM members");
+while ($m_id = $members_stmt->fetchColumn()) {
+    syncMemberWallet($pdo, $m_id);
+}
+
 // Master Ledger Calculations
 $stmt = $pdo->query("SELECT SUM(balance) FROM wallets");
-$total_inflow = $stmt->fetchColumn() ?: 0.00;
+$total_inflow = (float)($stmt->fetchColumn() ?: 0.00);
 
 $stmt = $pdo->query("SELECT SUM(user_wallet_60) FROM wallets");
-$total_user_wallet_balance = $stmt->fetchColumn() ?: 0.00;
+$total_user_wallet_balance = (float)($stmt->fetchColumn() ?: 0.00);
 
 $stmt = $pdo->query("SELECT SUM(company_wallet_40) FROM wallets");
-$total_company_wallet_balance = $stmt->fetchColumn() ?: 0.00;
+$total_company_wallet_balance = (float)($stmt->fetchColumn() ?: 0.00);
 
 $stmt = $pdo->query("SELECT SUM(p2_reserve_wallet) FROM wallets");
-$total_p2_reserve_balance = $stmt->fetchColumn() ?: 0.00;
+$total_p2_reserve_balance = (float)($stmt->fetchColumn() ?: 0.00);
 
 $stmt = $pdo->query("SELECT SUM(amount) FROM withdrawals WHERE status = 'Approved'");
-$total_payouts_approved = $stmt->fetchColumn() ?: 0.00;
+$total_payouts_approved = (float)($stmt->fetchColumn() ?: 0.00);
+
+// Fetch Member-by-Member Breakdown for User Wallets Pool Modal
+$breakdown_query = "
+    SELECT
+        m.member_id,
+        m.name,
+        w.user_wallet_60 as net_user_balance,
+        w.balance as gross_balance,
+        COALESCE(dr.dr_gross, 0.00) as dr_gross,
+        COALESCE(dr.dr_gross, 0.00) * 0.90 as dr_net,
+        COALESCE(dr.dr_gross, 0.00) * 0.10 as dr_tds,
+        COALESCE(mi.mi_gross_user, 0.00) as mi_gross_user,
+        COALESCE(mi.mi_gross_user, 0.00) * 0.95 as mi_net_user,
+        COALESCE(mi.mi_gross_user, 0.00) * 0.05 as mi_tds,
+        COALESCE(wd.wd_total, 0.00) as withdrawals_total
+    FROM members m
+    LEFT JOIN wallets w ON m.member_id = w.member_id
+    LEFT JOIN (
+        SELECT member_id, SUM(amount) as dr_gross
+        FROM transactions
+        WHERE type = 'Direct_Referral' AND status = 'Credit'
+        GROUP BY member_id
+    ) dr ON m.member_id = dr.member_id
+    LEFT JOIN (
+        SELECT member_id, SUM(amount) as mi_gross_user
+        FROM transactions
+        WHERE type LIKE 'Matrix_Income%' AND wallet_type = 'User_Wallet' AND status = 'Credit'
+        GROUP BY member_id
+    ) mi ON m.member_id = mi.member_id
+    LEFT JOIN (
+        SELECT member_id, SUM(amount) as wd_total
+        FROM transactions
+        WHERE type = 'Withdrawal_Request' AND status IN ('Pending', 'Approved')
+        GROUP BY member_id
+    ) wd ON m.member_id = wd.member_id
+    ORDER BY w.user_wallet_60 DESC
+";
+
+$stmt_breakdown = $pdo->query($breakdown_query);
+$user_wallet_breakdown = $stmt_breakdown->fetchAll(PDO::FETCH_ASSOC);
+
+// Totals for Modal Header Summary
+$sum_dr_gross = 0;
+$sum_dr_tds = 0;
+$sum_mi_user_gross = 0;
+$sum_mi_tds = 0;
+$sum_withdrawals = 0;
+
+foreach ($user_wallet_breakdown as $row) {
+    $sum_dr_gross += (float)$row['dr_gross'];
+    $sum_dr_tds += (float)$row['dr_tds'];
+    $sum_mi_user_gross += (float)$row['mi_gross_user'];
+    $sum_mi_tds += (float)$row['mi_tds'];
+    $sum_withdrawals += (float)$row['withdrawals_total'];
+}
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -41,10 +102,19 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="text-xs text-gray-500 mt-2">All-time credited commissions across matrix</p>
         </div>
 
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">
-            <span class="text-xs font-semibold text-green-400 uppercase">User Wallets Pool (60%)</span>
+        <!-- CLICKABLE USER WALLETS POOL CARD -->
+        <div onclick="openUserWalletModal()" class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500 cursor-pointer hover:scale-105 hover:border-green-400 transition transform shadow-lg group relative">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-green-400 uppercase">User Wallets Pool (60%)</span>
+                <span class="text-[10px] bg-green-500/20 text-green-300 font-bold px-2 py-0.5 rounded-full border border-green-500/30 group-hover:bg-green-500 group-hover:text-darkbg transition">
+                    <i class="fas fa-search-plus mr-1"></i> View Breakdown
+                </span>
+            </div>
             <div class="text-3xl font-extrabold text-green-400 mt-2">₹<?php echo number_format($total_user_wallet_balance, 2); ?></div>
-            <p class="text-xs text-green-500/80 mt-2">Currently available in member user wallets</p>
+            <p class="text-xs text-green-500/80 mt-2 flex items-center justify-between">
+                <span>Currently available in member wallets</span>
+                <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
+            </p>
         </div>
 
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
@@ -66,5 +136,117 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 </div>
+
+<!-- USER WALLETS POOL BREAKDOWN MODAL -->
+<div id="userWalletModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-darkcard border border-gold/40 rounded-2xl max-w-5xl w-full p-6 shadow-2xl relative gold-border-glow my-8">
+        <!-- Close Button -->
+        <button onclick="closeUserWalletModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold p-1">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Header -->
+        <div class="border-b border-gold/20 pb-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center text-xl border border-green-500/40">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">User Wallets Pool Detailed Breakdown</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Comprehensive audit statement showing Direct Referrals, Matrix Earnings, TDS Tax Deductions, Withdrawals, and Net Member Balances.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Metric Badges -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-xs">
+            <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
+                <span class="text-gray-400 block">Gross Direct Referrals</span>
+                <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_dr_gross, 2); ?></span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(TDS Deducted: -₹<?php echo number_format($sum_dr_tds, 2); ?>)</span>
+            </div>
+            <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
+                <span class="text-gray-400 block">Gross Matrix Income (60% Share)</span>
+                <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_mi_user_gross, 2); ?></span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(TDS Deducted: -₹<?php echo number_format($sum_mi_tds, 2); ?>)</span>
+            </div>
+            <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
+                <span class="text-gray-400 block">Total Withdrawals Debited</span>
+                <span class="text-sm font-bold text-amber-400">₹<?php echo number_format($sum_withdrawals, 2); ?></span>
+                <span class="text-[10px] text-gray-500 block mt-0.5">Approved & Pending Payouts</span>
+            </div>
+            <div class="bg-darkbg p-3 rounded-xl border border-green-500/40">
+                <span class="text-gray-400 block">Net User Wallets Pool</span>
+                <span class="text-sm font-bold text-green-400">₹<?php echo number_format($total_user_wallet_balance, 2); ?></span>
+                <span class="text-[10px] text-green-500 block mt-0.5">Currently Liquid Balance</span>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="overflow-x-auto max-h-[400px] overflow-y-auto border border-gold/10 rounded-xl">
+            <table class="w-full text-left text-xs text-gray-300">
+                <thead class="bg-gold/10 text-gold uppercase sticky top-0 bg-darkcard border-b border-gold/20">
+                    <tr>
+                        <th class="p-3">Member</th>
+                        <th class="p-3 text-right">Direct Ref (Gross)</th>
+                        <th class="p-3 text-right">10% Direct TDS</th>
+                        <th class="p-3 text-right">Matrix User Share (Gross)</th>
+                        <th class="p-3 text-right">5% Matrix TDS</th>
+                        <th class="p-3 text-right">Withdrawals</th>
+                        <th class="p-3 text-right">Net User Wallet</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gold/10">
+                    <?php if (empty($user_wallet_breakdown)): ?>
+                        <tr>
+                            <td colspan="7" class="p-4 text-center text-gray-500">No member wallet entries found.</td>
+                        </tr>
+                    <?php else: foreach ($user_wallet_breakdown as $row): ?>
+                        <tr class="hover:bg-gold/5 transition">
+                            <td class="p-3">
+                                <div class="font-bold text-white"><?php echo htmlspecialchars($row['name']); ?></div>
+                                <div class="font-mono text-[11px] text-gold"><?php echo htmlspecialchars($row['member_id']); ?></div>
+                            </td>
+                            <td class="p-3 text-right font-mono text-gray-300">₹<?php echo number_format((float)$row['dr_gross'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-red-400">-₹<?php echo number_format((float)$row['dr_tds'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-gray-300">₹<?php echo number_format((float)$row['mi_gross_user'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-red-400">-₹<?php echo number_format((float)$row['mi_tds'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-amber-400">₹<?php echo number_format((float)$row['withdrawals_total'], 2); ?></td>
+                            <td class="p-3 text-right font-mono font-bold text-green-400">₹<?php echo number_format((float)$row['net_user_balance'], 2); ?></td>
+                        </tr>
+                    <?php endforeach; endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer / Formula Note -->
+        <div class="mt-4 pt-3 border-t border-gold/10 text-[11px] text-gray-400 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div>
+                <i class="fas fa-info-circle text-gold mr-1"></i>
+                <span class="font-semibold text-gray-300">Formula:</span> Net User Wallet = (Direct Ref Gross − 10% TDS) + (Matrix User Share − 5% TDS) − Withdrawals.
+            </div>
+            <button onclick="closeUserWalletModal()" class="bg-gold/20 text-gold border border-gold/40 px-4 py-1.5 rounded-lg hover:bg-gold hover:text-darkbg transition font-semibold">
+                Close Breakdown
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openUserWalletModal() {
+    document.getElementById('userWalletModal').classList.remove('hidden');
+}
+
+function closeUserWalletModal() {
+    document.getElementById('userWalletModal').classList.add('hidden');
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        closeUserWalletModal();
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
