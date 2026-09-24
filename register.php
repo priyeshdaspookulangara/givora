@@ -40,8 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "This ePIN code has already been used.";
     } else {
         $package_type = $epin['package_type']; // Get package type from ePIN record
+        $epin_amount = (float)$epin['amount'];
 
         $is_utility_package = in_array($package_type, ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+        $is_charity_package = ($package_type === 'Charity_10000');
 
         if ($is_utility_package) {
             // Validate utility fields based on specific package chosen
@@ -52,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($package_type === 'Recharge_Bundle_5400' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
                 $error = "Please fill in all Recharge Bundle connection details (2 Mobile numbers with carriers and Indian Gas connection details).";
             }
-        } else {
+        } elseif (!$is_charity_package) {
             // Validation 2: Sponsor Check (if provided) for Matrix Packages
             if (!empty($sponsor_id)) {
                 $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
@@ -72,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
 
-                if ($is_utility_package) {
-                    // Utility Packages (₹1200, ₹3000, ₹5400) are completely separate from Matrix Plan: placement_parent_id & matrix_position remain NULL
-                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, 'Active')");
+                if ($is_charity_package) {
+                    // CHARITY SUPPORT PACKAGE (₹10,000 or multiples): Completely standalone from 3-Matrix Tree & Utility Plans
+                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
                     $stmt->execute([
                         $new_member_id,
                         !empty($sponsor_id) ? $sponsor_id : 'GT100000',
@@ -83,7 +85,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $phone,
                         $password,
                         $epin_code,
-                        $package_type
+                        $package_type,
+                        $epin_amount
+                    ]);
+
+                    // Update ePIN status to Used
+                    $stmt = $pdo->prepare("UPDATE epins SET status = 'Used', used_by_member_id = ? WHERE epin_code = ?");
+                    $stmt->execute([$new_member_id, $epin_code]);
+
+                    // Create wallet record
+                    ensureWalletExists($pdo, $new_member_id);
+
+                    // Log Charity Contribution transaction
+                    $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Charity_Contribution', ?, 'Main', 'Credit', ?)");
+                    $stmt->execute([$new_member_id, $epin_amount, "Charity Support Contribution of ₹" . number_format($epin_amount, 2)]);
+
+                    $pdo->commit();
+
+                    $registered_info = [
+                        'member_id' => $new_member_id,
+                        'password' => $password,
+                        'name' => $name,
+                        'package_type' => $package_type,
+                        'amount' => $epin_amount,
+                        'is_charity' => true
+                    ];
+                    $success = "Registration successful! Thank you for your generous Charity Support Contribution of ₹" . number_format($epin_amount, 2) . ".";
+                } elseif ($is_utility_package) {
+                    // Utility Packages (₹1200, ₹3000, ₹5400) are completely separate from Matrix Plan
+                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
+                    $stmt->execute([
+                        $new_member_id,
+                        !empty($sponsor_id) ? $sponsor_id : 'GT100000',
+                        $name,
+                        $email,
+                        $phone,
+                        $password,
+                        $epin_code,
+                        $package_type,
+                        $epin_amount
                     ]);
 
                     // Update ePIN status to Used
@@ -116,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $matrix_position = $placement_info['position'];
 
                     // Insert into members
-                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
+                    $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
                     $stmt->execute([
                         $new_member_id,
                         $sponsor_id,
@@ -127,7 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $phone,
                         $password,
                         $epin_code,
-                        $package_type
+                        $package_type,
+                        $epin_amount
                     ]);
 
                     // Update ePIN status to Used
@@ -185,9 +226,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="flex justify-between border-b border-gold/10 pb-2">
                     <span class="text-gray-400">Package:</span>
-                    <span class="text-white font-semibold"><?php echo str_replace('_', ' ₹', $registered_info['package_type']); ?></span>
+                    <span class="text-white font-semibold">
+                        <?php
+                        if (!empty($registered_info['is_charity'])) {
+                            echo "Charity Support (₹" . number_format($registered_info['amount'], 2) . ")";
+                        } else {
+                            echo str_replace('_', ' ₹', $registered_info['package_type']);
+                        }
+                        ?>
+                    </span>
                 </div>
-                <?php if (!empty($registered_info['is_recharge'])): ?>
+                <?php if (!empty($registered_info['is_charity'])): ?>
+                    <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs space-y-1">
+                        <div class="text-amber-400 font-bold"><i class="fas fa-hand-holding-heart mr-1"></i> Charity Supporter Account</div>
+                        <div class="text-gray-300">Your contribution of ₹<?php echo number_format($registered_info['amount'], 2); ?> is registered under Givora Charity Pool.</div>
+                    </div>
+                <?php elseif (!empty($registered_info['is_recharge'])): ?>
                     <div class="p-3 bg-gold/10 border border-gold/30 rounded-lg text-xs space-y-1">
                         <div class="text-gold font-bold"><i class="fas fa-bolt mr-1"></i> Recharge Bundle Active</div>
                         <div class="text-gray-300">Plan starts in 24 hours with 6 terms of mobile & gas recharges.</div>
@@ -226,6 +280,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span id="epin_status" class="absolute right-4 top-3.5 text-xs font-bold hidden"></span>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">Required. Get an ePIN from your sponsor or company admin.</p>
+                </div>
+
+                <!-- Charity Banner Section (Shown dynamically when ePIN is Charity) -->
+                <div id="charity_section" class="hidden md:col-span-2 bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl text-amber-300 text-xs flex items-center gap-3">
+                    <i class="fas fa-hand-holding-heart text-2xl text-amber-400"></i>
+                    <div>
+                        <span class="font-bold text-sm block">Charity Support Contribution Plan Detected</span>
+                        <span>This registration will be recorded under Givora Charity Pool (₹<span id="charity_amt_text">10,000</span>). Completely independent of matrix tree placement.</span>
+                    </div>
                 </div>
 
                 <!-- Sponsor ID -->
@@ -361,11 +424,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusSpan = document.getElementById('epin_status');
     const rechargeFields = document.getElementById('recharge_bundle_fields');
     const matrixSection = document.getElementById('matrix_section');
+    const charitySection = document.getElementById('charity_section');
+    const charityAmtText = document.getElementById('charity_amt_text');
 
     function checkEpin() {
         const code = epinInput.value.trim();
         if (code.length < 5) {
             rechargeFields.classList.add('hidden');
+            charitySection.classList.add('hidden');
             matrixSection.classList.remove('hidden');
             statusSpan.classList.add('hidden');
             return;
@@ -375,11 +441,21 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(data => {
                 if (data.valid) {
-                    statusSpan.textContent = '✓ ' + data.package_type.replace('_', ' ₹');
-                    statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-green-400';
-                    statusSpan.classList.remove('hidden');
+                    if (data.is_charity_package) {
+                        statusSpan.textContent = '✓ Charity Support (₹' + data.amount.toLocaleString() + ')';
+                        statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-amber-400';
+                        statusSpan.classList.remove('hidden');
 
-                    if (data.is_utility_package) {
+                        charitySection.classList.remove('hidden');
+                        charityAmtText.textContent = data.amount.toLocaleString();
+                        rechargeFields.classList.add('hidden');
+                        matrixSection.classList.add('hidden');
+                    } else if (data.is_utility_package) {
+                        statusSpan.textContent = '✓ ' + data.package_type.replace('_', ' ₹');
+                        statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-green-400';
+                        statusSpan.classList.remove('hidden');
+
+                        charitySection.classList.add('hidden');
                         rechargeFields.classList.remove('hidden');
                         matrixSection.classList.add('hidden');
 
@@ -427,7 +503,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.getElementById('gas_customer_name').required = true;
                         }
                     } else {
+                        statusSpan.textContent = '✓ ' + data.package_type.replace('_', ' ₹');
+                        statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-green-400';
+                        statusSpan.classList.remove('hidden');
+
                         rechargeFields.classList.add('hidden');
+                        charitySection.classList.add('hidden');
                         matrixSection.classList.remove('hidden');
                         document.getElementById('mobile_1').required = false;
                         document.getElementById('mobile_2').required = false;
@@ -439,6 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     statusSpan.className = 'absolute right-4 top-3.5 text-xs font-bold text-red-400';
                     statusSpan.classList.remove('hidden');
                     rechargeFields.classList.add('hidden');
+                    charitySection.classList.add('hidden');
                     matrixSection.classList.remove('hidden');
                 }
             })

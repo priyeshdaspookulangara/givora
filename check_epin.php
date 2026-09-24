@@ -10,7 +10,7 @@ if (empty($epin_code)) {
 }
 
 $pdo = getDBConnection();
-$stmt = $pdo->prepare("SELECT epin_code, package_type, status FROM epins WHERE epin_code = ?");
+$stmt = $pdo->prepare("SELECT epin_code, package_type, amount, status FROM epins WHERE epin_code = ?");
 $stmt->execute([$epin_code]);
 $epin = $stmt->fetch();
 
@@ -25,11 +25,14 @@ if ($epin['status'] !== 'Unused') {
 }
 
 $is_utility_package = in_array($epin['package_type'], ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+$is_charity_package = ($epin['package_type'] === 'Charity_10000');
 
 echo json_encode([
     'valid' => true,
     'epin_code' => $epin['epin_code'],
     'package_type' => $epin['package_type'],
+    'amount' => (float)$epin['amount'],
     'is_recharge_bundle' => ($epin['package_type'] === 'Recharge_Bundle_5400'),
-    'is_utility_package' => $is_utility_package
+    'is_utility_package' => $is_utility_package,
+    'is_charity_package' => $is_charity_package
 ]);

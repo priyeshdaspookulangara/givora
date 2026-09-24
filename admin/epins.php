@@ -10,12 +10,34 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'generate') {
     $package_type = $_POST['package_type'] ?? 'Foundation_5000';
+    $custom_amount = floatval($_POST['custom_amount'] ?? 0);
     $quantity = intval($_POST['quantity'] ?? 1);
     $assign_to = trim($_POST['assign_to'] ?? '');
 
+    // Default package amounts
+    $package_amounts = [
+        'Foundation_5000' => 5000.00,
+        'Leadership_15000' => 15000.00,
+        'Recharge_1200' => 1200.00,
+        'Gas_3000' => 3000.00,
+        'Recharge_Bundle_5400' => 5400.00,
+    ];
+
+    $final_amount = $package_amounts[$package_type] ?? 0.00;
+
+    if ($package_type === 'Charity_10000') {
+        if ($custom_amount < 10000 || fmod($custom_amount, 10000) != 0) {
+            $error = "Charity Support Package amount must be at least ₹10,000 and in exact multiples of ₹10,000 (e.g. ₹10,000, ₹20,000, ₹50,000).";
+        } else {
+            $final_amount = $custom_amount;
+        }
+    }
+
     if ($quantity < 1 || $quantity > 100) {
         $error = "Quantity must be between 1 and 100.";
-    } else {
+    }
+
+    if (empty($error)) {
         // Verify assign_to member exists if provided
         if (!empty($assign_to)) {
             $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
@@ -33,13 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             for ($i = 0; $i < $quantity; $i++) {
                 $epin_code = generateEpinCode();
-                $stmt = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status, generated_by_admin_id, assigned_to) VALUES (?, ?, 'Unused', ?, ?)");
-                if ($stmt->execute([$epin_code, $package_type, $admin_id, $assign_to])) {
+                $stmt = $pdo->prepare("INSERT INTO epins (epin_code, package_type, amount, status, generated_by_admin_id, assigned_to) VALUES (?, ?, ?, 'Unused', ?, ?)");
+                if ($stmt->execute([$epin_code, $package_type, $final_amount, $admin_id, $assign_to])) {
                     $generated_count++;
                 }
             }
 
-            $msg = "Successfully generated {$generated_count} new ePIN(s) for package " . str_replace('_', ' ₹', $package_type) . "!";
+            $display_pkg = ($package_type === 'Charity_10000') ? "Charity Support Package (₹" . number_format($final_amount, 2) . ")" : str_replace('_', ' ₹', $package_type);
+            $msg = "Successfully generated {$generated_count} new ePIN(s) for {$display_pkg}!";
         }
     }
 }
@@ -66,7 +89,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-white"><i class="fas fa-key text-gold mr-2"></i> ePIN Generator & Inventory Control</h1>
-            <p class="text-xs text-gray-400 mt-1">Generate secure single-use ePINs for Foundation and Leadership packages.</p>
+            <p class="text-xs text-gray-400 mt-1">Generate secure single-use ePINs for Matrix, Utility, and Charity Support packages.</p>
         </div>
         <a href="/admin/index.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10 self-start md:self-auto">← Admin Overview</a>
     </div>
@@ -89,18 +112,26 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="bg-darkcard p-6 rounded-2xl gold-border-glow mb-8">
         <h2 class="text-lg font-bold text-white mb-4 border-b border-gold/10 pb-2"><i class="fas fa-plus-circle text-gold mr-2"></i> Generate Batch ePINs</h2>
 
-        <form method="POST" action="" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="POST" action="" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="epinForm">
             <input type="hidden" name="action" value="generate">
 
             <div>
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">Package Tier *</label>
-                <select name="package_type" required class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
+                <select name="package_type" id="package_type_select" required class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                     <option value="Foundation_5000">Foundation Tier (₹5,000)</option>
                     <option value="Leadership_15000">Leadership Tier (₹15,000)</option>
                     <option value="Recharge_1200">Mobile Recharge Package (₹1,200)</option>
                     <option value="Gas_3000">Gas Connection Package (₹3,000)</option>
                     <option value="Recharge_Bundle_5400">Recharge Bundle Combo (₹5,400)</option>
+                    <option value="Charity_10000">Charity Support Package (₹10,000+)</option>
                 </select>
+            </div>
+
+            <!-- Custom Charity Amount Input (Visible only when Charity package is selected) -->
+            <div id="charity_amount_wrapper" class="hidden">
+                <label class="block text-xs font-semibold text-gold mb-1.5">Charity Amount (₹) *</label>
+                <input type="number" name="custom_amount" id="custom_amount" min="10000" step="10000" value="10000" placeholder="e.g. 10000, 20000, 50000" class="w-full bg-darkbg border border-gold rounded-xl px-4 py-2.5 text-xs text-gold font-mono font-bold focus:outline-none focus:ring-1 focus:ring-gold">
+                <p class="text-[10px] text-gray-400 mt-1">Multiples of ₹10,000 (Min ₹10,000)</p>
             </div>
 
             <div>
@@ -113,8 +144,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <input type="text" name="assign_to" placeholder="e.g., GT100001" class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold font-mono">
             </div>
 
-            <div class="flex items-end">
-                <button type="submit" class="w-full btn-gold py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center space-x-1.5">
+            <div class="flex items-end md:col-span-4">
+                <button type="submit" class="w-full btn-gold py-3 rounded-xl font-bold text-xs shadow-md flex items-center justify-center space-x-1.5">
                     <i class="fas fa-magic"></i>
                     <span>Generate Now</span>
                 </button>
@@ -142,6 +173,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">#</th>
                         <th class="p-3">ePIN Code</th>
                         <th class="p-3">Package Tier</th>
+                        <th class="p-3">Amount</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Assigned To</th>
                         <th class="p-3">Used By</th>
@@ -151,13 +183,20 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-gold/10">
                     <?php if (empty($epins)): ?>
                         <tr>
-                            <td colspan="7" class="p-4 text-center text-gray-500">No ePIN records found.</td>
+                            <td colspan="8" class="p-4 text-center text-gray-500">No ePIN records found.</td>
                         </tr>
                     <?php else: foreach ($epins as $idx => $pin): ?>
                         <tr class="hover:bg-gold/5 transition">
                             <td class="p-3 text-gray-500"><?php echo $idx + 1; ?></td>
                             <td class="p-3 font-mono font-extrabold text-gold text-sm"><?php echo htmlspecialchars($pin['epin_code']); ?></td>
-                            <td class="p-3 font-semibold text-white"><?php echo str_replace('_', ' ₹', $pin['package_type']); ?></td>
+                            <td class="p-3 font-semibold text-white">
+                                <?php if ($pin['package_type'] === 'Charity_10000'): ?>
+                                    <span class="text-amber-400 font-bold"><i class="fas fa-hand-holding-heart mr-1"></i> Charity Support</span>
+                                <?php else: ?>
+                                    <?php echo str_replace('_', ' ₹', $pin['package_type']); ?>
+                                <?php endif; ?>
+                            </td>
+                            <td class="p-3 font-mono font-bold text-gold">₹<?php echo number_format((float)$pin['amount'], 2); ?></td>
                             <td class="p-3">
                                 <?php if ($pin['status'] === 'Used'): ?>
                                     <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">Used</span>
@@ -175,5 +214,23 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pkgSelect = document.getElementById('package_type_select');
+    const charityWrapper = document.getElementById('charity_amount_wrapper');
+
+    function toggleCharityAmount() {
+        if (pkgSelect.value === 'Charity_10000') {
+            charityWrapper.classList.remove('hidden');
+        } else {
+            charityWrapper.classList.add('hidden');
+        }
+    }
+
+    pkgSelect.addEventListener('change', toggleCharityAmount);
+    toggleCharityAmount();
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

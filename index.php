@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/header.php';
                         Empowering Communities, Building Brighter Futures — <span class="gold-gradient-text">Together We Rise.</span>
                     </h1>
                     <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
-                        Join India's premier utility direct-selling enterprise. Harness the power of Household Synergy Utility Distribution combined with our revolutionary 3-Matrix compensation model.
+                        Join India's premier utility direct-selling enterprise. Harness the power of Household Synergy Utility Distribution combined with our revolutionary 3-Matrix compensation model & Charity Support initiative.
                     </p>
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                         <a href="/register.php" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
@@ -60,25 +60,22 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <!-- Slide 3: 3-Matrix Tree & 60:40 Wallet Split -->
-            <div class="swiper-slide py-20 lg:py-28 bg-gradient-to-b from-darkcard via-darkbg to-darkcard relative">
+            <!-- Slide 3: Charity Support Package -->
+            <div class="swiper-slide py-20 lg:py-28 bg-gradient-to-b from-darkcard via-amber-950/20 to-darkbg relative">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-4xl">
-                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gold/10 text-gold border border-gold/30 mb-6 uppercase tracking-wider">
-                        3x7 Matrix Compensation
+                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 mb-6 uppercase tracking-wider">
+                        Social Welfare Initiative
                     </span>
                     <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-                        Automated <span class="gold-gradient-text">60:40 Wallet Split</span> Income
+                        Givora <span class="text-amber-400">Charity Support Package</span>
                     </h1>
                     <p class="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed">
-                        Instant direct referral bonuses and 7-level matrix payouts automatically routed into 60% withdrawable user wallet & 40% company reserve.
+                        Contribute ₹10,000 or custom multiples directly toward community welfare and social support funds, operated independently of matrix plans.
                     </p>
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="/register.php?package=Leadership_15000" class="btn-gold px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2">
-                            <span>Join Leadership ₹15,000</span>
-                            <i class="fas fa-crown"></i>
-                        </a>
-                        <a href="/login.php" class="border border-gold/40 text-gold hover:bg-gold/10 px-8 py-4 rounded-xl text-lg font-semibold transition flex items-center justify-center space-x-2">
-                            <span>Member Dashboard</span>
+                        <a href="/register.php" class="bg-amber-500 hover:bg-amber-400 text-darkbg px-8 py-4 rounded-xl text-lg font-bold shadow-lg flex items-center justify-center space-x-2 transition">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <span>Contribute ₹10,000+</span>
                         </a>
                     </div>
                 </div>
@@ -95,8 +92,8 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Quick Overview Cards -->
 <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white">Matrix Compensation & Standalone Utility Packages</h2>
-        <p class="mt-2 text-gray-400">Choose between high-payout matrix packages or standalone utility subscriptions.</p>
+        <h2 class="text-3xl font-bold text-white">Matrix Compensation, Utility, & Charity Support Packages</h2>
+        <p class="mt-2 text-gray-400">Choose between high-payout matrix packages, standalone utility subscriptions, or charity support plans.</p>
     </div>
 
     <!-- Matrix Packages -->
@@ -155,6 +152,26 @@ require_once __DIR__ . '/includes/header.php';
                     Join Leadership Tier
                 </a>
             </div>
+        </div>
+    </div>
+
+    <!-- Charity Support Package Card -->
+    <h3 class="text-xl font-bold text-amber-400 border-b border-amber-500/20 pb-3 mb-8"><i class="fas fa-hand-holding-heart mr-2"></i> Charity Support Package (Social Welfare)</h3>
+    <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="space-y-4 max-w-2xl">
+            <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
+                <i class="fas fa-heart"></i> Independent Social Contribution
+            </div>
+            <h3 class="text-3xl font-extrabold text-white">Charity Support Package</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">
+                Empower local social welfare and community support programs. Key-in custom amounts in exact multiples of <strong class="text-amber-400">₹10,000</strong> (e.g., ₹10,000, ₹20,000, ₹50,000). Handled with complete operational transparency and separate from matrix trees.
+            </p>
+        </div>
+        <div class="flex-shrink-0 text-center">
+            <div class="text-4xl font-extrabold text-amber-400 font-mono mb-4">₹10,000+</div>
+            <a href="/register.php" class="bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold px-8 py-3.5 rounded-xl text-sm shadow-xl inline-block transition">
+                Contribute via ePIN
+            </a>
         </div>
     </div>
 

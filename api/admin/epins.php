@@ -35,11 +35,30 @@ if ($method === 'GET') {
     // Generate ePINs
     $input = getJsonInput();
     $package_type = trim($input['package_type'] ?? 'Foundation_5000');
+    $custom_amount = (float)($input['custom_amount'] ?? 0);
     $quantity = (int)($input['quantity'] ?? 1);
     $assigned_to = trim($input['assigned_to'] ?? '');
 
-    if (!in_array($package_type, ['Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400'])) {
+    $valid_packages = ['Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400', 'Charity_10000'];
+    if (!in_array($package_type, $valid_packages)) {
         sendJsonResponse(false, 'Invalid package type.', null, 400);
+    }
+
+    $package_amounts = [
+        'Foundation_5000' => 5000.00,
+        'Leadership_15000' => 15000.00,
+        'Recharge_1200' => 1200.00,
+        'Gas_3000' => 3000.00,
+        'Recharge_Bundle_5400' => 5400.00,
+    ];
+
+    $final_amount = $package_amounts[$package_type] ?? 0.00;
+
+    if ($package_type === 'Charity_10000') {
+        if ($custom_amount < 10000 || fmod($custom_amount, 10000) != 0) {
+            sendJsonResponse(false, 'Charity amount must be at least ₹10,000 and in exact multiples of ₹10,000.', null, 400);
+        }
+        $final_amount = $custom_amount;
     }
 
     if ($quantity < 1 || $quantity > 100) {
@@ -57,14 +76,15 @@ if ($method === 'GET') {
     $generated = [];
     for ($i = 0; $i < $quantity; $i++) {
         $code = generateEpinCode();
-        $stmt = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status, generated_by_admin_id, assigned_to) VALUES (?, ?, 'Unused', ?, ?)");
-        $stmt->execute([$code, $package_type, $admin['id'], !empty($assigned_to) ? $assigned_to : null]);
+        $stmt = $pdo->prepare("INSERT INTO epins (epin_code, package_type, amount, status, generated_by_admin_id, assigned_to) VALUES (?, ?, ?, 'Unused', ?, ?)");
+        $stmt->execute([$code, $package_type, $final_amount, $admin['id'], !empty($assigned_to) ? $assigned_to : null]);
         $generated[] = $code;
     }
 
     sendJsonResponse(true, "Successfully generated {$quantity} ePIN(s).", [
         'generated_codes' => $generated,
         'package_type' => $package_type,
+        'amount' => $final_amount,
         'assigned_to' => $assigned_to
     ], 201);
 

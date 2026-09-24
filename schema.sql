@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS epins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     epin_code VARCHAR(50) NOT NULL UNIQUE,
-    package_type ENUM('Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400') NOT NULL,
+    package_type VARCHAR(50) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     status ENUM('Unused', 'Used') NOT NULL DEFAULT 'Unused',
     generated_by_admin_id INT DEFAULT NULL,
     used_by_member_id VARCHAR(50) DEFAULT NULL,
@@ -30,7 +31,8 @@ CREATE TABLE IF NOT EXISTS members (
     phone VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
     used_epin VARCHAR(50) NOT NULL,
-    package_type ENUM('Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400') NOT NULL,
+    package_type VARCHAR(50) NOT NULL,
+    custom_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     profile_image VARCHAR(255) DEFAULT NULL,
     status ENUM('Active', 'Inactive') NOT NULL DEFAULT 'Active',
     p2_status ENUM('Inactive', 'Active') NOT NULL DEFAULT 'Inactive',
@@ -56,7 +58,7 @@ CREATE TABLE IF NOT EXISTS wallets (
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(50) NOT NULL,
-    type ENUM('Direct_Referral', 'Matrix_Income_P1', 'Matrix_Income_P2', 'Phase_2_Reserve', 'Phase_2_Joining_Fee', 'Withdrawal_Request', 'Admin_Adjustment') NOT NULL,
+    type VARCHAR(50) NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
     wallet_type ENUM('User_Wallet', 'Company_Wallet', 'Main') NOT NULL DEFAULT 'Main',
     status ENUM('Credit', 'Debit', 'Pending', 'Approved') NOT NULL DEFAULT 'Credit',
@@ -89,7 +91,7 @@ CREATE TABLE IF NOT EXISTS api_tokens (
 CREATE TABLE IF NOT EXISTS recharge_subscriptions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(20) NOT NULL,
-    package_type ENUM('Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400') NOT NULL DEFAULT 'Recharge_Bundle_5400',
+    package_type VARCHAR(50) NOT NULL DEFAULT 'Recharge_Bundle_5400',
     used_epin VARCHAR(50) NOT NULL,
     mobile_1 VARCHAR(20) DEFAULT NULL,
     operator_1 VARCHAR(50) DEFAULT NULL,
