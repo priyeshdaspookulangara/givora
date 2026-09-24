@@ -252,6 +252,7 @@ function ensureWalletExists($pdo, $member_id) {
 
 // Sync member wallet balance dynamically based on ledger transactions with TDS deductions:
 // - Direct Referral Bonus: 10% TDS deduction (Net 90% credited to User Wallet)
+// - Level Income (Non-Matrix Utility/Charity): 5% TDS deduction (Net 95% credited to User Wallet)
 // - Matrix Level Income: 5% TDS deduction on 60% User Wallet share (Net 57% of Matrix Income)
 function syncMemberWallet($pdo, $member_id) {
     if (empty($member_id)) return;
@@ -262,32 +263,38 @@ function syncMemberWallet($pdo, $member_id) {
     $dr_gross = (float)($stmt_dr->fetchColumn() ?: 0.00);
     $dr_net_user = $dr_gross * 0.90; // 10% TDS deduction
 
-    // 2. Matrix Level Income User Wallet credits (5% TDS deduction on 60% share => 57% Net to User Wallet)
+    // 2. Level Income credits (Non-Matrix Utility/Charity: 5% TDS deduction => 95% Net to User Wallet)
+    $stmt_li = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Level_Income' AND status = 'Credit'");
+    $stmt_li->execute([$member_id]);
+    $li_gross = (float)($stmt_li->fetchColumn() ?: 0.00);
+    $li_net_user = $li_gross * 0.95; // 5% TDS deduction
+
+    // 3. Matrix Level Income User Wallet credits (5% TDS deduction on 60% share => 57% Net to User Wallet)
     $stmt_m60 = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
     $stmt_m60->execute([$member_id]);
     $matrix_user_gross = (float)($stmt_m60->fetchColumn() ?: 0.00);
     $matrix_net_user = $matrix_user_gross * 0.95; // 5% TDS deduction
 
-    // 3. Admin adjustment credits into User Wallet
+    // 4. Admin adjustment credits into User Wallet
     $stmt_adj = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Admin_Adjustment' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
     $stmt_adj->execute([$member_id]);
     $adj_total = (float)($stmt_adj->fetchColumn() ?: 0.00);
 
-    // 4. Pending / Approved Withdrawal Debits from User Wallet
+    // 5. Pending / Approved Withdrawal Debits from User Wallet
     $stmt_w = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Withdrawal_Request' AND status IN ('Pending', 'Approved')");
     $stmt_w->execute([$member_id]);
     $withdrawal_debits = (float)($stmt_w->fetchColumn() ?: 0.00);
 
     // Calculated Net User Wallet after TDS deductions - Debits
-    $calculated_user_wallet = max(0, ($dr_net_user + $matrix_net_user + $adj_total) - $withdrawal_debits);
+    $calculated_user_wallet = max(0, ($dr_net_user + $li_net_user + $matrix_net_user + $adj_total) - $withdrawal_debits);
 
-    // 5. Company Wallet credits (40% Matrix Level)
+    // 6. Company Wallet credits (40% Matrix Level)
     $stmt_cw = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND wallet_type = 'Company_Wallet' AND status = 'Credit'");
     $stmt_cw->execute([$member_id]);
     $calculated_company_wallet = (float)($stmt_cw->fetchColumn() ?: 0.00);
 
-    // 6. Total Gross Earnings (Sum of all credit transactions for gross total)
-    $stmt_gross = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type IN ('Direct_Referral', 'Phase_2_Reserve')");
+    // 7. Total Gross Earnings (Sum of all credit transactions for gross total)
+    $stmt_gross = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND status = 'Credit' AND type IN ('Direct_Referral', 'Level_Income', 'Phase_2_Reserve')");
     $stmt_gross->execute([$member_id]);
     $direct_res_gross = (float)($stmt_gross->fetchColumn() ?: 0.00);
 
@@ -302,7 +309,51 @@ function syncMemberWallet($pdo, $member_id) {
     $stmt_up->execute([$calculated_user_wallet, $calculated_company_wallet, $calculated_balance, $member_id]);
 }
 
-// Commission & Bonus Processing
+// Distribute Unilevel Sponsor Chain Level Income for Non-Matrix Packages (Utility & Charity)
+// Level 1: 10%, Level 2: 5%, Level 3: 4%, Level 4: 3%, Level 5: 2%, Level 6: 1%
+function distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $package_amount) {
+    if (empty($sponsor_id) || $package_amount <= 0) return;
+
+    $level_percentages = [
+        1 => 0.10, // 10%
+        2 => 0.05, // 5%
+        3 => 0.04, // 4%
+        4 => 0.03, // 3%
+        5 => 0.02, // 2%
+        6 => 0.01  // 1%
+    ];
+
+    $curr_sponsor = $sponsor_id;
+
+    for ($level = 1; $level <= 6; $level++) {
+        if (empty($curr_sponsor)) break;
+
+        // Check if sponsor exists
+        $stmt = $pdo->prepare("SELECT member_id, sponsor_id FROM members WHERE member_id = ?");
+        $stmt->execute([$curr_sponsor]);
+        $sponsor_data = $stmt->fetch();
+
+        if (!$sponsor_data) break;
+
+        $pct = $level_percentages[$level];
+        $income_amount = $package_amount * $pct;
+
+        ensureWalletExists($pdo, $curr_sponsor);
+
+        // Update sponsor's wallet balance & user_wallet_60
+        $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ? WHERE member_id = ?");
+        $stmt->execute([$income_amount, $income_amount, $curr_sponsor]);
+
+        // Log transaction
+        $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Level_Income', ?, 'User_Wallet', 'Credit', ?)");
+        $stmt->execute([$curr_sponsor, $income_amount, "Level {$level} Income (" . ($pct * 100) . "%) from " . $new_member_id]);
+
+        // Move to next sponsor up the chain
+        $curr_sponsor = $sponsor_data['sponsor_id'];
+    }
+}
+
+// Commission & Bonus Processing for Matrix Packages
 function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type) {
     // Package parameters
     $package_amount = ($package_type === 'Leadership_15000') ? 15000 : 5000;

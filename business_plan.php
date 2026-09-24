@@ -6,7 +6,70 @@ require_once __DIR__ . '/includes/header.php';
 <div class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-12">
         <h1 class="text-4xl font-extrabold text-white">Business Compensation Plan</h1>
-        <p class="mt-4 text-lg text-goldlight">Understand our high-yield 3-Matrix Tree and Direct Referral System.</p>
+        <p class="mt-4 text-lg text-goldlight">Understand our high-yield 3-Matrix Compensation Plan and Unilevel Sponsor Chain Level Income System.</p>
+    </div>
+
+    <!-- Non-Matrix Level Income Table Banner -->
+    <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard border border-gold/40 rounded-2xl gold-border-glow p-8 mb-16">
+        <div class="flex items-center gap-3 border-b border-gold/20 pb-4 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gold/20 text-gold text-2xl flex items-center justify-center border border-gold">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold text-white">Unilevel Sponsor Chain Level Income</h2>
+                <p class="text-xs text-goldlight mt-0.5">Applies exclusively to Non-Matrix Packages (Mobile Recharge, Gas Refill, Recharge Bundle & Charity Support Packages).</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <p class="text-sm text-gray-300 leading-relaxed mb-4">
+                    When you refer members to Utility or Charity Support Packages, you earn an instant 6-level unilevel level income based on their package value across your direct sponsor chain!
+                </p>
+                <div class="p-4 bg-darkbg rounded-xl border border-gold/20 space-y-2 text-xs text-gray-300">
+                    <div class="flex items-center text-gold font-bold"><i class="fas fa-check-circle mr-2"></i> Unilevel Distribution (Up to 6 Levels)</div>
+                    <div class="flex items-center text-green-400 font-bold"><i class="fas fa-check-circle mr-2"></i> Credited directly to User Wallet (Net 95% after 5% TDS)</div>
+                    <div class="flex items-center text-amber-300 font-bold"><i class="fas fa-check-circle mr-2"></i> Operates independently of 3-matrix tree positions</div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto border border-gold/20 rounded-xl">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="bg-gold/20 text-gold uppercase border-b border-gold/20 font-bold">
+                        <tr>
+                            <th class="p-3">Sponsor Level</th>
+                            <th class="p-3 text-right">Income Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gold/10">
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-bold text-white"><i class="fas fa-crown text-gold mr-1.5"></i> Level 1 (Direct Sponsor)</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">10%</td>
+                        </tr>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-semibold text-gray-300">Level 2</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">5%</td>
+                        </tr>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-semibold text-gray-300">Level 3</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">4%</td>
+                        </tr>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-semibold text-gray-300">Level 4</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">3%</td>
+                        </tr>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-semibold text-gray-300">Level 5</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">2%</td>
+                        </tr>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-semibold text-gray-300">Level 6</td>
+                            <td class="p-3 text-right font-bold text-gold text-sm">1%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Package Overview Grid -->

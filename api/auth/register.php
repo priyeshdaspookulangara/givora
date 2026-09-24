@@ -27,7 +27,10 @@ if (!$epin) {
 }
 
 $package_type = $epin['package_type'];
+$epin_amount = (float)$epin['amount'];
+
 $is_utility_package = in_array($package_type, ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+$is_charity_package = ($package_type === 'Charity_10000');
 
 if ($is_utility_package) {
     $mobile_1 = trim($input['mobile_1'] ?? '');
@@ -52,9 +55,9 @@ $new_member_id = generateMemberId($pdo);
 try {
     $pdo->beginTransaction();
 
-    if ($is_utility_package) {
-        // Utility Package: No matrix placement or level commissions
-        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, 'Active')");
+    if ($is_charity_package) {
+        // Charity Package: Standalone from matrix tree, distributes 6-Level Unilevel Sponsor Income
+        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
         $stmt->execute([
             $new_member_id,
             $sponsor_id,
@@ -63,7 +66,44 @@ try {
             $phone,
             $password,
             $epin_code,
-            $package_type
+            $package_type,
+            $epin_amount
+        ]);
+
+        // Mark ePIN as Used
+        $stmt = $pdo->prepare("UPDATE epins SET status = 'Used', used_by_member_id = ? WHERE id = ?");
+        $stmt->execute([$new_member_id, $epin['id']]);
+
+        // Initialize wallet
+        ensureWalletExists($pdo, $new_member_id);
+
+        // Log Charity Contribution transaction
+        $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Charity_Contribution', ?, 'Main', 'Credit', ?)");
+        $stmt->execute([$new_member_id, $epin_amount, "Charity Support Contribution of ₹" . number_format($epin_amount, 2)]);
+
+        // Distribute 6-Level Unilevel Sponsor Income (10%, 5%, 4%, 3%, 2%, 1%)
+        distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $epin_amount);
+
+    } elseif ($is_utility_package) {
+        // Utility Package: Standalone from matrix tree, distributes 6-Level Unilevel Sponsor Income
+        $package_amounts = [
+            'Recharge_1200' => 1200.00,
+            'Gas_3000' => 3000.00,
+            'Recharge_Bundle_5400' => 5400.00
+        ];
+        $utility_amount = $package_amounts[$package_type] ?? $epin_amount;
+
+        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
+        $stmt->execute([
+            $new_member_id,
+            $sponsor_id,
+            $name,
+            $email,
+            $phone,
+            $password,
+            $epin_code,
+            $package_type,
+            $utility_amount
         ]);
 
         // Mark ePIN as Used
@@ -76,6 +116,9 @@ try {
         // Create recharge subscription & schedules
         createRechargeSubscription($pdo, $new_member_id, $package_type, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
 
+        // Distribute 6-Level Unilevel Sponsor Income (10%, 5%, 4%, 3%, 2%, 1%)
+        distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $utility_amount);
+
     } else {
         // Standard Matrix Placement
         $placement = findMatrixPlacement($pdo, !empty($placement_parent_id) ? $placement_parent_id : $sponsor_id);
@@ -83,7 +126,7 @@ try {
         $matrix_pos = $placement['position'];
 
         // Insert new member
-        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
+        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
         $stmt->execute([
             $new_member_id,
             $sponsor_id,
@@ -94,7 +137,8 @@ try {
             $phone,
             $password,
             $epin_code,
-            $package_type
+            $package_type,
+            $epin_amount
         ]);
 
         // Mark ePIN as Used

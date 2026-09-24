@@ -54,17 +54,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($package_type === 'Recharge_Bundle_5400' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
                 $error = "Please fill in all Recharge Bundle connection details (2 Mobile numbers with carriers and Indian Gas connection details).";
             }
-        } elseif (!$is_charity_package) {
-            // Validation 2: Sponsor Check (if provided) for Matrix Packages
-            if (!empty($sponsor_id)) {
-                $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
-                $stmt->execute([$sponsor_id]);
-                if (!$stmt->fetch()) {
-                    $error = "Specified Sponsor ID does not exist.";
-                }
-            } else {
-                $sponsor_id = 'GT100000'; // Default root sponsor
+        }
+
+        // Validate Sponsor ID if provided or fallback to root
+        if (!empty($sponsor_id)) {
+            $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
+            $stmt->execute([$sponsor_id]);
+            if (!$stmt->fetch()) {
+                $error = "Specified Sponsor ID does not exist.";
             }
+        } else {
+            $sponsor_id = 'GT100000'; // Default root sponsor
         }
 
         if (empty($error)) {
@@ -75,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->beginTransaction();
 
                 if ($is_charity_package) {
-                    // CHARITY SUPPORT PACKAGE (₹10,000 or multiples): Completely standalone from 3-Matrix Tree & Utility Plans
+                    // CHARITY SUPPORT PACKAGE (₹10,000 or multiples): Standalone from 3-Matrix Tree, distributes 6-Level Unilevel Sponsor Income
                     $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
                     $stmt->execute([
                         $new_member_id,
-                        !empty($sponsor_id) ? $sponsor_id : 'GT100000',
+                        $sponsor_id,
                         $name,
                         $email,
                         $phone,
@@ -100,6 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Charity_Contribution', ?, 'Main', 'Credit', ?)");
                     $stmt->execute([$new_member_id, $epin_amount, "Charity Support Contribution of ₹" . number_format($epin_amount, 2)]);
 
+                    // Distribute 6-Level Unilevel Sponsor Income (10%, 5%, 4%, 3%, 2%, 1%)
+                    distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $epin_amount);
+
                     $pdo->commit();
 
                     $registered_info = [
@@ -112,18 +115,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ];
                     $success = "Registration successful! Thank you for your generous Charity Support Contribution of ₹" . number_format($epin_amount, 2) . ".";
                 } elseif ($is_utility_package) {
-                    // Utility Packages (₹1200, ₹3000, ₹5400) are completely separate from Matrix Plan
+                    // UTILITY PACKAGES (₹1200, ₹3000, ₹5400): Standalone from 3-Matrix Tree, distributes 6-Level Unilevel Sponsor Income
+                    $package_amounts = [
+                        'Recharge_1200' => 1200.00,
+                        'Gas_3000' => 3000.00,
+                        'Recharge_Bundle_5400' => 5400.00
+                    ];
+                    $utility_amount = $package_amounts[$package_type] ?? $epin_amount;
+
                     $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, custom_amount, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, 'Active')");
                     $stmt->execute([
                         $new_member_id,
-                        !empty($sponsor_id) ? $sponsor_id : 'GT100000',
+                        $sponsor_id,
                         $name,
                         $email,
                         $phone,
                         $password,
                         $epin_code,
                         $package_type,
-                        $epin_amount
+                        $utility_amount
                     ]);
 
                     // Update ePIN status to Used
@@ -135,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Create Utility Recharge Subscription and schedules
                     createRechargeSubscription($pdo, $new_member_id, $package_type, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
+
+                    // Distribute 6-Level Unilevel Sponsor Income (10%, 5%, 4%, 3%, 2%, 1%)
+                    distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $utility_amount);
 
                     $pdo->commit();
 
@@ -287,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-hand-holding-heart text-2xl text-amber-400"></i>
                     <div>
                         <span class="font-bold text-sm block">Charity Support Contribution Plan Detected</span>
-                        <span>This registration will be recorded under Givora Charity Pool (₹<span id="charity_amt_text">10,000</span>). Completely independent of matrix tree placement.</span>
+                        <span>This registration will be recorded under Givora Charity Pool (₹<span id="charity_amt_text">10,000</span>). Completely independent of matrix tree placement. Generates 6-level unilevel sponsor income!</span>
                     </div>
                 </div>
 

@@ -27,7 +27,7 @@ $total_p2_reserve_balance = (float)($stmt->fetchColumn() ?: 0.00);
 $stmt = $pdo->query("SELECT SUM(amount) FROM withdrawals WHERE status = 'Approved'");
 $total_payouts_approved = (float)($stmt->fetchColumn() ?: 0.00);
 
-// Fetch Member-by-Member Breakdown for User Wallets Pool Modal
+// Fetch Member-by-Member Breakdown for User Wallets Pool Modal (Includes Direct Ref, Matrix Income, & Unilevel Level Income)
 $breakdown_query = "
     SELECT
         m.member_id,
@@ -37,6 +37,9 @@ $breakdown_query = "
         COALESCE(dr.dr_gross, 0.00) as dr_gross,
         COALESCE(dr.dr_gross, 0.00) * 0.90 as dr_net,
         COALESCE(dr.dr_gross, 0.00) * 0.10 as dr_tds,
+        COALESCE(li.li_gross, 0.00) as li_gross,
+        COALESCE(li.li_gross, 0.00) * 0.95 as li_net,
+        COALESCE(li.li_gross, 0.00) * 0.05 as li_tds,
         COALESCE(mi.mi_gross_user, 0.00) as mi_gross_user,
         COALESCE(mi.mi_gross_user, 0.00) * 0.95 as mi_net_user,
         COALESCE(mi.mi_gross_user, 0.00) * 0.05 as mi_tds,
@@ -49,6 +52,12 @@ $breakdown_query = "
         WHERE type = 'Direct_Referral' AND status = 'Credit'
         GROUP BY member_id
     ) dr ON m.member_id = dr.member_id
+    LEFT JOIN (
+        SELECT member_id, SUM(amount) as li_gross
+        FROM transactions
+        WHERE type = 'Level_Income' AND status = 'Credit'
+        GROUP BY member_id
+    ) li ON m.member_id = li.member_id
     LEFT JOIN (
         SELECT member_id, SUM(amount) as mi_gross_user
         FROM transactions
@@ -70,6 +79,8 @@ $user_wallet_breakdown = $stmt_breakdown->fetchAll(PDO::FETCH_ASSOC);
 // Totals for Modal Header Summary
 $sum_dr_gross = 0;
 $sum_dr_tds = 0;
+$sum_li_gross = 0;
+$sum_li_tds = 0;
 $sum_mi_user_gross = 0;
 $sum_mi_tds = 0;
 $sum_withdrawals = 0;
@@ -77,6 +88,8 @@ $sum_withdrawals = 0;
 foreach ($user_wallet_breakdown as $row) {
     $sum_dr_gross += (float)$row['dr_gross'];
     $sum_dr_tds += (float)$row['dr_tds'];
+    $sum_li_gross += (float)$row['li_gross'];
+    $sum_li_tds += (float)$row['li_tds'];
     $sum_mi_user_gross += (float)$row['mi_gross_user'];
     $sum_mi_tds += (float)$row['mi_tds'];
     $sum_withdrawals += (float)$row['withdrawals_total'];
@@ -99,13 +112,13 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
             <span class="text-xs font-semibold text-gray-400 uppercase">Total Gross Inflow</span>
             <div class="text-3xl font-extrabold gold-gradient-text mt-2">₹<?php echo number_format($total_inflow, 2); ?></div>
-            <p class="text-xs text-gray-500 mt-2">All-time credited commissions across matrix</p>
+            <p class="text-xs text-gray-500 mt-2">All-time credited commissions across matrix & level income</p>
         </div>
 
         <!-- CLICKABLE USER WALLETS POOL CARD -->
         <div onclick="openUserWalletModal()" class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500 cursor-pointer hover:scale-105 hover:border-green-400 transition transform shadow-lg group relative">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-green-400 uppercase">User Wallets Pool (60%)</span>
+                <span class="text-xs font-semibold text-green-400 uppercase">User Wallets Pool</span>
                 <span class="text-[10px] bg-green-500/20 text-green-300 font-bold px-2 py-0.5 rounded-full border border-green-500/30 group-hover:bg-green-500 group-hover:text-darkbg transition">
                     <i class="fas fa-search-plus mr-1"></i> View Breakdown
                 </span>
@@ -139,7 +152,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <!-- USER WALLETS POOL BREAKDOWN MODAL -->
 <div id="userWalletModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-darkcard border border-gold/40 rounded-2xl max-w-5xl w-full p-6 shadow-2xl relative gold-border-glow my-8">
+    <div class="bg-darkcard border border-gold/40 rounded-2xl max-w-6xl w-full p-6 shadow-2xl relative gold-border-glow my-8">
         <!-- Close Button -->
         <button onclick="closeUserWalletModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold p-1">
             <i class="fas fa-times"></i>
@@ -153,32 +166,37 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-white">User Wallets Pool Detailed Breakdown</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Comprehensive audit statement showing Direct Referrals, Matrix Earnings, TDS Tax Deductions, Withdrawals, and Net Member Balances.</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Comprehensive audit statement showing Direct Referrals, Unilevel Level Income, Matrix Earnings, TDS Deductions, Withdrawals, and Net Balances.</p>
                 </div>
             </div>
         </div>
 
         <!-- Summary Metric Badges -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-xs">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 text-xs">
             <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
-                <span class="text-gray-400 block">Gross Direct Referrals</span>
+                <span class="text-gray-400 block">Gross Direct Ref</span>
                 <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_dr_gross, 2); ?></span>
-                <span class="text-[10px] text-red-400 block mt-0.5">(TDS Deducted: -₹<?php echo number_format($sum_dr_tds, 2); ?>)</span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(10% TDS: -₹<?php echo number_format($sum_dr_tds, 2); ?>)</span>
             </div>
             <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
-                <span class="text-gray-400 block">Gross Matrix Income (60% Share)</span>
+                <span class="text-gray-400 block">Gross Level Income</span>
+                <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_li_gross, 2); ?></span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(5% TDS: -₹<?php echo number_format($sum_li_tds, 2); ?>)</span>
+            </div>
+            <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
+                <span class="text-gray-400 block">Gross Matrix (60% Share)</span>
                 <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_mi_user_gross, 2); ?></span>
-                <span class="text-[10px] text-red-400 block mt-0.5">(TDS Deducted: -₹<?php echo number_format($sum_mi_tds, 2); ?>)</span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(5% TDS: -₹<?php echo number_format($sum_mi_tds, 2); ?>)</span>
             </div>
             <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
-                <span class="text-gray-400 block">Total Withdrawals Debited</span>
+                <span class="text-gray-400 block">Withdrawals Debited</span>
                 <span class="text-sm font-bold text-amber-400">₹<?php echo number_format($sum_withdrawals, 2); ?></span>
-                <span class="text-[10px] text-gray-500 block mt-0.5">Approved & Pending Payouts</span>
+                <span class="text-[10px] text-gray-500 block mt-0.5">Approved & Pending</span>
             </div>
             <div class="bg-darkbg p-3 rounded-xl border border-green-500/40">
-                <span class="text-gray-400 block">Net User Wallets Pool</span>
+                <span class="text-gray-400 block">Net User Pool</span>
                 <span class="text-sm font-bold text-green-400">₹<?php echo number_format($total_user_wallet_balance, 2); ?></span>
-                <span class="text-[10px] text-green-500 block mt-0.5">Currently Liquid Balance</span>
+                <span class="text-[10px] text-green-500 block mt-0.5">Currently Liquid</span>
             </div>
         </div>
 
@@ -189,9 +207,9 @@ require_once __DIR__ . '/../includes/header.php';
                     <tr>
                         <th class="p-3">Member</th>
                         <th class="p-3 text-right">Direct Ref (Gross)</th>
-                        <th class="p-3 text-right">10% Direct TDS</th>
-                        <th class="p-3 text-right">Matrix User Share (Gross)</th>
-                        <th class="p-3 text-right">5% Matrix TDS</th>
+                        <th class="p-3 text-right">Unilevel Level Income</th>
+                        <th class="p-3 text-right">Matrix User Share</th>
+                        <th class="p-3 text-right">TDS Deducted</th>
                         <th class="p-3 text-right">Withdrawals</th>
                         <th class="p-3 text-right">Net User Wallet</th>
                     </tr>
@@ -201,16 +219,18 @@ require_once __DIR__ . '/../includes/header.php';
                         <tr>
                             <td colspan="7" class="p-4 text-center text-gray-500">No member wallet entries found.</td>
                         </tr>
-                    <?php else: foreach ($user_wallet_breakdown as $row): ?>
+                    <?php else: foreach ($user_wallet_breakdown as $row):
+                        $total_tds = (float)$row['dr_tds'] + (float)$row['li_tds'] + (float)$row['mi_tds'];
+                    ?>
                         <tr class="hover:bg-gold/5 transition">
                             <td class="p-3">
                                 <div class="font-bold text-white"><?php echo htmlspecialchars($row['name']); ?></div>
                                 <div class="font-mono text-[11px] text-gold"><?php echo htmlspecialchars($row['member_id']); ?></div>
                             </td>
                             <td class="p-3 text-right font-mono text-gray-300">₹<?php echo number_format((float)$row['dr_gross'], 2); ?></td>
-                            <td class="p-3 text-right font-mono text-red-400">-₹<?php echo number_format((float)$row['dr_tds'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-amber-300">₹<?php echo number_format((float)$row['li_gross'], 2); ?></td>
                             <td class="p-3 text-right font-mono text-gray-300">₹<?php echo number_format((float)$row['mi_gross_user'], 2); ?></td>
-                            <td class="p-3 text-right font-mono text-red-400">-₹<?php echo number_format((float)$row['mi_tds'], 2); ?></td>
+                            <td class="p-3 text-right font-mono text-red-400">-₹<?php echo number_format($total_tds, 2); ?></td>
                             <td class="p-3 text-right font-mono text-amber-400">₹<?php echo number_format((float)$row['withdrawals_total'], 2); ?></td>
                             <td class="p-3 text-right font-mono font-bold text-green-400">₹<?php echo number_format((float)$row['net_user_balance'], 2); ?></td>
                         </tr>
@@ -223,7 +243,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="mt-4 pt-3 border-t border-gold/10 text-[11px] text-gray-400 flex flex-col md:flex-row justify-between items-center gap-2">
             <div>
                 <i class="fas fa-info-circle text-gold mr-1"></i>
-                <span class="font-semibold text-gray-300">Formula:</span> Net User Wallet = (Direct Ref Gross − 10% TDS) + (Matrix User Share − 5% TDS) − Withdrawals.
+                <span class="font-semibold text-gray-300">Formula:</span> Net User Wallet = (Direct Ref Gross − 10% TDS) + (Level Income − 5% TDS) + (Matrix User Share − 5% TDS) − Withdrawals.
             </div>
             <button onclick="closeUserWalletModal()" class="bg-gold/20 text-gold border border-gold/40 px-4 py-1.5 rounded-lg hover:bg-gold hover:text-darkbg transition font-semibold">
                 Close Breakdown
