@@ -118,16 +118,16 @@ $referral_url = getBaseUrl() . "/register.php?sponsor=" . urlencode($member['mem
         </a>
 
         <!-- Matrix Level Income -->
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+        <a href="/customer/matrix_income.php" class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500 hover:border-gold/50 transition cursor-pointer group">
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold uppercase text-purple-400">Matrix Level Income</span>
-                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+                <span class="text-xs font-semibold uppercase text-purple-400 group-hover:text-gold transition">Matrix Level Income <i class="fas fa-arrow-right text-[10px] ml-1"></i></span>
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg group-hover:bg-gold/10 group-hover:text-gold transition">
                     <i class="fas fa-sitemap"></i>
                 </div>
             </div>
-            <div class="text-2xl font-extrabold text-purple-300">₹<?php echo number_format($matrix_level_income, 2); ?></div>
-            <p class="text-xs text-gray-400 mt-2">Auto Spillover Matrix Earnings</p>
-        </div>
+            <div class="text-2xl font-extrabold text-purple-300 group-hover:text-gold transition">₹<?php echo number_format($matrix_level_income, 2); ?></div>
+            <p class="text-xs text-gray-400 mt-2">Auto Spillover Matrix Earnings <span class="text-gold underline text-[10px] ml-1">View Statements →</span></p>
+        </a>
 
         <!-- User Wallet -->
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500">

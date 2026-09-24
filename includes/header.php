@@ -133,6 +133,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <i class="fas fa-user-plus w-5 text-gold"></i>
                             <span>Direct Referrals</span>
                         </a>
+                        <a href="/customer/matrix_income.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'matrix_income.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-coins w-5 text-gold"></i>
+                            <span>Matrix Income</span>
+                        </a>
                         <a href="/customer/profile.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'profile.php' ? 'sidebar-item-active font-bold' : ''; ?>">
                             <i class="fas fa-user-edit w-5 text-gold"></i>
                             <span>My Profile</span>
