@@ -65,9 +65,13 @@ function getDownlineList($pdo, $root_member_id, $max_level = 7) {
 $matrix_tree = buildMatrixTree($pdo, $member['member_id'], 1, 3);
 $downline_list = getDownlineList($pdo, $member['member_id'], 7);
 
-// Fetch Phase 2 children if member is active in Phase 2
+// Verify if member actually satisfies full 6-level matrix completion for Phase 2 qualification
+$has_completed_6_levels = hasCompletedMatrixLevels($pdo, $member['member_id'], 6);
+$is_p2_qualified = ($member['p2_status'] === 'Active' && $has_completed_6_levels);
+
+// Fetch Phase 2 children if member is active and qualified in Phase 2
 $p2_children = [];
-if ($member['p2_status'] === 'Active') {
+if ($is_p2_qualified) {
     $stmt = $pdo->prepare("SELECT member_id, name, package_type, p2_matrix_position, p2_created_at FROM members WHERE p2_placement_parent_id = ? AND p2_status = 'Active' ORDER BY p2_matrix_position ASC");
     $stmt->execute([$member['member_id']]);
     $p2_children = $stmt->fetchAll();
@@ -90,14 +94,14 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
             <div class="flex items-center gap-2">
                 <span class="text-xs uppercase font-extrabold tracking-widest px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Phase 2 Matrix Status</span>
-                <?php if ($member['p2_status'] === 'Active'): ?>
+                <?php if ($is_p2_qualified): ?>
                     <span class="text-xs font-bold px-2 py-0.5 rounded bg-green-500/20 text-green-400">PROMOTED & ACTIVE</span>
                 <?php else: ?>
-                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">PENDING PHASE 1 COMPLETION</span>
+                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">PHASE 1 ACTIVE (PENDING 6 LEVELS)</span>
                 <?php endif; ?>
             </div>
             <h3 class="text-lg font-bold text-white mt-2">
-                <?php if ($member['p2_status'] === 'Active'): ?>
+                <?php if ($is_p2_qualified): ?>
                     <i class="fas fa-crown text-gold mr-1.5"></i> Qualified & Promoted to Phase 2 Matrix!
                 <?php else: ?>
                     Phase 1 Matrix Active
@@ -105,7 +109,7 @@ require_once __DIR__ . '/../includes/header.php';
             </h3>
             <p class="text-xs text-gray-400 mt-1">Note: Qualification for Phase 2 Matrix requires complete 6-level downline filling (1,092 members) under your node in Phase 1.</p>
         </div>
-        <?php if ($member['p2_status'] === 'Active'): ?>
+        <?php if ($is_p2_qualified): ?>
             <div class="text-right flex-shrink-0">
                 <div class="text-xs text-gray-400">Phase 2 Placement Parent</div>
                 <div class="text-sm font-bold font-mono text-gold"><?php echo htmlspecialchars($member['p2_placement_parent_id'] ?: 'GT100000 (Root)'); ?></div>

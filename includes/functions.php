@@ -250,20 +250,23 @@ function ensureWalletExists($pdo, $member_id) {
     syncMemberWallet($pdo, $member_id);
 }
 
-// Sync member wallet balance dynamically based on ledger transactions:
-// 100% Direct Referral Bonus + 60% Matrix Level Income - Withdrawals = User Wallet
+// Sync member wallet balance dynamically based on ledger transactions with TDS deductions:
+// - Direct Referral Bonus: 10% TDS deduction (Net 90% credited to User Wallet)
+// - Matrix Level Income: 5% TDS deduction on 60% User Wallet share (Net 57% of Matrix Income)
 function syncMemberWallet($pdo, $member_id) {
     if (empty($member_id)) return;
 
-    // 1. Direct Referral credits (100% User Wallet)
+    // 1. Direct Referral credits (10% TDS deduction => 90% Net to User Wallet)
     $stmt_dr = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral' AND status = 'Credit'");
     $stmt_dr->execute([$member_id]);
-    $dr_total = (float)($stmt_dr->fetchColumn() ?: 0.00);
+    $dr_gross = (float)($stmt_dr->fetchColumn() ?: 0.00);
+    $dr_net_user = $dr_gross * 0.90; // 10% TDS deduction
 
-    // 2. Matrix Level Income User Wallet credits (60% entries or direct User Wallet matrix entries)
+    // 2. Matrix Level Income User Wallet credits (5% TDS deduction on 60% share => 57% Net to User Wallet)
     $stmt_m60 = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
     $stmt_m60->execute([$member_id]);
-    $matrix_user_total = (float)($stmt_m60->fetchColumn() ?: 0.00);
+    $matrix_user_gross = (float)($stmt_m60->fetchColumn() ?: 0.00);
+    $matrix_net_user = $matrix_user_gross * 0.95; // 5% TDS deduction
 
     // 3. Admin adjustment credits into User Wallet
     $stmt_adj = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Admin_Adjustment' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
@@ -275,8 +278,8 @@ function syncMemberWallet($pdo, $member_id) {
     $stmt_w->execute([$member_id]);
     $withdrawal_debits = (float)($stmt_w->fetchColumn() ?: 0.00);
 
-    // Calculated User Wallet = 100% Direct Referral + 60% Matrix Level + Admin Adjustments - Debits
-    $calculated_user_wallet = max(0, ($dr_total + $matrix_user_total + $adj_total) - $withdrawal_debits);
+    // Calculated Net User Wallet after TDS deductions - Debits
+    $calculated_user_wallet = max(0, ($dr_net_user + $matrix_net_user + $adj_total) - $withdrawal_debits);
 
     // 5. Company Wallet credits (40% Matrix Level)
     $stmt_cw = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND wallet_type = 'Company_Wallet' AND status = 'Credit'");
