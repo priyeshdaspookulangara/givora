@@ -27,8 +27,9 @@ if (!$epin) {
 }
 
 $package_type = $epin['package_type'];
+$is_utility_package = in_array($package_type, ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
 
-if ($package_type === 'Recharge_Bundle_5400') {
+if ($is_utility_package) {
     $mobile_1 = trim($input['mobile_1'] ?? '');
     $operator_1 = trim($input['operator_1'] ?? '');
     $mobile_2 = trim($input['mobile_2'] ?? '');
@@ -36,10 +37,6 @@ if ($package_type === 'Recharge_Bundle_5400') {
     $gas_provider = trim($input['gas_provider'] ?? '');
     $gas_consumer_number = trim($input['gas_consumer_number'] ?? '');
     $gas_customer_name = trim($input['gas_customer_name'] ?? '');
-
-    if (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name)) {
-        sendJsonResponse(false, 'Recharge Bundle requires mobile_1, operator_1, mobile_2, operator_2, gas_provider, gas_consumer_number, and gas_customer_name.', null, 400);
-    }
 }
 
 // 2. Verify Sponsor
@@ -55,9 +52,9 @@ $new_member_id = generateMemberId($pdo);
 try {
     $pdo->beginTransaction();
 
-    if ($package_type === 'Recharge_Bundle_5400') {
-        // Recharge bundle: No matrix placement or level commissions
-        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, 'Recharge_Bundle_5400', 'Active')");
+    if ($is_utility_package) {
+        // Utility Package: No matrix placement or level commissions
+        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, 'Active')");
         $stmt->execute([
             $new_member_id,
             $sponsor_id,
@@ -65,7 +62,8 @@ try {
             $email,
             $phone,
             $password,
-            $epin_code
+            $epin_code,
+            $package_type
         ]);
 
         // Mark ePIN as Used
@@ -76,7 +74,7 @@ try {
         ensureWalletExists($pdo, $new_member_id);
 
         // Create recharge subscription & schedules
-        createRechargeSubscription($pdo, $new_member_id, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
+        createRechargeSubscription($pdo, $new_member_id, $package_type, $epin_code, $mobile_1, $operator_1, $mobile_2, $operator_2, $gas_provider, $gas_consumer_number, $gas_customer_name);
 
     } else {
         // Standard Matrix Placement

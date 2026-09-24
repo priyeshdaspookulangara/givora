@@ -129,6 +129,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <i class="fas fa-chart-line w-5 text-gold"></i>
                             <span>Dashboard</span>
                         </a>
+                        <a href="/customer/referrals.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'referrals.php' ? 'sidebar-item-active font-bold' : ''; ?>">
+                            <i class="fas fa-user-plus w-5 text-gold"></i>
+                            <span>Direct Referrals</span>
+                        </a>
                         <a href="/customer/profile.php" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-300 hover:text-gold hover:bg-gold/5 <?php echo $current_page === 'profile.php' ? 'sidebar-item-active font-bold' : ''; ?>">
                             <i class="fas fa-user-edit w-5 text-gold"></i>
                             <span>My Profile</span>

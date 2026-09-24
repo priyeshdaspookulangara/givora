@@ -38,8 +38,8 @@ if ($method === 'GET') {
     $quantity = (int)($input['quantity'] ?? 1);
     $assigned_to = trim($input['assigned_to'] ?? '');
 
-    if (!in_array($package_type, ['Foundation_5000', 'Leadership_15000', 'Recharge_Bundle_5400'])) {
-        sendJsonResponse(false, 'Invalid package type. Must be Foundation_5000, Leadership_15000, or Recharge_Bundle_5400.', null, 400);
+    if (!in_array($package_type, ['Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400'])) {
+        sendJsonResponse(false, 'Invalid package type.', null, 400);
     }
 
     if ($quantity < 1 || $quantity > 100) {
