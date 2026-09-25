@@ -191,7 +191,7 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-gray-400 text-sm"> / 6 terms</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 2 Mobile Numbers Included</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 1 Mobile Connection Included</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms every 28 days</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Major Carriers (Jio, Airtel, Vi, BSNL)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>

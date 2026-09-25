@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($is_utility_package) {
             // Validate utility fields based on specific package chosen
-            if ($package_type === 'Recharge_1200' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2))) {
-                $error = "Please fill in both Mobile 1 and Mobile 2 numbers and carriers for the Mobile Recharge Package (₹1,200).";
+            if ($package_type === 'Recharge_1200' && (empty($mobile_1) || empty($operator_1))) {
+                $error = "Please fill in Mobile 1 number and carrier for the Mobile Recharge Package (₹1,200).";
             } elseif ($package_type === 'Gas_3000' && (empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
                 $error = "Please fill in all Gas connection details for the Gas Connection Package (₹3,000).";
             } elseif ($package_type === 'Recharge_Bundle_5400' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
@@ -483,13 +483,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         if (pkg === 'Recharge_1200') {
                             document.getElementById('utility_title').textContent = 'Mobile Recharge Package Details (₹1,200)';
-                            document.getElementById('utility_desc').textContent = 'Collect 2 Mobile connections for 6 terms of recharges starting in 24 hours.';
+                            document.getElementById('utility_desc').textContent = 'Collect 1 Mobile connection for 6 terms of recharges starting in 24 hours.';
                             fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
-                            fMob2.classList.remove('hidden'); fOp2.classList.remove('hidden');
+                            fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
                             fGasProv.classList.add('hidden'); fGasCons.classList.add('hidden'); fGasName.classList.add('hidden');
 
                             document.getElementById('mobile_1').required = true;
-                            document.getElementById('mobile_2').required = true;
+                            document.getElementById('mobile_2').required = false;
                             document.getElementById('gas_consumer_number').required = false;
                             document.getElementById('gas_customer_name').required = false;
                         } else if (pkg === 'Gas_3000') {

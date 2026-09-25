@@ -497,11 +497,13 @@ function createRechargeSubscription($pdo, $member_id, $package_type, $epin_code,
         $days_offset = ($term - 1) * 28;
         $due_date = date('Y-m-d H:i:s', strtotime("{$start_date} + {$days_offset} days"));
 
-        if ($package_type === 'Recharge_1200' || $package_type === 'Recharge_Bundle_5400') {
+        if (!empty($mobile_1) && in_array($package_type, ['Recharge_1200', 'Recharge_Bundle_5400'])) {
             // Mobile 1 term
             $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_1', ?, ?, 'Scheduled')");
             $stmt->execute([$subscription_id, $term, $due_date]);
+        }
 
+        if (!empty($mobile_2) && $package_type === 'Recharge_Bundle_5400') {
             // Mobile 2 term
             $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_2', ?, ?, 'Scheduled')");
             $stmt->execute([$subscription_id, $term, $due_date]);
