@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS withdrawals (
 
 CREATE TABLE IF NOT EXISTS api_tokens (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_type ENUM('member', 'admin') NOT NULL,
+    user_type ENUM('member', 'admin', 'accountant') NOT NULL,
     user_id VARCHAR(50) NOT NULL,
     token VARCHAR(64) NOT NULL UNIQUE,
     expires_at DATETIME NOT NULL,
@@ -123,10 +123,239 @@ CREATE TABLE IF NOT EXISTS recharge_schedules (
     FOREIGN KEY (subscription_id) REFERENCES recharge_subscriptions(id) ON DELETE CASCADE
 );
 
--- Initial Admin Account
+-- ====================================================================
+-- DOUBLE-ENTRY ACCOUNTING & FINANCIAL MANAGEMENT TABLES (INDIAN COA & GST)
+-- ====================================================================
+
+-- Accountant Users Table
+CREATE TABLE IF NOT EXISTS accountants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) DEFAULT NULL,
+    password VARCHAR(255) NOT NULL,
+    status ENUM('Active', 'Inactive') NOT NULL DEFAULT 'Active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Chart of Accounts (COA)
+CREATE TABLE IF NOT EXISTS accounts_coa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    type ENUM('Asset', 'Liability', 'Equity', 'Revenue', 'Expense') NOT NULL,
+    sub_type VARCHAR(50) NOT NULL, -- e.g., Current Asset, Fixed Asset, Sundry Debtors, Direct Expense, Tax Ledger
+    parent_id INT DEFAULT NULL,
+    opening_balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    opening_balance_type ENUM('Debit', 'Credit') NOT NULL DEFAULT 'Debit',
+    current_balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    is_system TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES accounts_coa(id) ON DELETE SET NULL
+);
+
+-- Customer / Vendor Parties
+CREATE TABLE IF NOT EXISTS parties (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    party_type ENUM('Customer', 'Vendor') NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    gstin VARCHAR(15) DEFAULT NULL,
+    pan VARCHAR(10) DEFAULT NULL,
+    email VARCHAR(100) DEFAULT NULL,
+    phone VARCHAR(20) DEFAULT NULL,
+    address TEXT,
+    state_code VARCHAR(2) DEFAULT '27', -- e.g. 27 for Maharashtra
+    state_name VARCHAR(50) DEFAULT 'Maharashtra',
+    credit_limit DECIMAL(12,2) DEFAULT 0.00,
+    account_id INT NOT NULL, -- Links to COA Sundry Debtors or Sundry Creditors ledger
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (account_id) REFERENCES accounts_coa(id)
+);
+
+-- Inventory Items
+CREATE TABLE IF NOT EXISTS inventory_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    hsn_sac VARCHAR(10) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'NOS',
+    purchase_rate DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    sales_rate DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    gst_rate DECIMAL(5,2) NOT NULL DEFAULT 18.00, -- e.g. 18.00%
+    opening_qty DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    current_qty DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    valuation_method ENUM('FIFO', 'Weighted_Average') NOT NULL DEFAULT 'Weighted_Average',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Vouchers (Receipt, Payment, Contra, Journal, Debit Note, Credit Note)
+CREATE TABLE IF NOT EXISTS vouchers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    voucher_number VARCHAR(50) NOT NULL UNIQUE,
+    voucher_type ENUM('Receipt', 'Payment', 'Contra', 'Journal', 'Debit_Note', 'Credit_Note') NOT NULL,
+    voucher_date DATE NOT NULL,
+    narration TEXT,
+    reference_number VARCHAR(100) DEFAULT NULL,
+    total_debit DECIMAL(15,2) NOT NULL,
+    total_credit DECIMAL(15,2) NOT NULL,
+    status ENUM('Posted', 'Reversed', 'Draft') NOT NULL DEFAULT 'Posted',
+    created_by_accountant_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by_accountant_id) REFERENCES accountants(id)
+);
+
+-- Voucher Line Items (Debit/Credit Journal Lines)
+CREATE TABLE IF NOT EXISTS voucher_line_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    voucher_id INT NOT NULL,
+    account_id INT NOT NULL,
+    line_type ENUM('Debit', 'Credit') NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    particulars VARCHAR(255) DEFAULT NULL,
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES accounts_coa(id)
+);
+
+-- Commercial Documents (PO, Purchase Bill, Sales Quotation, Tax Invoice, Sales Return)
+CREATE TABLE IF NOT EXISTS commercial_documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doc_number VARCHAR(50) NOT NULL UNIQUE,
+    doc_type ENUM('Purchase_Order', 'Purchase_Bill', 'Sales_Quotation', 'Tax_Invoice', 'Sales_Return', 'Purchase_Return') NOT NULL,
+    doc_date DATE NOT NULL,
+    party_id INT NOT NULL,
+    place_of_supply VARCHAR(50) DEFAULT 'Maharashtra',
+    state_code VARCHAR(2) DEFAULT '27',
+    is_interstate TINYINT(1) DEFAULT 0,
+    subtotal DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    total_cgst DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    total_sgst DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    total_igst DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    grand_total DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    voucher_id INT DEFAULT NULL, -- Linked accounting voucher ID
+    status ENUM('Active', 'Cancelled') NOT NULL DEFAULT 'Active',
+    created_by_accountant_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (party_id) REFERENCES parties(id),
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by_accountant_id) REFERENCES accountants(id)
+);
+
+-- Commercial Document Line Items
+CREATE TABLE IF NOT EXISTS commercial_document_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    document_id INT NOT NULL,
+    item_id INT NOT NULL,
+    qty DECIMAL(10,2) NOT NULL,
+    rate DECIMAL(12,2) NOT NULL,
+    taxable_value DECIMAL(15,2) NOT NULL,
+    hsn_sac VARCHAR(10) NOT NULL,
+    gst_rate DECIMAL(5,2) NOT NULL,
+    cgst_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    sgst_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    igst_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    line_total DECIMAL(15,2) NOT NULL,
+    FOREIGN KEY (document_id) REFERENCES commercial_documents(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES inventory_items(id)
+);
+
+-- Inventory Transactions Log
+CREATE TABLE IF NOT EXISTS inventory_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT NOT NULL,
+    trans_date DATE NOT NULL,
+    trans_type ENUM('Purchase', 'Sales', 'Purchase_Return', 'Sales_Return', 'Adjustment') NOT NULL,
+    reference_id INT DEFAULT NULL, -- Document ID
+    qty DECIMAL(10,2) NOT NULL,
+    rate DECIMAL(12,2) NOT NULL,
+    valuation_total DECIMAL(15,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES inventory_items(id)
+);
+
+-- Tax Ledger Transactions (GST CGST/SGST/IGST Tracking)
+CREATE TABLE IF NOT EXISTS tax_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    trans_date DATE NOT NULL,
+    voucher_id INT DEFAULT NULL,
+    document_id INT DEFAULT NULL,
+    party_id INT DEFAULT NULL,
+    gstin VARCHAR(15) DEFAULT NULL,
+    tax_type ENUM('CGST', 'SGST', 'IGST') NOT NULL,
+    supply_type ENUM('Inward', 'Outward') NOT NULL,
+    hsn_sac VARCHAR(10) DEFAULT NULL,
+    taxable_value DECIMAL(15,2) NOT NULL,
+    tax_rate DECIMAL(5,2) NOT NULL,
+    tax_amount DECIMAL(15,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE CASCADE,
+    FOREIGN KEY (document_id) REFERENCES commercial_documents(id) ON DELETE CASCADE
+);
+
+-- Bank Reconciliation Statement (BRS) Records
+CREATE TABLE IF NOT EXISTS bank_reconciliations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bank_account_id INT NOT NULL,
+    reconciliation_date DATE NOT NULL,
+    voucher_id INT NOT NULL,
+    cleared_date DATE DEFAULT NULL,
+    status ENUM('Uncleared', 'Cleared') NOT NULL DEFAULT 'Uncleared',
+    statement_balance DECIMAL(15,2) DEFAULT 0.00,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (bank_account_id) REFERENCES accounts_coa(id),
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE CASCADE
+);
+
+-- Immutable Accounting Audit Trail Logs
+CREATE TABLE IF NOT EXISTS accounting_audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    accountant_id INT DEFAULT NULL,
+    username VARCHAR(50) DEFAULT 'System',
+    action_type VARCHAR(50) NOT NULL, -- e.g. VOUCHER_CREATE, VOUCHER_REVERSE, INVOICE_POST
+    target_entity VARCHAR(50) NOT NULL,
+    target_id VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    ip_address VARCHAR(45) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Initial Admin & Default Accountant Credentials
 INSERT INTO admins (username, password)
 VALUES ('admin', 'admin123')
 ON DUPLICATE KEY UPDATE id=id;
+
+INSERT INTO accountants (username, name, email, phone, password, status)
+VALUES ('accountant', 'Senior Accountant', 'accountant@givoratraders.com', '9876543210', 'accountant123', 'Active')
+ON DUPLICATE KEY UPDATE id=id;
+
+-- Seed Standard Indian Chart of Accounts (COA)
+INSERT INTO accounts_coa (code, name, type, sub_type, opening_balance, opening_balance_type, is_system) VALUES
+('1000', 'Cash Account', 'Asset', 'Cash & Bank', 50000.00, 'Debit', 1),
+('1010', 'HDFC Bank Account', 'Asset', 'Cash & Bank', 250000.00, 'Debit', 1),
+('1020', 'Sundry Debtors Control', 'Asset', 'Sundry Debtors', 0.00, 'Debit', 1),
+('1030', 'Input CGST Ledger', 'Asset', 'Tax Ledger', 0.00, 'Debit', 1),
+('1031', 'Input SGST Ledger', 'Asset', 'Tax Ledger', 0.00, 'Debit', 1),
+('1032', 'Input IGST Ledger', 'Asset', 'Tax Ledger', 0.00, 'Debit', 1),
+('1040', 'Stock Inventory Account', 'Asset', 'Stock', 0.00, 'Debit', 1),
+
+('2000', 'Sundry Creditors Control', 'Liability', 'Sundry Creditors', 0.00, 'Credit', 1),
+('2010', 'Output CGST Ledger', 'Liability', 'Tax Ledger', 0.00, 'Credit', 1),
+('2011', 'Output SGST Ledger', 'Liability', 'Tax Ledger', 0.00, 'Credit', 1),
+('2012', 'Output IGST Ledger', 'Liability', 'Tax Ledger', 0.00, 'Credit', 1),
+('2020', 'TDS Payable Control', 'Liability', 'Duties & Taxes', 0.00, 'Credit', 1),
+
+('3000', 'Capital Account', 'Equity', 'Capital', 300000.00, 'Credit', 1),
+
+('4000', 'Sales Revenue Account', 'Revenue', 'Direct Revenue', 0.00, 'Credit', 1),
+('4010', 'Matrix Joining Fees Income', 'Revenue', 'Direct Revenue', 0.00, 'Credit', 1),
+
+('5000', 'Purchase Account', 'Expense', 'Direct Expense', 0.00, 'Debit', 1),
+('5010', 'Matrix Commissions Expense', 'Expense', 'Direct Expense', 0.00, 'Debit', 1),
+('5020', 'Office Rent Expense', 'Expense', 'Indirect Expense', 0.00, 'Debit', 1),
+('5030', 'Utility & Electricity Expense', 'Expense', 'Indirect Expense', 0.00, 'Debit', 1),
+('5040', 'Staff Salaries Expense', 'Expense', 'Indirect Expense', 0.00, 'Debit', 1)
+ON DUPLICATE KEY UPDATE code=code;
 
 -- Initial Company Root Member for matrix top
 INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, p2_status)

@@ -518,3 +518,90 @@ function createRechargeSubscription($pdo, $member_id, $package_type, $epin_code,
 
     return $subscription_id;
 }
+
+// Delete Member and Completely Revert Ledger Transactions & Commissions
+function deleteMemberAndRevertCommissions($pdo, $member_id) {
+    if (empty($member_id) || $member_id === 'GT100000') {
+        throw new Exception("System Root Member (GT100000) cannot be deleted.");
+    }
+
+    // Verify member exists
+    $stmt = $pdo->prepare("SELECT * FROM members WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $member = $stmt->fetch();
+
+    if (!$member) {
+        throw new Exception("Member ID '{$member_id}' does not exist.");
+    }
+
+    $pdo->beginTransaction();
+
+    try {
+        // 1. Identify all upline members who received commissions triggered by this member
+        $stmt_affected = $pdo->prepare("SELECT DISTINCT member_id FROM transactions WHERE description LIKE ? AND member_id != ?");
+        $stmt_affected->execute(["%{$member_id}%", $member_id]);
+        $affected_members = $stmt_affected->fetchAll(PDO::FETCH_COLUMN);
+
+        // 2. Delete all transaction records associated with or triggered by this member
+        $stmt_del_tx = $pdo->prepare("DELETE FROM transactions WHERE member_id = ? OR description LIKE ?");
+        $stmt_del_tx->execute([$member_id, "%{$member_id}%"]);
+
+        // 3. Delete member's withdrawals and wallets
+        $stmt_del_w = $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?");
+        $stmt_del_w->execute([$member_id]);
+
+        $stmt_del_wal = $pdo->prepare("DELETE FROM wallets WHERE member_id = ?");
+        $stmt_del_wal->execute([$member_id]);
+
+        // 4. Clean up utility recharge subscriptions and schedules
+        $stmt_subs = $pdo->prepare("SELECT id FROM recharge_subscriptions WHERE member_id = ?");
+        $stmt_subs->execute([$member_id]);
+        $sub_ids = $stmt_subs->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($sub_ids)) {
+            $in_clause = implode(',', array_fill(0, count($sub_ids), '?'));
+            $stmt_del_sch = $pdo->prepare("DELETE FROM recharge_schedules WHERE subscription_id IN ($in_clause)");
+            $stmt_del_sch->execute($sub_ids);
+
+            $stmt_del_sub = $pdo->prepare("DELETE FROM recharge_subscriptions WHERE member_id = ?");
+            $stmt_del_sub->execute([$member_id]);
+        }
+
+        // 5. Clean up API tokens
+        try {
+            $stmt_del_tok = $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?");
+            $stmt_del_tok->execute([$member_id]);
+        } catch (Exception $e) {
+            // Ignore if api_tokens table doesn't exist
+        }
+
+        // 6. Reset ePIN used by member back to 'Unused'
+        if (!empty($member['used_epin'])) {
+            $stmt_epin = $pdo->prepare("UPDATE epins SET status = 'Unused', used_by_member_id = NULL WHERE epin_code = ?");
+            $stmt_epin->execute([$member['used_epin']]);
+        }
+
+        // 7. Reassign any matrix placement children of this member to root GT100000
+        $parent_fallback = !empty($member['placement_parent_id']) ? $member['placement_parent_id'] : 'GT100000';
+        $stmt_reassign = $pdo->prepare("UPDATE members SET placement_parent_id = ? WHERE placement_parent_id = ?");
+        $stmt_reassign->execute([$parent_fallback, $member_id]);
+
+        $stmt_reassign_p2 = $pdo->prepare("UPDATE members SET p2_placement_parent_id = 'GT100000' WHERE p2_placement_parent_id = ?");
+        $stmt_reassign_p2->execute([$member_id]);
+
+        // 8. Delete member record
+        $stmt_del_m = $pdo->prepare("DELETE FROM members WHERE member_id = ?");
+        $stmt_del_m->execute([$member_id]);
+
+        // 9. Synchronize all affected upline members' wallets to recalculate net balances & gross totals
+        foreach ($affected_members as $aff_id) {
+            syncMemberWallet($pdo, $aff_id);
+        }
+
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
