@@ -34,7 +34,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-bold text-white"><i class="fas fa-sitemap text-gold mr-2"></i> Matrix Level Income Breakdown</h1>
-            <p class="text-xs text-gray-400 mt-1">Detailed statements of auto-spillover matrix level commissions earned across Phase 1 & Phase 2.</p>
+            <p class="text-xs text-gray-400 mt-1">Detailed statements of auto-spillover matrix level commissions earned across active matrix levels.</p>
         </div>
         <a href="/customer/dashboard.php" class="text-xs text-gold border border-gold/40 px-3 py-1.5 rounded-lg hover:bg-gold/10">← Dashboard</a>
     </div>
@@ -45,7 +45,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
             <span class="text-xs uppercase tracking-wider text-purple-400 font-bold">Total Gross Matrix Income</span>
             <div class="text-3xl font-extrabold text-purple-300 mt-2">₹<?php echo number_format($gross_matrix_total, 2); ?></div>
-            <p class="text-xs text-gray-400 mt-2">Combined Phase 1 & Phase 2 level earnings</p>
+            <p class="text-xs text-gray-400 mt-2">Combined matrix level commissions</p>
         </div>
 
         <!-- 60% User Wallet Share -->

@@ -115,7 +115,7 @@ require_once __DIR__ . '/includes/header.php';
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 100% Direct Referral Bonus (₹500 per member)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6-Level Phase 1 Fixed Commissions (₹150 to ₹1,000)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 60:40 User/Company Split on Matrix Earnings</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Auto-Promotion to Phase 2 upon 6 levels completion</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Automated 3-Matrix Auto-Placement Support</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
