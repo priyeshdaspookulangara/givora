@@ -138,6 +138,78 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <!-- Standalone Utility & Welfare Packages Grid -->
+    <div class="bg-darkcard rounded-2xl gold-border-glow p-8 mb-16">
+        <h2 class="text-2xl font-bold text-white mb-2"><i class="fas fa-box-open text-gold mr-2"></i> Standalone Utility & Welfare Package Options</h2>
+        <p class="text-sm text-gray-400 mb-6">Choose from our diverse utility, industrial, educational, and welfare plans. All plans distribute Unilevel Sponsor Level Income (10% to 1%).</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Tier 1 Utility</div>
+                <div class="text-lg font-bold text-white mt-1">Standard Recharge Plan</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹1,200</div>
+                <div class="text-xs text-gray-300">6 Terms every 28 days</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 3 GB per day data allocation</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-goldlight font-bold uppercase">Tier 2 Heavy User</div>
+                <div class="text-lg font-bold text-white mt-1">Turbo Recharge Plan</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹1,500</div>
+                <div class="text-xs text-gray-300">6 Installments every 28 days</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Unlimited cap-free data</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">LPG Refill</div>
+                <div class="text-lg font-bold text-white mt-1">Gas Refill Service</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹3,000</div>
+                <div class="text-xs text-gray-300">6 Domestic Cylinder Refills</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> On-demand booking</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Commercial LPG</div>
+                <div class="text-lg font-bold text-white mt-1">Industrial Gas Package</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹10,000</div>
+                <div class="text-xs text-gray-300">6 Cycles (₹3,000 refill value)</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 5% TDS deducted on credit</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Utility Combo</div>
+                <div class="text-lg font-bold text-white mt-1">Recharge Bundle Combo</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹5,400</div>
+                <div class="text-xs text-gray-300">2 Mobile + 1 Gas Connection</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Combined utility discount</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Social Welfare</div>
+                <div class="text-lg font-bold text-white mt-1">Charity Support Package</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">Community support fund</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Exact multiples of ₹10,000</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Educational</div>
+                <div class="text-lg font-bold text-white mt-1">Vidya Vikas Program</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">Student & Skill Support</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Exact multiples of ₹10,000</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Progressive Scheme</div>
+                <div class="text-lg font-bold text-white mt-1">Progressive EMI Scheme</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">10 Monthly Installments</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 15% return per installment</div>
+            </div>
+        </div>
+    </div>
+
     <!-- 3-Matrix Breakdown Table -->
     <div class="bg-darkcard rounded-2xl gold-border-glow p-8 mb-16 overflow-x-auto">
         <h2 class="text-2xl font-bold text-white mb-4">Phase 1 3-Matrix Commission Schedule (Levels 1 to 6)</h2>

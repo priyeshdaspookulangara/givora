@@ -672,7 +672,7 @@ function changeMemberSponsorAndRecalculate($pdo, $member_id, $new_sponsor_id) {
         $stmt_up->execute([$new_sponsor_id, $member_id]);
 
         $package_type = $member['package_type'];
-        $is_non_matrix = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
+        $is_non_matrix = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000', 'Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
 
         if (!$is_non_matrix) {
             // Matrix package: Direct Referral Bonus reassignment
@@ -699,7 +699,7 @@ function changeMemberSponsorAndRecalculate($pdo, $member_id, $new_sponsor_id) {
             $stmt_del->execute(["%from {$member_id}%"]);
 
             $package_amount = 0.00;
-            if (in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000'])) {
+            if (in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000'])) {
                 $package_amount = (float)$member['custom_amount'];
             } elseif ($package_type === 'Recharge_1200') {
                 $package_amount = 1200.00;

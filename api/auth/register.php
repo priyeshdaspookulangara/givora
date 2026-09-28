@@ -30,7 +30,7 @@ $package_type = $epin['package_type'];
 $epin_amount = (float)$epin['amount'];
 
 $is_utility_package = in_array($package_type, ['Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
-$is_charity_package = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000']);
+$is_charity_package = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000']);
 
 if ($is_utility_package) {
     $mobile_1 = trim($input['mobile_1'] ?? '');
@@ -78,12 +78,19 @@ try {
         ensureWalletExists($pdo, $new_member_id);
 
         // Log Welfare Contribution transaction
-        $trans_desc = ($package_type === 'Vidya_Vikas_10000') ? "Vidya Vikas Program Contribution of ₹" . number_format($epin_amount, 2) : "Charity Support Contribution of ₹" . number_format($epin_amount, 2);
+        if ($package_type === 'Vidya_Vikas_10000') {
+            $trans_desc = "Vidya Vikas Program Contribution of ₹" . number_format($epin_amount, 2);
+        } elseif ($package_type === 'Progressive_10000') {
+            $trans_desc = "Progressive EMI Scheme Contribution of ₹" . number_format($epin_amount, 2);
+        } else {
+            $trans_desc = "Charity Support Contribution of ₹" . number_format($epin_amount, 2);
+        }
+
         $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Charity_Contribution', ?, 'Main', 'Credit', ?)");
         $stmt->execute([$new_member_id, $epin_amount, $trans_desc]);
 
-        // If Vidya Vikas Support Program, create 10-installment benefit schedule
-        if ($package_type === 'Vidya_Vikas_10000') {
+        // If Vidya Vikas or Progressive EMI Scheme, create 10-installment benefit schedule
+        if (in_array($package_type, ['Vidya_Vikas_10000', 'Progressive_10000'])) {
             createVidyaVikasSubscription($pdo, $new_member_id, $epin_amount, $epin_code);
         }
 
