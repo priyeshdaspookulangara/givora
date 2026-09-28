@@ -128,8 +128,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <select name="package_type" id="package_type_select" required class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                     <option value="Foundation_5000">Foundation Tier (₹5,000)</option>
                     <option value="Leadership_15000">Leadership Tier (₹15,000)</option>
-                    <option value="Recharge_1200">Mobile Recharge Package (₹1,200)</option>
-                    <option value="Recharge_Plus_1500">Recharge Plus Unlimited Data (₹1,500)</option>
+                    <option value="Recharge_1200">Standard Recharge Plan (₹1,200 - 3 GB/day)</option>
+                    <option value="Recharge_Plus_1500">Turbo Recharge Plan (₹1,500 - Unlimited Data)</option>
                     <option value="Gas_3000">Gas Connection Package (₹3,000)</option>
                     <option value="Industrial_Gas_10000">Industrial Gas Package (₹10,000)</option>
                     <option value="Recharge_Bundle_5400">Recharge Bundle Combo (₹5,400)</option>

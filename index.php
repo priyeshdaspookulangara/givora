@@ -200,54 +200,54 @@ require_once __DIR__ . '/includes/header.php';
     <!-- Standalone Utility Packages -->
     <h3 class="text-xl font-bold text-gold border-b border-gold/20 pb-3 mb-8"><i class="fas fa-bolt mr-2"></i> Standalone Utility Packages (Non-Matrix)</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <!-- Mobile Recharge Package -->
+        <!-- Standard Recharge Plan (₹1,200) -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-gold font-bold">Standard Utility</span>
-                <h3 class="text-2xl font-bold text-white mt-1">Mobile Recharge</h3>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Entry Level Tier 1</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Standard Recharge Plan</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹1,200</span>
                     <span class="text-gray-400 text-sm"> / 6 terms</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 1 Mobile Connection Included</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> <strong>3 GB per day</strong> Data Allocation</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms every 28 days</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Major Carriers (Jio, Airtel, Vi, BSNL)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Unilevel 6-Level Income</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
                 <a href="/register.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
-                    Select Mobile Plan
+                    Select Standard Plan
                 </a>
             </div>
         </div>
 
-        <!-- Recharge Plus Package (₹1,500) -->
+        <!-- Turbo Recharge Plan (₹1,500) -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300 border-t-2 border-t-gold">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center text-goldlight text-2xl mb-6 border border-gold">
-                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-bolt"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-goldlight font-bold">Unlimited Data</span>
-                <h3 class="text-2xl font-bold text-white mt-1">Recharge Plus</h3>
+                <span class="text-xs uppercase tracking-widest text-goldlight font-bold">Heavy User Tier 2</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Turbo Recharge Plan</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹1,500</span>
                     <span class="text-gray-400 text-sm"> / 6 installments</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> 1 Mobile Connection</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> <strong>Unlimited Data</strong> Plan</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> <strong>Unlimited Data</strong> (Cap-free access)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> 6 Installments every 28 days</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Unilevel 6-Level Income</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
                 <a href="/register.php" class="block text-center btn-gold py-3 rounded-xl font-bold">
-                    Select Recharge Plus
+                    Select Turbo Plan
                 </a>
             </div>
         </div>

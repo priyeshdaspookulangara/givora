@@ -490,8 +490,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         const fGasName = document.getElementById('field_gas_name');
 
                         if (pkg === 'Recharge_1200') {
-                            document.getElementById('utility_title').textContent = 'Mobile Recharge Package Details (₹1,200)';
-                            document.getElementById('utility_desc').textContent = 'Collect 1 Mobile connection for 6 terms of recharges starting in 24 hours.';
+                            document.getElementById('utility_title').textContent = 'Standard Recharge Plan Details (₹1,200)';
+                            document.getElementById('utility_desc').textContent = '3 GB per day data allocation for 6 terms starting in 24 hours.';
                             fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
                             fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
                             fGasProv.classList.add('hidden'); fGasCons.classList.add('hidden'); fGasName.classList.add('hidden');
@@ -501,8 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.getElementById('gas_consumer_number').required = false;
                             document.getElementById('gas_customer_name').required = false;
                         } else if (pkg === 'Recharge_Plus_1500') {
-                            document.getElementById('utility_title').textContent = 'Recharge Plus Unlimited Data Package Details (₹1,500)';
-                            document.getElementById('utility_desc').textContent = 'Collect 1 Mobile connection for 6 terms of unlimited data recharges starting in 24 hours.';
+                            document.getElementById('utility_title').textContent = 'Turbo Recharge Plan Details (₹1,500)';
+                            document.getElementById('utility_desc').textContent = 'Unlimited cap-free data allocation for 6 installments starting in 24 hours.';
                             fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
                             fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
                             fGasProv.classList.add('hidden'); fGasCons.classList.add('hidden'); fGasName.classList.add('hidden');

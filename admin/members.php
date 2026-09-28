@@ -100,8 +100,8 @@ $login_url = getBaseUrl() . "/login.php";
                     <option value="Leadership_15000" <?php echo $package_filter === 'Leadership_15000' ? 'selected' : ''; ?>>Leadership (₹15,000)</option>
                     <option value="Charity_10000" <?php echo $package_filter === 'Charity_10000' ? 'selected' : ''; ?>>Charity Support (₹10,000+)</option>
                     <option value="Vidya_Vikas_10000" <?php echo $package_filter === 'Vidya_Vikas_10000' ? 'selected' : ''; ?>>Vidya Vikas Support (₹10,000+)</option>
-                    <option value="Recharge_1200" <?php echo $package_filter === 'Recharge_1200' ? 'selected' : ''; ?>>Mobile Recharge (₹1,200)</option>
-                    <option value="Recharge_Plus_1500" <?php echo $package_filter === 'Recharge_Plus_1500' ? 'selected' : ''; ?>>Recharge Plus (₹1,500)</option>
+                    <option value="Recharge_1200" <?php echo $package_filter === 'Recharge_1200' ? 'selected' : ''; ?>>Standard Recharge Plan (₹1,200)</option>
+                    <option value="Recharge_Plus_1500" <?php echo $package_filter === 'Recharge_Plus_1500' ? 'selected' : ''; ?>>Turbo Recharge Plan (₹1,500)</option>
                     <option value="Gas_3000" <?php echo $package_filter === 'Gas_3000' ? 'selected' : ''; ?>>Gas Connection (₹3,000)</option>
                     <option value="Industrial_Gas_10000" <?php echo $package_filter === 'Industrial_Gas_10000' ? 'selected' : ''; ?>>Industrial Gas (₹10,000)</option>
                     <option value="Recharge_Bundle_5400" <?php echo $package_filter === 'Recharge_Bundle_5400' ? 'selected' : ''; ?>>Recharge Combo (₹5,400)</option>
