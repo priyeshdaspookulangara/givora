@@ -155,6 +155,29 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <!-- National Insurance Company Limited (NICL) Co-operation Highlight -->
+    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 p-6 rounded-2xl gold-border-glow mb-16 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/40 flex items-center justify-center text-2xl flex-shrink-0">
+                <i class="fas fa-hospital-user"></i>
+            </div>
+            <div>
+                <span class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 font-extrabold text-[10px] rounded-full border border-blue-500/30 uppercase">
+                    Co-operating Insurance Enterprise
+                </span>
+                <h3 class="text-xl font-extrabold text-white mt-1">National Insurance Company Limited (NICL)</h3>
+                <p class="text-xs text-gray-300 mt-0.5">
+                    Official Medi Claim & Group Health Insurance partner for all ₹10,000+ EMI Welfare Schemes and 3-Matrix Plan members.
+                </p>
+            </div>
+        </div>
+        <div class="flex-shrink-0 text-center">
+            <span class="px-4 py-2 bg-blue-600/30 text-blue-200 font-extrabold text-xs rounded-xl border border-blue-500/50 inline-block">
+                <i class="fas fa-check-circle mr-1"></i> Cashless Medi Claim Protection
+            </span>
+        </div>
+    </div>
+
     <!-- Welfare & Support Programs -->
     <h3 class="text-xl font-bold text-amber-400 border-b border-amber-500/20 pb-3 mb-8"><i class="fas fa-hand-holding-heart mr-2"></i> Welfare & Support Programs (Non-Matrix)</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
