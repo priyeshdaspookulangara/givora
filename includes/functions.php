@@ -605,3 +605,105 @@ function deleteMemberAndRevertCommissions($pdo, $member_id) {
         throw $e;
     }
 }
+
+// Change Member Sponsor and Sitewide Recalculate Referral Income
+function changeMemberSponsorAndRecalculate($pdo, $member_id, $new_sponsor_id) {
+    if (empty($member_id) || $member_id === 'GT100000') {
+        throw new Exception("System Root Member (GT100000) sponsor cannot be changed.");
+    }
+
+    $new_sponsor_id = trim($new_sponsor_id);
+    if (empty($new_sponsor_id)) {
+        $new_sponsor_id = 'GT100000';
+    }
+
+    if ($member_id === $new_sponsor_id) {
+        throw new Exception("A member cannot be their own sponsor.");
+    }
+
+    // Verify member exists
+    $stmt = $pdo->prepare("SELECT * FROM members WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $member = $stmt->fetch();
+
+    if (!$member) {
+        throw new Exception("Member ID '{$member_id}' does not exist.");
+    }
+
+    // Verify new sponsor exists
+    $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
+    $stmt->execute([$new_sponsor_id]);
+    if (!$stmt->fetch()) {
+        throw new Exception("New Sponsor ID '{$new_sponsor_id}' does not exist.");
+    }
+
+    $old_sponsor_id = $member['sponsor_id'];
+    if ($old_sponsor_id === $new_sponsor_id) {
+        return true; // No change required
+    }
+
+    $pdo->beginTransaction();
+
+    try {
+        // 1. Update member's sponsor_id
+        $stmt_up = $pdo->prepare("UPDATE members SET sponsor_id = ? WHERE member_id = ?");
+        $stmt_up->execute([$new_sponsor_id, $member_id]);
+
+        $package_type = $member['package_type'];
+        $is_non_matrix = in_array($package_type, ['Charity_10000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+
+        if (!$is_non_matrix) {
+            // Matrix package: Direct Referral Bonus reassignment
+            $direct_bonus = ($package_type === 'Leadership_15000') ? 1500.00 : 500.00;
+
+            // Check if transaction already exists for this direct referral
+            $stmt_chk = $pdo->prepare("SELECT id FROM transactions WHERE type = 'Direct_Referral' AND description LIKE ?");
+            $stmt_chk->execute(["%{$member_id}%"]);
+            $tx_id = $stmt_chk->fetchColumn();
+
+            if ($tx_id) {
+                // Reassign existing Direct Referral transaction to the new sponsor
+                $stmt_tx_up = $pdo->prepare("UPDATE transactions SET member_id = ? WHERE id = ?");
+                $stmt_tx_up->execute([$new_sponsor_id, $tx_id]);
+            } else {
+                // Create new Direct Referral transaction for new sponsor
+                ensureWalletExists($pdo, $new_sponsor_id);
+                $stmt_tx_in = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Direct_Referral', ?, 'User_Wallet', 'Credit', ?)");
+                $stmt_tx_in->execute([$new_sponsor_id, $direct_bonus, "Direct Referral Bonus (100%) for " . $member_id]);
+            }
+        } else {
+            // Non-matrix package (Utility / Charity): Revert old level income & redistribute up new sponsor chain
+            $stmt_del = $pdo->prepare("DELETE FROM transactions WHERE type = 'Level_Income' AND description LIKE ?");
+            $stmt_del->execute(["%from {$member_id}%"]);
+
+            $package_amount = 0.00;
+            if ($package_type === 'Charity_10000') {
+                $package_amount = (float)$member['custom_amount'];
+            } elseif ($package_type === 'Recharge_1200') {
+                $package_amount = 1200.00;
+            } elseif ($package_type === 'Gas_3000') {
+                $package_amount = 3000.00;
+            } elseif ($package_type === 'Recharge_Bundle_5400') {
+                $package_amount = 5400.00;
+            }
+
+            if ($package_amount > 0) {
+                distributeLevelIncome($pdo, $member_id, $new_sponsor_id, $package_amount);
+            }
+        }
+
+        // 2. Sitewide Wallet Synchronization for all members
+        $stmt_all = $pdo->query("SELECT member_id FROM members");
+        $all_member_ids = $stmt_all->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($all_member_ids as $m_id) {
+            syncMemberWallet($pdo, $m_id);
+        }
+
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
