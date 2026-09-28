@@ -24,8 +24,8 @@ if ($epin['status'] !== 'Unused') {
     exit;
 }
 
-$is_utility_package = in_array($epin['package_type'], ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
-$is_charity_package = ($epin['package_type'] === 'Charity_10000');
+$is_utility_package = in_array($epin['package_type'], ['Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
+$is_charity_package = in_array($epin['package_type'], ['Charity_10000', 'Vidya_Vikas_10000']);
 
 echo json_encode([
     'valid' => true,

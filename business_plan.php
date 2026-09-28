@@ -17,7 +17,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div>
                 <h2 class="text-2xl font-extrabold text-white">Unilevel Sponsor Chain Level Income</h2>
-                <p class="text-xs text-goldlight mt-0.5">Applies exclusively to Non-Matrix Packages (Mobile Recharge, Gas Refill, Recharge Bundle & Charity Support Packages).</p>
+                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Vidya Vikas & Charity Support Programs).</p>
             </div>
         </div>
 

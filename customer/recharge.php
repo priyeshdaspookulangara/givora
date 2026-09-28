@@ -116,7 +116,7 @@ require_once __DIR__ . '/../includes/header.php';
             <h2 class="text-xl font-bold text-white">No Active Utility Package</h2>
             <p class="text-xs text-gray-400 leading-relaxed">
                 You are currently on the <span class="text-gold font-bold"><?php echo str_replace('_', ' ₹', $member['package_type']); ?></span> package.
-                Givora Traders offers standalone utility packages for Mobile Recharges (₹1,200), Gas Refills (₹3,000), and Utility Combo (₹5,400).
+                Givora Traders offers standalone utility packages for Mobile Recharge (₹1,200), Recharge Plus Unlimited Data (₹1,500), Gas Refills (₹3,000), Industrial Gas (₹10,000), and Utility Combo (₹5,400).
             </p>
             <div class="pt-2">
                 <a href="/register.php" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-xs inline-block">

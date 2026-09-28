@@ -42,15 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $package_type = $epin['package_type']; // Get package type from ePIN record
         $epin_amount = (float)$epin['amount'];
 
-        $is_utility_package = in_array($package_type, ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
-        $is_charity_package = ($package_type === 'Charity_10000');
+        $is_utility_package = in_array($package_type, ['Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
+        $is_charity_package = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000']);
 
         if ($is_utility_package) {
             // Validate utility fields based on specific package chosen
-            if ($package_type === 'Recharge_1200' && (empty($mobile_1) || empty($operator_1))) {
-                $error = "Please fill in Mobile 1 number and carrier for the Mobile Recharge Package (₹1,200).";
-            } elseif ($package_type === 'Gas_3000' && (empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
-                $error = "Please fill in all Gas connection details for the Gas Connection Package (₹3,000).";
+            if (in_array($package_type, ['Recharge_1200', 'Recharge_Plus_1500']) && (empty($mobile_1) || empty($operator_1))) {
+                $error = "Please fill in Mobile 1 number and carrier for the Mobile Recharge Package.";
+            } elseif (in_array($package_type, ['Gas_3000', 'Industrial_Gas_10000']) && (empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
+                $error = "Please fill in all Gas connection details.";
             } elseif ($package_type === 'Recharge_Bundle_5400' && (empty($mobile_1) || empty($operator_1) || empty($mobile_2) || empty($operator_2) || empty($gas_provider) || empty($gas_consumer_number) || empty($gas_customer_name))) {
                 $error = "Please fill in all Recharge Bundle connection details (2 Mobile numbers with carriers and Indian Gas connection details).";
             }
@@ -96,9 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Create wallet record
                     ensureWalletExists($pdo, $new_member_id);
 
-                    // Log Charity Contribution transaction
+                    // Log Welfare Contribution transaction
+                    $trans_desc = ($package_type === 'Vidya_Vikas_10000') ? "Vidya Vikas Program Contribution of ₹" . number_format($epin_amount, 2) : "Charity Support Contribution of ₹" . number_format($epin_amount, 2);
                     $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Charity_Contribution', ?, 'Main', 'Credit', ?)");
-                    $stmt->execute([$new_member_id, $epin_amount, "Charity Support Contribution of ₹" . number_format($epin_amount, 2)]);
+                    $stmt->execute([$new_member_id, $epin_amount, $trans_desc]);
+
+                    // If Vidya Vikas Support Program, create 10-installment benefit schedule (15% per installment)
+                    if ($package_type === 'Vidya_Vikas_10000') {
+                        createVidyaVikasSubscription($pdo, $new_member_id, $epin_amount, $epin_code);
+                    }
 
                     // Distribute 6-Level Unilevel Sponsor Income (10%, 5%, 4%, 3%, 2%, 1%)
                     distributeLevelIncome($pdo, $new_member_id, $sponsor_id, $epin_amount);
@@ -115,10 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ];
                     $success = "Registration successful! Thank you for your generous Charity Support Contribution of ₹" . number_format($epin_amount, 2) . ".";
                 } elseif ($is_utility_package) {
-                    // UTILITY PACKAGES (₹1200, ₹3000, ₹5400): Standalone from 3-Matrix Tree, distributes 6-Level Unilevel Sponsor Income
+                    // UTILITY PACKAGES (₹1200, ₹1500, ₹3000, ₹10000, ₹5400): Standalone from 3-Matrix Tree, distributes 6-Level Unilevel Sponsor Income
                     $package_amounts = [
                         'Recharge_1200' => 1200.00,
+                        'Recharge_Plus_1500' => 1500.00,
                         'Gas_3000' => 3000.00,
+                        'Industrial_Gas_10000' => 10000.00,
                         'Recharge_Bundle_5400' => 5400.00
                     ];
                     $utility_amount = $package_amounts[$package_type] ?? $epin_amount;
@@ -492,9 +500,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.getElementById('mobile_2').required = false;
                             document.getElementById('gas_consumer_number').required = false;
                             document.getElementById('gas_customer_name').required = false;
+                        } else if (pkg === 'Recharge_Plus_1500') {
+                            document.getElementById('utility_title').textContent = 'Recharge Plus Unlimited Data Package Details (₹1,500)';
+                            document.getElementById('utility_desc').textContent = 'Collect 1 Mobile connection for 6 terms of unlimited data recharges starting in 24 hours.';
+                            fMob1.classList.remove('hidden'); fOp1.classList.remove('hidden');
+                            fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
+                            fGasProv.classList.add('hidden'); fGasCons.classList.add('hidden'); fGasName.classList.add('hidden');
+
+                            document.getElementById('mobile_1').required = true;
+                            document.getElementById('mobile_2').required = false;
+                            document.getElementById('gas_consumer_number').required = false;
+                            document.getElementById('gas_customer_name').required = false;
                         } else if (pkg === 'Gas_3000') {
                             document.getElementById('utility_title').textContent = 'Gas Connection Package Details (₹3,000)';
                             document.getElementById('utility_desc').textContent = 'Collect Indian Gas connection details for 6 terms of cylinder refills.';
+                            fMob1.classList.add('hidden'); fOp1.classList.add('hidden');
+                            fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
+                            fGasProv.classList.remove('hidden'); fGasCons.classList.remove('hidden'); fGasName.classList.remove('hidden');
+
+                            document.getElementById('mobile_1').required = false;
+                            document.getElementById('mobile_2').required = false;
+                            document.getElementById('gas_consumer_number').required = true;
+                            document.getElementById('gas_customer_name').required = true;
+                        } else if (pkg === 'Industrial_Gas_10000') {
+                            document.getElementById('utility_title').textContent = 'Industrial Gas Package Details (₹10,000)';
+                            document.getElementById('utility_desc').textContent = 'Collect Industrial Gas connection details for 6 cycles of refill installments (₹3,000 per refill, 5% TDS deducted on credit).';
                             fMob1.classList.add('hidden'); fOp1.classList.add('hidden');
                             fMob2.classList.add('hidden'); fOp2.classList.add('hidden');
                             fGasProv.classList.remove('hidden'); fGasCons.classList.remove('hidden'); fGasName.classList.remove('hidden');

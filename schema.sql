@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS recharge_subscriptions (
 CREATE TABLE IF NOT EXISTS recharge_schedules (
     id INT AUTO_INCREMENT PRIMARY KEY,
     subscription_id INT NOT NULL,
-    service_type ENUM('Mobile_1', 'Mobile_2', 'Gas') NOT NULL,
+    service_type ENUM('Mobile_1', 'Mobile_2', 'Gas', 'Vidya_Vikas') NOT NULL,
     term_number INT NOT NULL,
     due_date DATETIME DEFAULT NULL,
     status ENUM('Scheduled', 'Requested', 'Completed', 'Failed') NOT NULL DEFAULT 'Scheduled',
