@@ -17,7 +17,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div>
                 <h2 class="text-2xl font-extrabold text-white">Unilevel Sponsor Chain Level Income</h2>
-                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Vidya Vikas & Charity Support Programs).</p>
+                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Progressive EMI Scheme, Vidya Vikas & Charity Support Programs).</p>
             </div>
         </div>
 
@@ -85,7 +85,7 @@ require_once __DIR__ . '/includes/header.php';
                     </span>
                     <h2 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h2>
                     <p class="text-xs text-gray-300 mt-1 max-w-xl">
-                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong>, Givora Traders provides comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
+                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong>, Givora Traders provides comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Progressive EMI Scheme, Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
                     </p>
                 </div>
             </div>

@@ -180,7 +180,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- Welfare & Support Programs -->
     <h3 class="text-xl font-bold text-amber-400 border-b border-amber-500/20 pb-3 mb-8"><i class="fas fa-hand-holding-heart mr-2"></i> Welfare & Support Programs (Non-Matrix)</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         <!-- Charity Support Package Card -->
         <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between">
             <div class="space-y-4">
@@ -189,7 +189,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <h3 class="text-2xl font-extrabold text-white">Charity Support Package</h3>
                 <p class="text-gray-300 text-xs leading-relaxed">
-                    Empower community welfare & social support initiatives. Key-in custom amounts in exact multiples of <strong class="text-amber-400">₹10,000</strong> (e.g., ₹10,000, ₹20,000, ₹50,000).
+                    Empower community welfare & social support initiatives. Key-in custom amounts in exact multiples of <strong class="text-amber-400">₹10,000</strong>.
                 </p>
                 <div class="text-3xl font-extrabold text-amber-400 font-mono">₹10,000+</div>
             </div>
