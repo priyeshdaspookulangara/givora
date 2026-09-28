@@ -21,6 +21,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+// Handle Change Sponsor Action
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'change_sponsor') {
+    $target_member_id = trim($_POST['target_member_id'] ?? '');
+    $new_sponsor_id = trim($_POST['new_sponsor_id'] ?? '');
+
+    try {
+        if (changeMemberSponsorAndRecalculate($pdo, $target_member_id, $new_sponsor_id)) {
+            $msg = "Sponsor for member '{$target_member_id}' updated to '{$new_sponsor_id}' successfully! Sitewide referral income and wallets recalculated.";
+        }
+    } catch (Exception $e) {
+        $error = "Failed to change sponsor: " . $e->getMessage();
+    }
+}
+
 $search = trim($_GET['search'] ?? '');
 $package_filter = trim($_GET['package'] ?? '');
 
@@ -196,6 +210,11 @@ $login_url = getBaseUrl() . "/login.php";
                                     </a>
 
                                     <?php if ($m['member_id'] !== 'GT100000'): ?>
+                                        <button onclick="openChangeSponsorModal('<?php echo $m['member_id']; ?>', '<?php echo htmlspecialchars(addslashes($m['name'])); ?>', '<?php echo htmlspecialchars($m['sponsor_id'] ?: 'GT100000'); ?>')" class="px-2.5 py-1.5 rounded-lg bg-gold/20 border border-gold/40 hover:bg-gold/30 text-gold font-bold text-xs inline-flex items-center space-x-1 transition shadow">
+                                            <i class="fas fa-user-edit"></i>
+                                            <span>Change Sponsor</span>
+                                        </button>
+
                                         <form method="POST" action="" onsubmit="return confirm('⚠️ WARNING: Deleting member <?php echo $m['member_id']; ?> (<?php echo htmlspecialchars($m['name']); ?>) will permanently revert ALL commissions and transactions triggered by this member across upline wallets!\n\nAre you sure you want to proceed?');">
                                             <input type="hidden" name="action" value="delete_member">
                                             <input type="hidden" name="delete_member_id" value="<?php echo $m['member_id']; ?>">
@@ -214,5 +233,74 @@ $login_url = getBaseUrl() . "/login.php";
         </div>
     </div>
 </div>
+
+<!-- Change Sponsor Modal -->
+<div id="changeSponsorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-darkcard border border-gold/40 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+        <button onclick="closeChangeSponsorModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center text-gold">
+                <i class="fas fa-user-friends text-lg"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Change Sponsor & Recalculate</h3>
+                <p class="text-xs text-gray-400">Update member's direct sponsor and recalculate referral income sitewide.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="" class="space-y-4">
+            <input type="hidden" name="action" value="change_sponsor">
+            <input type="hidden" name="target_member_id" id="modal_target_member_id" value="">
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Target Member</label>
+                <div class="bg-darkbg border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-gold font-bold font-mono" id="modal_target_member_display">
+                    -
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Current Sponsor ID</label>
+                <div class="bg-darkbg/50 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-gray-400 font-mono" id="modal_current_sponsor_display">
+                    -
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">New Sponsor ID <span class="text-red-400">*</span></label>
+                <input type="text" name="new_sponsor_id" id="modal_new_sponsor_id" required placeholder="e.g. GT100000" class="w-full bg-darkbg border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-gold">
+            </div>
+
+            <div class="p-3 bg-amber-900/20 border border-amber-500/30 rounded-xl text-[11px] text-amber-300">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Submitting will automatically transfer the referral bonus credit to the new sponsor and perform sitewide wallet recalculation.
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeChangeSponsorModal()" class="px-4 py-2 rounded-xl bg-darkbg border border-gray-700 text-gray-300 font-semibold text-xs hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-gold px-5 py-2 rounded-xl font-bold text-xs">
+                    <i class="fas fa-sync-alt mr-1"></i> Update & Recalculate
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openChangeSponsorModal(memberId, memberName, currentSponsor) {
+    document.getElementById('modal_target_member_id').value = memberId;
+    document.getElementById('modal_target_member_display').innerText = memberId + ' - ' + memberName;
+    document.getElementById('modal_current_sponsor_display').innerText = currentSponsor;
+    document.getElementById('modal_new_sponsor_id').value = '';
+    document.getElementById('changeSponsorModal').classList.remove('hidden');
+}
+
+function closeChangeSponsorModal() {
+    document.getElementById('changeSponsorModal').classList.add('hidden');
+}
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
