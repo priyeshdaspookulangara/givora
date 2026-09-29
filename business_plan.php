@@ -17,7 +17,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div>
                 <h2 class="text-2xl font-extrabold text-white">Unilevel Sponsor Chain Level Income</h2>
-                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Progressive EMI Scheme, Vidya Vikas & Charity Support Programs).</p>
+                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Vidya Vikas & Charity Support Programs).</p>
             </div>
         </div>
 
@@ -86,7 +86,7 @@ require_once __DIR__ . '/includes/header.php';
                     </span>
                     <h2 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h2>
                     <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
-                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Progressive EMI Scheme, Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
+                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
                     </p>
                 </div>
             </div>
@@ -201,13 +201,6 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Exact multiples of ₹10,000</div>
             </div>
 
-            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
-                <div class="text-xs text-amber-400 font-bold uppercase">Progressive Scheme</div>
-                <div class="text-lg font-bold text-white mt-1">Progressive EMI Scheme</div>
-                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
-                <div class="text-xs text-gray-300">10 Monthly Installments</div>
-                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 15% return per installment</div>
-            </div>
         </div>
     </div>
 

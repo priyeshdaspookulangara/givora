@@ -154,61 +154,13 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Progressive EMI Scheme Card -->
-        <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between border-t-2 border-t-amber-400">
-            <div class="space-y-4">
-                <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
-                    <i class="fas fa-chart-line"></i> 10-Installment Scheme
-                </div>
-                <h3 class="text-2xl font-extrabold text-white">Progressive EMI Scheme</h3>
-                <p class="text-gray-300 text-xs leading-relaxed">
-                    Progressive ₹10,000+ EMI Scheme. Features <strong class="text-amber-300">10 installments (15% return/benefit per installment)</strong>.
-                </p>
-                <div class="text-3xl font-extrabold text-amber-300 font-mono">₹10,000+ <span class="text-xs font-sans text-gray-400">(10 x 15%)</span></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-amber-500/20">
-                <a href="/register.php" class="block text-center bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold py-3 rounded-xl text-xs shadow-xl transition">
-                    Join Progressive Scheme
-                </a>
-            </div>
-        </div>
     </div>
 
-    <!-- National Insurance Company Limited (NICL) Co-operation Highlight Section -->
-    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 p-8 rounded-3xl gold-border-glow mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
-        <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-            <!-- White rounded card containing National Insurance Logo -->
-            <div class="w-44 h-44 bg-white rounded-3xl p-4 flex items-center justify-center shadow-2xl flex-shrink-0 border-2 border-gold/40 hover:scale-105 transition-transform duration-300">
-                <img src="/assets/images/national_insurance_logo.png" alt="National Insurance Logo" class="max-w-full max-h-full object-contain rounded-2xl">
-            </div>
-            <div class="space-y-2">
-                <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
-                    Co-operating Insurance Partner
-                </span>
-                <h3 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h3>
-                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
-                    In official co-operation with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing complimentary Group Health Mediclaim & Cashless Hospitalization Coverage for all <strong>₹10,000+ EMI Welfare Schemes</strong> and active <strong>3-Matrix Plan members</strong>.
-                </p>
-            </div>
-        </div>
-        <div class="flex-shrink-0 text-center">
-            <!-- White rounded box: Scheme Information & Downloads -->
-            <div class="bg-white rounded-3xl p-6 shadow-2xl border-2 border-gold/40 text-gray-800 space-y-4 max-w-sm w-full">
-                <h4 class="text-lg font-bold text-gray-900 text-left">Scheme Information & Downloads</h4>
-
-                <div class="space-y-3">
-                    <!-- Button 1: To know more about this scheme, click here. -->
-                    <a href="/mediclaim.php" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-3 px-4 rounded-xl text-center shadow transition border border-blue-700">
-                        To know more about this scheme, click here.
-                    </a>
-
-                    <!-- Button 2: To download brochure click here -->
-                    <a href="/mediclaim.php" class="block w-full bg-white hover:bg-blue-50 text-blue-800 font-semibold text-xs py-3 px-4 rounded-xl text-center shadow-sm transition border-2 border-blue-400">
-                        To download brochure click here
-                    </a>
-                </div>
-            </div>
-        </div>
+    <!-- National Insurance Company Limited (NICL) Centralized Image Banner -->
+    <div class="my-16 flex justify-center items-center">
+        <a href="/mediclaim.php" class="block hover:scale-[1.02] transition-transform duration-300 shadow-2xl rounded-3xl overflow-hidden border-2 border-gold/40">
+            <img src="/assets/images/NIC.jpg" alt="National Insurance Company Limited (NICL) Medi Claim Scheme" class="w-full max-w-[720px] h-[269px] object-cover rounded-3xl">
+        </a>
     </div>
 
     <!-- Welfare & Support Programs -->
