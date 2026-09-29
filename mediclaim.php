@@ -173,6 +173,145 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <!-- Technical Report: Company Background & Underwriting Parameters -->
+    <div class="bg-darkcard p-8 lg:p-12 rounded-3xl gold-border-glow space-y-8">
+        <div class="border-b border-gold/20 pb-6">
+            <span class="px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
+                TECHNICAL REPORT & PREMIUM SCHEDULE
+            </span>
+            <h2 class="text-3xl font-extrabold text-white mt-2">National Insurance Company Limited (NICL) Institutional Analysis</h2>
+            <p class="text-xs text-gray-400 mt-1">Underwriting architecture, risk pool distribution, and tabulated premium schedules for Givora Group Insurance Plan.</p>
+        </div>
+
+        <!-- Background & Institutional Profile -->
+        <div class="space-y-4 text-xs sm:text-sm text-gray-300 leading-relaxed">
+            <h3 class="text-xl font-bold text-gold"><i class="fas fa-landmark mr-2"></i> Company Background & Institutional Role</h3>
+            <p>
+                <strong>National Insurance Company Limited (NICL)</strong> stands as India's oldest premier public sector general insurance enterprise operating under the administrative control of the <strong>Ministry of Finance, Government of India</strong>. Founded in 1906 in Kolkata, Bengal, NICL possesses over a century of continuous operational legacy. Following the passage of the General Insurance Business (Nationalisation) Act in 1972, NICL was nationalized and established as a cornerstone of India’s sovereign financial infrastructure.
+            </p>
+            <p>
+                As a state-owned entity, NICL plays a pivotal role in national risk distribution, underwriting retail, commercial, agricultural, and industrial risk portfolios. With a solvency ratio exceeding statutory requirements and backing by sovereign guarantees, NICL provides unmatched institutional stability, claim-settlement credibility, and pan-India reach across urban, rural, and industrial ecosystems.
+            </p>
+        </div>
+
+        <!-- Key Advantages List -->
+        <div class="space-y-4 text-xs sm:text-sm text-gray-300">
+            <h3 class="text-xl font-bold text-gold"><i class="fas fa-star mr-2"></i> Key Advantages of National Insurance Company Limited</h3>
+            <ul class="space-y-2.5 pl-2">
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-gold mt-1 mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-white">Central Public Sector Backing:</strong> Sovereign financial security governed by the Ministry of Finance, Government of India, ensuring unmatched stability, capital adequacy, and zero-default claim settlement credibility.
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-gold mt-1 mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-white">Pan-India Branch & Network Hospital Grid:</strong> An extensive network of over 1,800 offices and 10,000+ empanelled network hospitals nationwide, facilitating instant cashless pre-authorization and localized claim support.
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-gold mt-1 mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-white">Diverse Product Portfolio:</strong> Comprehensive risk solutions spanning retail healthcare, commercial group policies, rural agricultural safety nets, and heavy industrial risk coverage.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tabulated Premium Schedule -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-gold"><i class="fas fa-table mr-2"></i> Exact Tabulated Premium Schedule & Benefit Slabs</h3>
+            <p class="text-xs text-gray-400">
+                The schedule below details the exact benefit slab mapping and corresponding premium progression across Sum Insured tiers.
+            </p>
+
+            <div class="overflow-x-auto border border-gold/30 rounded-2xl">
+                <table class="w-full text-left text-xs text-gray-200">
+                    <thead class="bg-gold/20 text-gold uppercase border-b border-gold/30 font-extrabold text-[11px]">
+                        <tr>
+                            <th class="p-3.5 border-r border-gold/20">Benefit Slabs / Coverage Slabs</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 1</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 2</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 3</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 4</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 5</th>
+                            <th class="p-3.5 text-center border-r border-gold/20">Tier 6</th>
+                            <th class="p-3.5 text-center">Tier 7</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gold/10 font-mono">
+                        <tr class="bg-darkbg/50">
+                            <td class="p-3.5 font-sans font-bold text-white border-r border-gold/20">Sum Insured (Rs.)</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 75,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 1,00,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 1,25,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 1,50,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold border-r border-gold/20">Rs. 1,75,000</td>
+                            <td class="p-3.5 text-center font-bold text-gold">Rs. 2,00,000</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-sans font-semibold text-gray-300 border-r border-gold/20">Section I Limit (Rs.)</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 75,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,00,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,25,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,75,000</td>
+                            <td class="p-3.5 text-center">Rs. 2,00,000</td>
+                        </tr>
+                        <tr class="bg-darkbg/30">
+                            <td class="p-3.5 font-sans font-semibold text-gray-300 border-r border-gold/20">Section II Limit (Rs.)</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,00,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 1,50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 2,00,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 2,50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 3,00,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 3,50,000</td>
+                            <td class="p-3.5 text-center">Rs. 4,00,000</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-sans font-semibold text-gray-300 border-r border-gold/20">Section III Supplementary Limit (Rs.)</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center border-r border-gold/20">Rs. 50,000</td>
+                            <td class="p-3.5 text-center">Rs. 50,000</td>
+                        </tr>
+                        <tr class="bg-gold/10 font-bold">
+                            <td class="p-3.5 font-sans font-bold text-gold border-r border-gold/20">Base Premium Payable (Rs.)</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 582</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 838</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 1,111</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 1,365</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 1,620</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm border-r border-gold/20">Rs. 1,851</td>
+                            <td class="p-3.5 text-center text-amber-300 text-sm">Rs. 2,084</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-[11px] text-amber-300 italic">
+                * Note: Applicable statutory service charges and GST / Govt. taxes are extra as stated in the schedule.
+            </p>
+        </div>
+
+        <!-- Concluding Synthesis -->
+        <div class="space-y-3 text-xs sm:text-sm text-gray-300 border-t border-gold/20 pt-6">
+            <h3 class="text-xl font-bold text-gold"><i class="fas fa-network-wired mr-2"></i> Synthesis on Scalable Risk Distribution Models</h3>
+            <p class="leading-relaxed">
+                Integrating a state-backed public sector insurer like NICL into direct-selling utility and EMI welfare ecosystems creates a highly resilient <strong>Scalable Risk Distribution Model</strong>. By aggregating a large pool of active matrix members and installment subscribers, individual healthcare risk is effectively pooled and underwritten at actuarially favorable group rates.
+            </p>
+            <p class="leading-relaxed">
+                This institutional synergy ensures that member health crises do not disrupt personal finances or installment returns, reinforcing long-term participant retention, operational stability, and socio-economic protection across India.
+            </p>
+        </div>
+    </div>
+
     <!-- Step-by-Step Activation Process -->
     <div class="bg-darkcard p-8 rounded-2xl gold-border-glow">
         <h2 class="text-2xl font-bold text-white mb-6 text-center"><i class="fas fa-list-ol text-gold mr-2"></i> How Policy Activation Works</h2>
