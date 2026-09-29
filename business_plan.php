@@ -17,7 +17,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div>
                 <h2 class="text-2xl font-extrabold text-white">Unilevel Sponsor Chain Level Income</h2>
-                <p class="text-xs text-goldlight mt-0.5">Applies exclusively to Non-Matrix Packages (Mobile Recharge, Gas Refill, Recharge Bundle & Charity Support Packages).</p>
+                <p class="text-xs text-goldlight mt-0.5">Applies to Non-Matrix Packages (Utility Packs, Industrial Gas, Progressive EMI Scheme, Vidya Vikas & Charity Support Programs).</p>
             </div>
         </div>
 
@@ -72,6 +72,32 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <!-- National Insurance Company Limited (NICL) Partnership Banner -->
+    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 rounded-3xl p-8 gold-border-glow mb-16">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                <!-- White rounded card containing National Insurance Logo -->
+                <div class="w-44 h-44 bg-white rounded-3xl p-4 flex items-center justify-center shadow-2xl flex-shrink-0 border-2 border-gold/40 hover:scale-105 transition-transform duration-300">
+                    <img src="/assets/images/national_insurance_logo.png" alt="National Insurance Logo" class="max-w-full max-h-full object-contain rounded-2xl">
+                </div>
+                <div class="space-y-2">
+                    <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
+                        OFFICIAL INSURANCE PARTNER
+                    </span>
+                    <h2 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h2>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
+                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Progressive EMI Scheme, Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
+                    </p>
+                </div>
+            </div>
+            <div class="flex-shrink-0 text-center md:text-right bg-darkbg/90 border border-blue-500/40 p-5 rounded-2xl shadow-xl space-y-2">
+                <div class="text-xs text-blue-300 font-bold uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> Mediclaim Coverage</div>
+                <div class="text-xl font-extrabold text-white font-mono">Cashless Hospitalization</div>
+                <div class="text-[11px] text-gray-400">Backed by Govt. of India Enterprise</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Package Overview Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow">
@@ -110,6 +136,78 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-white font-bold">3 x 6 Matrix</span>
                 </li>
             </ul>
+        </div>
+    </div>
+
+    <!-- Standalone Utility & Welfare Packages Grid -->
+    <div class="bg-darkcard rounded-2xl gold-border-glow p-8 mb-16">
+        <h2 class="text-2xl font-bold text-white mb-2"><i class="fas fa-box-open text-gold mr-2"></i> Standalone Utility & Welfare Package Options</h2>
+        <p class="text-sm text-gray-400 mb-6">Choose from our diverse utility, industrial, educational, and welfare plans. All plans distribute Unilevel Sponsor Level Income (10% to 1%).</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Tier 1 Utility</div>
+                <div class="text-lg font-bold text-white mt-1">Standard Recharge Plan</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹1,200</div>
+                <div class="text-xs text-gray-300">6 Terms every 28 days</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 3 GB per day data allocation</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-goldlight font-bold uppercase">Tier 2 Heavy User</div>
+                <div class="text-lg font-bold text-white mt-1">Turbo Recharge Plan</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹1,500</div>
+                <div class="text-xs text-gray-300">6 Installments every 28 days</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Unlimited cap-free data</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">LPG Refill</div>
+                <div class="text-lg font-bold text-white mt-1">Gas Refill Service</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹3,000</div>
+                <div class="text-xs text-gray-300">6 Domestic Cylinder Refills</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> On-demand booking</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Commercial LPG</div>
+                <div class="text-lg font-bold text-white mt-1">Industrial Gas Package</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹10,000</div>
+                <div class="text-xs text-gray-300">6 Cycles (₹3,000 refill value)</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 5% TDS deducted on credit</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-gold font-bold uppercase">Utility Combo</div>
+                <div class="text-lg font-bold text-white mt-1">Recharge Bundle Combo</div>
+                <div class="text-2xl font-extrabold text-gold font-mono my-2">₹5,400</div>
+                <div class="text-xs text-gray-300">2 Mobile + 1 Gas Connection</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Combined utility discount</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Social Welfare</div>
+                <div class="text-lg font-bold text-white mt-1">Charity Support Package</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">Community support fund</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Exact multiples of ₹10,000</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Educational</div>
+                <div class="text-lg font-bold text-white mt-1">Vidya Vikas Program</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">Student & Skill Support</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> Exact multiples of ₹10,000</div>
+            </div>
+
+            <div class="bg-darkbg p-5 rounded-xl border border-gold/20">
+                <div class="text-xs text-amber-400 font-bold uppercase">Progressive Scheme</div>
+                <div class="text-lg font-bold text-white mt-1">Progressive EMI Scheme</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono my-2">₹10,000+</div>
+                <div class="text-xs text-gray-300">10 Monthly Installments</div>
+                <div class="text-[11px] text-amber-300 font-semibold mt-1"><i class="fas fa-check mr-1"></i> 15% return per installment</div>
+            </div>
         </div>
     </div>
 
@@ -161,7 +259,7 @@ require_once __DIR__ . '/includes/header.php';
                     <td class="px-4 py-3 font-semibold text-white">Level 5</td>
                     <td class="px-4 py-3">243</td>
                     <td class="px-4 py-3 font-bold text-gold">₹800</td>
-                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2)</span></td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹480</td>
                     <td class="px-4 py-3 font-bold text-white">₹1,94,400</td>
                 </tr>
                 <tr>

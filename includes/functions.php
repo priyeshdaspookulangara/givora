@@ -497,7 +497,7 @@ function createRechargeSubscription($pdo, $member_id, $package_type, $epin_code,
         $days_offset = ($term - 1) * 28;
         $due_date = date('Y-m-d H:i:s', strtotime("{$start_date} + {$days_offset} days"));
 
-        if (!empty($mobile_1) && in_array($package_type, ['Recharge_1200', 'Recharge_Bundle_5400'])) {
+        if (!empty($mobile_1) && in_array($package_type, ['Recharge_1200', 'Recharge_Plus_1500', 'Recharge_Bundle_5400'])) {
             // Mobile 1 term
             $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Mobile_1', ?, ?, 'Scheduled')");
             $stmt->execute([$subscription_id, $term, $due_date]);
@@ -509,11 +509,33 @@ function createRechargeSubscription($pdo, $member_id, $package_type, $epin_code,
             $stmt->execute([$subscription_id, $term, $due_date]);
         }
 
-        if ($package_type === 'Gas_3000' || $package_type === 'Recharge_Bundle_5400') {
+        if (in_array($package_type, ['Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400'])) {
             // Gas term (6 terms, requested on user demand)
-            $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status) VALUES (?, 'Gas', ?, NULL, 'Scheduled')");
-            $stmt->execute([$subscription_id, $term]);
+            $note = ($package_type === 'Industrial_Gas_10000') ? "Industrial Refill (₹3,000 value, 5% TDS deducted on credit)" : NULL;
+            $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status, notes) VALUES (?, 'Gas', ?, NULL, 'Scheduled', ?)");
+            $stmt->execute([$subscription_id, $term, $note]);
         }
+    }
+
+    return $subscription_id;
+}
+
+// Vidya Vikas Support Program 10-Installment Subscription Helper
+function createVidyaVikasSubscription($pdo, $member_id, $package_amount, $epin_code) {
+    $start_date = date('Y-m-d H:i:s');
+
+    $stmt = $pdo->prepare("INSERT INTO recharge_subscriptions (member_id, package_type, used_epin, status, start_date) VALUES (?, 'Vidya_Vikas_10000', ?, 'Active', ?)");
+    $stmt->execute([$member_id, $epin_code, $start_date]);
+
+    $subscription_id = $pdo->lastInsertId();
+    $installment_amount = $package_amount * 0.15; // 15% per installment
+
+    for ($term = 1; $term <= 10; $term++) {
+        $days_offset = ($term - 1) * 30; // 30-day monthly cycles
+        $due_date = date('Y-m-d H:i:s', strtotime("{$start_date} + {$days_offset} days"));
+
+        $stmt = $pdo->prepare("INSERT INTO recharge_schedules (subscription_id, service_type, term_number, due_date, status, notes) VALUES (?, 'Vidya_Vikas', ?, ?, 'Scheduled', ?)");
+        $stmt->execute([$subscription_id, $term, $due_date, "Vidya Vikas Installment #" . $term . " (15% return: ₹" . number_format($installment_amount, 2) . ")"]);
     }
 
     return $subscription_id;
@@ -650,7 +672,7 @@ function changeMemberSponsorAndRecalculate($pdo, $member_id, $new_sponsor_id) {
         $stmt_up->execute([$new_sponsor_id, $member_id]);
 
         $package_type = $member['package_type'];
-        $is_non_matrix = in_array($package_type, ['Charity_10000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+        $is_non_matrix = in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000', 'Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
 
         if (!$is_non_matrix) {
             // Matrix package: Direct Referral Bonus reassignment
@@ -672,17 +694,21 @@ function changeMemberSponsorAndRecalculate($pdo, $member_id, $new_sponsor_id) {
                 $stmt_tx_in->execute([$new_sponsor_id, $direct_bonus, "Direct Referral Bonus (100%) for " . $member_id]);
             }
         } else {
-            // Non-matrix package (Utility / Charity): Revert old level income & redistribute up new sponsor chain
+            // Non-matrix package (Utility / Charity / Vidya Vikas): Revert old level income & redistribute up new sponsor chain
             $stmt_del = $pdo->prepare("DELETE FROM transactions WHERE type = 'Level_Income' AND description LIKE ?");
             $stmt_del->execute(["%from {$member_id}%"]);
 
             $package_amount = 0.00;
-            if ($package_type === 'Charity_10000') {
+            if (in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000'])) {
                 $package_amount = (float)$member['custom_amount'];
             } elseif ($package_type === 'Recharge_1200') {
                 $package_amount = 1200.00;
+            } elseif ($package_type === 'Recharge_Plus_1500') {
+                $package_amount = 1500.00;
             } elseif ($package_type === 'Gas_3000') {
                 $package_amount = 3000.00;
+            } elseif ($package_type === 'Industrial_Gas_10000') {
+                $package_amount = 10000.00;
             } elseif ($package_type === 'Recharge_Bundle_5400') {
                 $package_amount = 5400.00;
             }

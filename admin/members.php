@@ -99,8 +99,12 @@ $login_url = getBaseUrl() . "/login.php";
                     <option value="Foundation_5000" <?php echo $package_filter === 'Foundation_5000' ? 'selected' : ''; ?>>Foundation (₹5,000)</option>
                     <option value="Leadership_15000" <?php echo $package_filter === 'Leadership_15000' ? 'selected' : ''; ?>>Leadership (₹15,000)</option>
                     <option value="Charity_10000" <?php echo $package_filter === 'Charity_10000' ? 'selected' : ''; ?>>Charity Support (₹10,000+)</option>
-                    <option value="Recharge_1200" <?php echo $package_filter === 'Recharge_1200' ? 'selected' : ''; ?>>Mobile Recharge (₹1,200)</option>
+                    <option value="Vidya_Vikas_10000" <?php echo $package_filter === 'Vidya_Vikas_10000' ? 'selected' : ''; ?>>Vidya Vikas Support (₹10,000+)</option>
+                    <option value="Progressive_10000" <?php echo $package_filter === 'Progressive_10000' ? 'selected' : ''; ?>>Progressive EMI Scheme (₹10,000+)</option>
+                    <option value="Recharge_1200" <?php echo $package_filter === 'Recharge_1200' ? 'selected' : ''; ?>>Standard Recharge Plan (₹1,200)</option>
+                    <option value="Recharge_Plus_1500" <?php echo $package_filter === 'Recharge_Plus_1500' ? 'selected' : ''; ?>>Turbo Recharge Plan (₹1,500)</option>
                     <option value="Gas_3000" <?php echo $package_filter === 'Gas_3000' ? 'selected' : ''; ?>>Gas Connection (₹3,000)</option>
+                    <option value="Industrial_Gas_10000" <?php echo $package_filter === 'Industrial_Gas_10000' ? 'selected' : ''; ?>>Industrial Gas (₹10,000)</option>
                     <option value="Recharge_Bundle_5400" <?php echo $package_filter === 'Recharge_Bundle_5400' ? 'selected' : ''; ?>>Recharge Combo (₹5,400)</option>
                 </select>
             </div>
@@ -138,7 +142,7 @@ $login_url = getBaseUrl() . "/login.php";
                             <td colspan="8" class="p-4 text-center text-gray-500">No members found matching the specified criteria.</td>
                         </tr>
                     <?php else: foreach ($members as $m):
-                        $is_non_matrix = in_array($m['package_type'], ['Charity_10000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400']);
+                        $is_non_matrix = in_array($m['package_type'], ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000', 'Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400']);
 
                         // Format WhatsApp Greeting URL:
                         $wa_text = "Welcome to Givora Traders LLP! Your Member ID is: " . $m['member_id'] . " and Password is: " . $m['password'] . " . Login here: " . $login_url;
@@ -181,7 +185,15 @@ $login_url = getBaseUrl() . "/login.php";
                                     <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 inline-block">
                                         <i class="fas fa-hand-holding-heart mr-1"></i> Charity (₹<?php echo number_format((float)$m['custom_amount'], 2); ?>)
                                     </span>
-                                <?php elseif (in_array($m['package_type'], ['Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400'])): ?>
+                                <?php elseif ($m['package_type'] === 'Vidya_Vikas_10000'): ?>
+                                    <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 inline-block">
+                                        <i class="fas fa-graduation-cap mr-1"></i> Vidya Vikas (₹<?php echo number_format((float)$m['custom_amount'], 2); ?>)
+                                    </span>
+                                <?php elseif ($m['package_type'] === 'Progressive_10000'): ?>
+                                    <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 inline-block">
+                                        <i class="fas fa-chart-line mr-1"></i> Progressive EMI (₹<?php echo number_format((float)$m['custom_amount'], 2); ?>)
+                                    </span>
+                                <?php elseif (in_array($m['package_type'], ['Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400'])): ?>
                                     <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30 inline-block">
                                         <i class="fas fa-bolt mr-1"></i> <?php echo str_replace('_', ' ₹', $m['package_type']); ?>
                                     </span>
@@ -192,14 +204,7 @@ $login_url = getBaseUrl() . "/login.php";
                                 <?php endif; ?>
                             </td>
                             <td class="p-3">
-                                <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400 font-bold block mb-1">Active</span>
-                                <?php if (!$is_non_matrix): ?>
-                                    <?php if ($m['p2_status'] === 'Active'): ?>
-                                        <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 block"><i class="fas fa-crown text-[9px] mr-0.5"></i> P2: Active</span>
-                                    <?php else: ?>
-                                        <span class="px-2 py-0.5 rounded text-[10px] bg-gray-500/20 text-gray-400 font-semibold block">P2: Pending</span>
-                                    <?php endif; ?>
-                                <?php endif; ?>
+                                <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400 font-bold block">Active</span>
                             </td>
                             <td class="p-3 font-mono text-gray-400"><?php echo date('d M Y', strtotime($m['created_at'])); ?></td>
                             <td class="p-3 text-right">

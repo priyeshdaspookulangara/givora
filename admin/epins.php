@@ -19,15 +19,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'Foundation_5000' => 5000.00,
         'Leadership_15000' => 15000.00,
         'Recharge_1200' => 1200.00,
+        'Recharge_Plus_1500' => 1500.00,
         'Gas_3000' => 3000.00,
+        'Industrial_Gas_10000' => 10000.00,
         'Recharge_Bundle_5400' => 5400.00,
     ];
 
     $final_amount = $package_amounts[$package_type] ?? 0.00;
 
-    if ($package_type === 'Charity_10000') {
+    if (in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000'])) {
         if ($custom_amount < 10000 || fmod($custom_amount, 10000) != 0) {
-            $error = "Charity Support Package amount must be at least ₹10,000 and in exact multiples of ₹10,000 (e.g. ₹10,000, ₹20,000, ₹50,000).";
+            $error = "Welfare / Support Package amount must be at least ₹10,000 and in exact multiples of ₹10,000 (e.g. ₹10,000, ₹20,000, ₹50,000).";
         } else {
             $final_amount = $custom_amount;
         }
@@ -61,7 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 }
             }
 
-            $display_pkg = ($package_type === 'Charity_10000') ? "Charity Support Package (₹" . number_format($final_amount, 2) . ")" : str_replace('_', ' ₹', $package_type);
+            if ($package_type === 'Charity_10000') {
+                $display_pkg = "Charity Support Package (₹" . number_format($final_amount, 2) . ")";
+            } elseif ($package_type === 'Vidya_Vikas_10000') {
+                $display_pkg = "Vidya Vikas Support Program (₹" . number_format($final_amount, 2) . ")";
+            } elseif ($package_type === 'Progressive_10000') {
+                $display_pkg = "Progressive EMI Scheme (₹" . number_format($final_amount, 2) . ")";
+            } else {
+                $display_pkg = str_replace('_', ' ₹', $package_type);
+            }
             $msg = "Successfully generated {$generated_count} new ePIN(s) for {$display_pkg}!";
         }
     }
@@ -120,9 +130,13 @@ require_once __DIR__ . '/../includes/header.php';
                 <select name="package_type" id="package_type_select" required class="w-full bg-darkbg border border-gold/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold">
                     <option value="Foundation_5000">Foundation Tier (₹5,000)</option>
                     <option value="Leadership_15000">Leadership Tier (₹15,000)</option>
-                    <option value="Recharge_1200">Mobile Recharge Package (₹1,200)</option>
+                    <option value="Recharge_1200">Standard Recharge Plan (₹1,200 - 3 GB/day)</option>
+                    <option value="Recharge_Plus_1500">Turbo Recharge Plan (₹1,500 - Unlimited Data)</option>
                     <option value="Gas_3000">Gas Connection Package (₹3,000)</option>
+                    <option value="Industrial_Gas_10000">Industrial Gas Package (₹10,000)</option>
                     <option value="Recharge_Bundle_5400">Recharge Bundle Combo (₹5,400)</option>
+                    <option value="Vidya_Vikas_10000">Vidya Vikas Support Program (₹10,000+)</option>
+                    <option value="Progressive_10000">Progressive EMI Scheme (₹10,000+)</option>
                     <option value="Charity_10000">Charity Support Package (₹10,000+)</option>
                 </select>
             </div>
@@ -192,6 +206,10 @@ require_once __DIR__ . '/../includes/header.php';
                             <td class="p-3 font-semibold text-white">
                                 <?php if ($pin['package_type'] === 'Charity_10000'): ?>
                                     <span class="text-amber-400 font-bold"><i class="fas fa-hand-holding-heart mr-1"></i> Charity Support</span>
+                                <?php elseif ($pin['package_type'] === 'Vidya_Vikas_10000'): ?>
+                                    <span class="text-amber-300 font-bold"><i class="fas fa-graduation-cap mr-1"></i> Vidya Vikas Program</span>
+                                <?php elseif ($pin['package_type'] === 'Progressive_10000'): ?>
+                                    <span class="text-amber-400 font-bold"><i class="fas fa-chart-line mr-1"></i> Progressive EMI Scheme</span>
                                 <?php else: ?>
                                     <?php echo str_replace('_', ' ₹', $pin['package_type']); ?>
                                 <?php endif; ?>
@@ -221,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const charityWrapper = document.getElementById('charity_amount_wrapper');
 
     function toggleCharityAmount() {
-        if (pkgSelect.value === 'Charity_10000') {
+        if (pkgSelect.value === 'Charity_10000' || pkgSelect.value === 'Vidya_Vikas_10000' || pkgSelect.value === 'Progressive_10000') {
             charityWrapper.classList.remove('hidden');
         } else {
             charityWrapper.classList.add('hidden');

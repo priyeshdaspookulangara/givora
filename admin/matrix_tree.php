@@ -104,12 +104,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="text-xs font-bold text-white"><?php echo str_replace('_', ' ₹', $member['package_type']); ?></div>
             </div>
             <div class="bg-darkbg px-4 py-2 rounded-xl border border-gold/20">
-                <div class="text-[10px] text-gray-400">Phase 1 Status</div>
+                <div class="text-[10px] text-gray-400">Matrix Status</div>
                 <div class="text-xs font-bold text-green-400"><?php echo htmlspecialchars($member['status']); ?></div>
-            </div>
-            <div class="bg-darkbg px-4 py-2 rounded-xl border border-gold/20">
-                <div class="text-[10px] text-gray-400">Phase 2 Matrix Status</div>
-                <div class="text-xs font-bold <?php echo $member['p2_status'] === 'Active' ? 'text-gold' : 'text-gray-400'; ?>"><?php echo htmlspecialchars($member['p2_status']); ?></div>
             </div>
         </div>
     </div>

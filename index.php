@@ -115,7 +115,7 @@ require_once __DIR__ . '/includes/header.php';
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 100% Direct Referral Bonus (₹500 per member)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6-Level Phase 1 Fixed Commissions (₹150 to ₹1,000)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 60:40 User/Company Split on Matrix Earnings</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Auto-Promotion to Phase 2 upon 6 levels completion</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Automated 3-Matrix Auto-Placement Support</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
@@ -141,7 +141,7 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-gray-400 text-sm"> / one-time</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Premium Direct Referral Bonus (₹1,500 per member)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Quick Income</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Accelerated Matrix Level Earnings</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Full 3-Matrix Auto-Placement Support</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Dedicated Priority Support</li>
@@ -153,74 +153,169 @@ require_once __DIR__ . '/includes/header.php';
                 </a>
             </div>
         </div>
+
+        <!-- Progressive EMI Scheme Card -->
+        <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between border-t-2 border-t-amber-400">
+            <div class="space-y-4">
+                <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
+                    <i class="fas fa-chart-line"></i> 10-Installment Scheme
+                </div>
+                <h3 class="text-2xl font-extrabold text-white">Progressive EMI Scheme</h3>
+                <p class="text-gray-300 text-xs leading-relaxed">
+                    Progressive ₹10,000+ EMI Scheme. Features <strong class="text-amber-300">10 installments (15% return/benefit per installment)</strong>.
+                </p>
+                <div class="text-3xl font-extrabold text-amber-300 font-mono">₹10,000+ <span class="text-xs font-sans text-gray-400">(10 x 15%)</span></div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-amber-500/20">
+                <a href="/register.php" class="block text-center bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold py-3 rounded-xl text-xs shadow-xl transition">
+                    Join Progressive Scheme
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- Charity Support Package Card -->
-    <h3 class="text-xl font-bold text-amber-400 border-b border-amber-500/20 pb-3 mb-8"><i class="fas fa-hand-holding-heart mr-2"></i> Charity Support Package (Social Welfare)</h3>
-    <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
-        <div class="space-y-4 max-w-2xl">
-            <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
-                <i class="fas fa-heart"></i> Independent Social Contribution
+    <!-- National Insurance Company Limited (NICL) Co-operation Highlight Section -->
+    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 p-8 rounded-3xl gold-border-glow mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+            <!-- White rounded card containing National Insurance Logo -->
+            <div class="w-44 h-44 bg-white rounded-3xl p-4 flex items-center justify-center shadow-2xl flex-shrink-0 border-2 border-gold/40 hover:scale-105 transition-transform duration-300">
+                <img src="/assets/images/national_insurance_logo.png" alt="National Insurance Logo" class="max-w-full max-h-full object-contain rounded-2xl">
             </div>
-            <h3 class="text-3xl font-extrabold text-white">Charity Support Package</h3>
-            <p class="text-gray-300 text-sm leading-relaxed">
-                Empower local social welfare and community support programs. Key-in custom amounts in exact multiples of <strong class="text-amber-400">₹10,000</strong> (e.g., ₹10,000, ₹20,000, ₹50,000). Handled with complete operational transparency and separate from matrix trees.
-            </p>
+            <div class="space-y-2">
+                <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
+                    Co-operating Insurance Partner
+                </span>
+                <h3 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h3>
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
+                    In official co-operation with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing complimentary Group Health Mediclaim & Cashless Hospitalization Coverage for all <strong>₹10,000+ EMI Welfare Schemes</strong> and active <strong>3-Matrix Plan members</strong>.
+                </p>
+            </div>
         </div>
         <div class="flex-shrink-0 text-center">
-            <div class="text-4xl font-extrabold text-amber-400 font-mono mb-4">₹10,000+</div>
-            <a href="/register.php" class="bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold px-8 py-3.5 rounded-xl text-sm shadow-xl inline-block transition">
-                Contribute via ePIN
-            </a>
+            <div class="bg-darkbg/90 border border-blue-500/40 p-5 rounded-2xl shadow-xl space-y-2">
+                <div class="text-xs text-blue-300 font-bold uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> Health Coverage</div>
+                <div class="text-lg font-extrabold text-white font-mono">Cashless Medi Claim Shield</div>
+                <span class="px-4 py-1.5 bg-blue-600/30 text-blue-200 font-extrabold text-xs rounded-xl border border-blue-500/50 inline-block">
+                    <i class="fas fa-check-circle mr-1"></i> Govt. of India Enterprise
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welfare & Support Programs -->
+    <h3 class="text-xl font-bold text-amber-400 border-b border-amber-500/20 pb-3 mb-8"><i class="fas fa-hand-holding-heart mr-2"></i> Welfare & Support Programs (Non-Matrix)</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <!-- Charity Support Package Card -->
+        <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
+                    <i class="fas fa-heart"></i> Social Welfare
+                </div>
+                <h3 class="text-2xl font-extrabold text-white">Charity Support Package</h3>
+                <p class="text-gray-300 text-xs leading-relaxed">
+                    Empower community welfare & social support initiatives. Key-in custom amounts in exact multiples of <strong class="text-amber-400">₹10,000</strong>.
+                </p>
+                <div class="text-3xl font-extrabold text-amber-400 font-mono">₹10,000+</div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-amber-500/20">
+                <a href="/register.php" class="block text-center bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold py-3 rounded-xl text-xs shadow-xl transition">
+                    Contribute via ePIN
+                </a>
+            </div>
+        </div>
+
+        <!-- Vidya Vikas Support Program Card -->
+        <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
+                    <i class="fas fa-graduation-cap"></i> Educational Support
+                </div>
+                <h3 class="text-2xl font-extrabold text-white">Vidya Vikas Support Program</h3>
+                <p class="text-gray-300 text-xs leading-relaxed">
+                    Support student education & skill development. Multiples of <strong class="text-amber-400">₹10,000</strong>. Features <strong class="text-amber-300">10 installments (15% return/benefit per installment)</strong>.
+                </p>
+                <div class="text-3xl font-extrabold text-amber-300 font-mono">₹10,000+ <span class="text-xs font-sans text-gray-400">(10 x 15%)</span></div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-amber-500/20">
+                <a href="/register.php" class="block text-center bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold py-3 rounded-xl text-xs shadow-xl transition">
+                    Join Vidya Vikas
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Standalone Utility Packages -->
     <h3 class="text-xl font-bold text-gold border-b border-gold/20 pb-3 mb-8"><i class="fas fa-bolt mr-2"></i> Standalone Utility Packages (Non-Matrix)</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Mobile Recharge Package -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <!-- Standard Recharge Plan (₹1,200) -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-gold font-bold">Utility Package</span>
-                <h3 class="text-2xl font-bold text-white mt-1">Mobile Recharge</h3>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Entry Level Tier 1</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Standard Recharge Plan</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹1,200</span>
                     <span class="text-gray-400 text-sm"> / 6 terms</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 1 Mobile Connection Included</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> <strong>3 GB per day</strong> Data Allocation</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms every 28 days</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Major Carriers (Jio, Airtel, Vi, BSNL)</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Unilevel 6-Level Income</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
                 <a href="/register.php" class="block text-center border border-gold/40 text-gold hover:bg-gold/10 py-3 rounded-xl font-semibold">
-                    Select Mobile Plan
+                    Select Standard Plan
                 </a>
             </div>
         </div>
 
-        <!-- Gas Connection Package -->
+        <!-- Turbo Recharge Plan (₹1,500) -->
+        <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300 border-t-2 border-t-gold">
+            <div>
+                <div class="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center text-goldlight text-2xl mb-6 border border-gold">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="text-xs uppercase tracking-widest text-goldlight font-bold">Heavy User Tier 2</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Turbo Recharge Plan</h3>
+                <div class="mt-4 mb-6">
+                    <span class="text-4xl font-extrabold gold-gradient-text">₹1,500</span>
+                    <span class="text-gray-400 text-sm"> / 6 installments</span>
+                </div>
+                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> 1 Mobile Connection</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> <strong>Unlimited Data</strong> (Cap-free access)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> 6 Installments every 28 days</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Unilevel 6-Level Income</li>
+                </ul>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gold/10">
+                <a href="/register.php" class="block text-center btn-gold py-3 rounded-xl font-bold">
+                    Select Turbo Plan
+                </a>
+            </div>
+        </div>
+
+        <!-- Gas Connection Package (₹3,000) -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
                     <i class="fas fa-fire"></i>
                 </div>
-                <span class="text-xs uppercase tracking-widest text-gold font-bold">Utility Package</span>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">LPG Refill</span>
                 <h3 class="text-2xl font-bold text-white mt-1">Gas Refill Service</h3>
                 <div class="mt-4 mb-6">
                     <span class="text-4xl font-extrabold gold-gradient-text">₹3,000</span>
                     <span class="text-gray-400 text-sm"> / 6 terms</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Indian Gas Refill Connection</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Domestic LPG Cylinder Refills</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Refill Terms on Demand</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Indane, Bharat, & HP Gas Support</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Unilevel 6-Level Income</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">
@@ -229,8 +324,36 @@ require_once __DIR__ . '/includes/header.php';
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- Recharge Bundle Combo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Industrial Gas Package (₹10,000) -->
+        <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300 border border-gold/30">
+            <div>
+                <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <span class="text-xs uppercase tracking-widest text-gold font-bold">Commercial & Industrial</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Industrial Gas Package</h3>
+                <div class="mt-4 mb-6">
+                    <span class="text-4xl font-extrabold gold-gradient-text">₹10,000</span>
+                    <span class="text-gray-400 text-sm"> / 6 cycles</span>
+                </div>
+                <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Commercial / Industrial LPG Supply</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Refill Cycles (₹3,000 credit per refill)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Standard TDS Cutting on ₹3,000 Refill</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Unilevel 6-Level Sponsor Income</li>
+                </ul>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gold/10">
+                <a href="/register.php" class="block text-center btn-gold py-3 rounded-xl font-bold">
+                    Select Industrial Gas
+                </a>
+            </div>
+        </div>
+
+        <!-- Recharge Bundle Combo (₹5,400) -->
         <div class="bg-darkcard rounded-2xl p-8 gold-border-glow flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold text-2xl mb-6 border border-gold/30">
@@ -246,7 +369,7 @@ require_once __DIR__ . '/includes/header.php';
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 2 Mobile Numbers + 1 Gas Connection</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6 Terms Mobile + 6 Refill Terms</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Combined Utility Discount Plan</li>
-                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Separate from Matrix Tree</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Unilevel 6-Level Sponsor Income</li>
                 </ul>
             </div>
             <div class="mt-8 pt-6 border-t border-gold/10">

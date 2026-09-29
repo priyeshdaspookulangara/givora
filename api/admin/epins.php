@@ -39,7 +39,7 @@ if ($method === 'GET') {
     $quantity = (int)($input['quantity'] ?? 1);
     $assigned_to = trim($input['assigned_to'] ?? '');
 
-    $valid_packages = ['Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Gas_3000', 'Recharge_Bundle_5400', 'Charity_10000'];
+    $valid_packages = ['Foundation_5000', 'Leadership_15000', 'Recharge_1200', 'Recharge_Plus_1500', 'Gas_3000', 'Industrial_Gas_10000', 'Recharge_Bundle_5400', 'Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000'];
     if (!in_array($package_type, $valid_packages)) {
         sendJsonResponse(false, 'Invalid package type.', null, 400);
     }
@@ -48,15 +48,17 @@ if ($method === 'GET') {
         'Foundation_5000' => 5000.00,
         'Leadership_15000' => 15000.00,
         'Recharge_1200' => 1200.00,
+        'Recharge_Plus_1500' => 1500.00,
         'Gas_3000' => 3000.00,
+        'Industrial_Gas_10000' => 10000.00,
         'Recharge_Bundle_5400' => 5400.00,
     ];
 
     $final_amount = $package_amounts[$package_type] ?? 0.00;
 
-    if ($package_type === 'Charity_10000') {
+    if (in_array($package_type, ['Charity_10000', 'Vidya_Vikas_10000', 'Progressive_10000'])) {
         if ($custom_amount < 10000 || fmod($custom_amount, 10000) != 0) {
-            sendJsonResponse(false, 'Charity amount must be at least ₹10,000 and in exact multiples of ₹10,000.', null, 400);
+            sendJsonResponse(false, 'Welfare/Support package amount must be at least ₹10,000 and in exact multiples of ₹10,000.', null, 400);
         }
         $final_amount = $custom_amount;
     }
