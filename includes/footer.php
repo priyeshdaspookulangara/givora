@@ -29,6 +29,7 @@
                     <ul class="space-y-2 text-sm">
                         <li><a href="/index.php" class="hover:text-gold transition">Home</a></li>
                         <li><a href="/business_plan.php" class="hover:text-gold transition">Business Compensation Plan</a></li>
+                        <li><a href="/mediclaim.php" class="hover:text-gold transition">National Insurance Medi Claim</a></li>
                         <li><a href="/about.php" class="hover:text-gold transition">About Givora Traders</a></li>
                         <li><a href="/contact.php" class="hover:text-gold transition">Contact Support</a></li>
                     </ul>

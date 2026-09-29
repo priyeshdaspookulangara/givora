@@ -251,6 +251,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/index.php" class="text-gray-300 hover:text-gold transition font-medium">Home</a>
                     <a href="/business_plan.php" class="text-gray-300 hover:text-gold transition font-medium">Business Plan</a>
+                    <a href="/mediclaim.php" class="text-gray-300 hover:text-gold transition font-medium">Medi Claim Policy</a>
                     <a href="/about.php" class="text-gray-300 hover:text-gold transition font-medium">About Us</a>
                     <a href="/contact.php" class="text-gray-300 hover:text-gold transition font-medium">Contact</a>
 
@@ -286,6 +287,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div id="mobile-menu" class="hidden md:hidden bg-darkcard border-b border-gold/20 px-4 pt-2 pb-6 space-y-3">
             <a href="/index.php" class="block text-gray-300 hover:text-gold py-2">Home</a>
             <a href="/business_plan.php" class="block text-gray-300 hover:text-gold py-2">Business Plan</a>
+            <a href="/mediclaim.php" class="block text-gray-300 hover:text-gold py-2">Medi Claim Policy</a>
             <a href="/about.php" class="block text-gray-300 hover:text-gold py-2">About Us</a>
             <a href="/contact.php" class="block text-gray-300 hover:text-gold py-2">Contact</a>
             <?php if ($is_admin): ?>
