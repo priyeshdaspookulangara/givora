@@ -141,7 +141,7 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="text-gray-400 text-sm"> / one-time</span>
                 </div>
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
-                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Premium Direct Referral Bonus (₹1,500 per member)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Quick Income</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Accelerated Matrix Level Earnings</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Full 3-Matrix Auto-Placement Support</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Dedicated Priority Support</li>
