@@ -46,7 +46,7 @@
                 <div>
                     <h3 class="text-gold font-semibold text-lg mb-4">Contact Info</h3>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><i class="fas fa-map-marker-alt text-gold mr-2"></i> Givora Traders LLP HQ, India</li>
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt text-gold mr-2 mt-1"></i> <span>ROOM NO 36/1486 ASHWA ARCADE MARAR ROAD THRISSUR 1</span></li>
                         <li><i class="fas fa-envelope text-gold mr-2"></i> support@givoratraders.com</li>
                         <li><i class="fas fa-phone-alt text-gold mr-2"></i> +91 98765 43210</li>
                     </ul>
