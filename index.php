@@ -192,12 +192,21 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
         <div class="flex-shrink-0 text-center">
-            <div class="bg-darkbg/90 border border-blue-500/40 p-5 rounded-2xl shadow-xl space-y-2">
-                <div class="text-xs text-blue-300 font-bold uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> Health Coverage</div>
-                <div class="text-lg font-extrabold text-white font-mono">Cashless Medi Claim Shield</div>
-                <span class="px-4 py-1.5 bg-blue-600/30 text-blue-200 font-extrabold text-xs rounded-xl border border-blue-500/50 inline-block">
-                    <i class="fas fa-check-circle mr-1"></i> Govt. of India Enterprise
-                </span>
+            <!-- White rounded box: Scheme Information & Downloads -->
+            <div class="bg-white rounded-3xl p-6 shadow-2xl border-2 border-gold/40 text-gray-800 space-y-4 max-w-sm w-full">
+                <h4 class="text-lg font-bold text-gray-900 text-left">Scheme Information & Downloads</h4>
+
+                <div class="space-y-3">
+                    <!-- Button 1: To know more about this scheme, click here. -->
+                    <a href="/mediclaim.php" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-3 px-4 rounded-xl text-center shadow transition border border-blue-700">
+                        To know more about this scheme, click here.
+                    </a>
+
+                    <!-- Button 2: To download brochure click here -->
+                    <a href="/mediclaim.php" class="block w-full bg-white hover:bg-blue-50 text-blue-800 font-semibold text-xs py-3 px-4 rounded-xl text-center shadow-sm transition border-2 border-blue-400">
+                        To download brochure click here
+                    </a>
+                </div>
             </div>
         </div>
     </div>
