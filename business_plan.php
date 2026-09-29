@@ -73,26 +73,27 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <!-- National Insurance Company Limited (NICL) Partnership Banner -->
-    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 rounded-2xl p-8 gold-border-glow mb-16">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/50 flex items-center justify-center text-3xl font-black">
-                    <i class="fas fa-shield-alt"></i>
+    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 rounded-3xl p-8 gold-border-glow mb-16">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                <!-- White rounded card containing National Insurance Logo -->
+                <div class="w-44 h-44 bg-white rounded-3xl p-4 flex items-center justify-center shadow-2xl flex-shrink-0 border-2 border-gold/40 hover:scale-105 transition-transform duration-300">
+                    <img src="/assets/images/national_insurance_logo.png" alt="National Insurance Logo" class="max-w-full max-h-full object-contain rounded-2xl">
                 </div>
-                <div>
-                    <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 mb-1">
+                <div class="space-y-2">
+                    <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
                         OFFICIAL INSURANCE PARTNER
                     </span>
                     <h2 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h2>
-                    <p class="text-xs text-gray-300 mt-1 max-w-xl">
-                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong>, Givora Traders provides comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Progressive EMI Scheme, Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
+                        In official partnership with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing comprehensive Group Health Mediclaim & Hospitalization Shield across all <strong>EMI schemes of ₹10,000 and above</strong> (Progressive EMI Scheme, Vidya Vikas Program, Charity Support, Industrial Gas) and active <strong>3-Matrix compensation tiers</strong>.
                     </p>
                 </div>
             </div>
-            <div class="flex-shrink-0 text-center md:text-right bg-darkbg/80 border border-blue-500/30 p-4 rounded-xl">
-                <div class="text-xs text-blue-300 font-bold">Mediclaim Coverage</div>
-                <div class="text-xl font-extrabold text-white font-mono mt-0.5">Cashless Hospitalization</div>
-                <div class="text-[11px] text-gray-400 mt-1">Backed by Govt. of India Enterprise</div>
+            <div class="flex-shrink-0 text-center md:text-right bg-darkbg/90 border border-blue-500/40 p-5 rounded-2xl shadow-xl space-y-2">
+                <div class="text-xs text-blue-300 font-bold uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> Mediclaim Coverage</div>
+                <div class="text-xl font-extrabold text-white font-mono">Cashless Hospitalization</div>
+                <div class="text-[11px] text-gray-400">Backed by Govt. of India Enterprise</div>
             </div>
         </div>
     </div>

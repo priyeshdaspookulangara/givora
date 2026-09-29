@@ -153,28 +153,52 @@ require_once __DIR__ . '/includes/header.php';
                 </a>
             </div>
         </div>
+
+        <!-- Progressive EMI Scheme Card -->
+        <div class="bg-gradient-to-r from-darkcard via-amber-950/20 to-darkcard rounded-2xl p-8 gold-border-glow border border-amber-500/30 flex flex-col justify-between border-t-2 border-t-amber-400">
+            <div class="space-y-4">
+                <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-extrabold uppercase">
+                    <i class="fas fa-chart-line"></i> 10-Installment Scheme
+                </div>
+                <h3 class="text-2xl font-extrabold text-white">Progressive EMI Scheme</h3>
+                <p class="text-gray-300 text-xs leading-relaxed">
+                    Progressive ₹10,000+ EMI Scheme. Features <strong class="text-amber-300">10 installments (15% return/benefit per installment)</strong>.
+                </p>
+                <div class="text-3xl font-extrabold text-amber-300 font-mono">₹10,000+ <span class="text-xs font-sans text-gray-400">(10 x 15%)</span></div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-amber-500/20">
+                <a href="/register.php" class="block text-center bg-amber-500 hover:bg-amber-400 text-darkbg font-extrabold py-3 rounded-xl text-xs shadow-xl transition">
+                    Join Progressive Scheme
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- National Insurance Company Limited (NICL) Co-operation Highlight -->
-    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 p-6 rounded-2xl gold-border-glow mb-16 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/40 flex items-center justify-center text-2xl flex-shrink-0">
-                <i class="fas fa-hospital-user"></i>
+    <!-- National Insurance Company Limited (NICL) Co-operation Highlight Section -->
+    <div class="bg-gradient-to-r from-blue-950/40 via-darkcard to-gold/10 border border-blue-500/40 p-8 rounded-3xl gold-border-glow mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+            <!-- White rounded card containing National Insurance Logo -->
+            <div class="w-44 h-44 bg-white rounded-3xl p-4 flex items-center justify-center shadow-2xl flex-shrink-0 border-2 border-gold/40 hover:scale-105 transition-transform duration-300">
+                <img src="/assets/images/national_insurance_logo.png" alt="National Insurance Logo" class="max-w-full max-h-full object-contain rounded-2xl">
             </div>
-            <div>
-                <span class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 font-extrabold text-[10px] rounded-full border border-blue-500/30 uppercase">
-                    Co-operating Insurance Enterprise
+            <div class="space-y-2">
+                <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 font-extrabold text-xs rounded-full border border-blue-500/30 uppercase tracking-wider">
+                    Co-operating Insurance Partner
                 </span>
-                <h3 class="text-xl font-extrabold text-white mt-1">National Insurance Company Limited (NICL)</h3>
-                <p class="text-xs text-gray-300 mt-0.5">
-                    Official Medi Claim & Group Health Insurance partner for all ₹10,000+ EMI Welfare Schemes and 3-Matrix Plan members.
+                <h3 class="text-2xl font-extrabold text-white">National Insurance Company Limited (NICL)</h3>
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
+                    In official co-operation with <strong>National Insurance Company Limited (NICL)</strong> — Trusted Since 1906 — providing complimentary Group Health Mediclaim & Cashless Hospitalization Coverage for all <strong>₹10,000+ EMI Welfare Schemes</strong> and active <strong>3-Matrix Plan members</strong>.
                 </p>
             </div>
         </div>
         <div class="flex-shrink-0 text-center">
-            <span class="px-4 py-2 bg-blue-600/30 text-blue-200 font-extrabold text-xs rounded-xl border border-blue-500/50 inline-block">
-                <i class="fas fa-check-circle mr-1"></i> Cashless Medi Claim Protection
-            </span>
+            <div class="bg-darkbg/90 border border-blue-500/40 p-5 rounded-2xl shadow-xl space-y-2">
+                <div class="text-xs text-blue-300 font-bold uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> Health Coverage</div>
+                <div class="text-lg font-extrabold text-white font-mono">Cashless Medi Claim Shield</div>
+                <span class="px-4 py-1.5 bg-blue-600/30 text-blue-200 font-extrabold text-xs rounded-xl border border-blue-500/50 inline-block">
+                    <i class="fas fa-check-circle mr-1"></i> Govt. of India Enterprise
+                </span>
+            </div>
         </div>
     </div>
 
