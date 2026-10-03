@@ -100,8 +100,11 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-yellow-400">
             <span class="text-xs uppercase tracking-wider text-yellow-400 font-bold"><i class="fas fa-coins mr-1"></i> Gold Scheme Reserve</span>
             <div class="text-3xl font-extrabold text-yellow-400 mt-2">₹<?php echo number_format($wallet['gold_reserve_wallet'] ?? 0, 2); ?></div>
-            <p class="text-xs text-yellow-400/80 mt-2">
-                Target: ₹36,000 (Reserved from L5 Matrix Income)
+            <p class="text-[11px] text-yellow-300 font-bold mt-2">
+                GLC 36 BULLION ADVANCED SCHEME
+            </p>
+            <p class="text-[10px] text-gray-400 mt-0.5">
+                Corejem Exports LLP • Corj.co.in • info@webcoretrade.in
             </p>
         </div>
     </div>
