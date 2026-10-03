@@ -114,6 +114,7 @@ require_once __DIR__ . '/includes/header.php';
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 100% Direct Referral Bonus (₹500 per member)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 6-Level Phase 1 Fixed Commissions (₹150 to ₹1,000)</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Level 5 Auto-Reserves: ₹15,000 Phase 2 & ₹36,000 Gold Scheme</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> 60:40 User/Company Split on Matrix Earnings</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-gold mr-3"></i> Auto-Promotion to Phase 2 upon 6 levels completion</li>
                 </ul>
@@ -143,6 +144,7 @@ require_once __DIR__ . '/includes/header.php';
                 <ul class="space-y-3 text-gray-300 text-sm border-t border-gold/10 pt-6">
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Premium Direct Referral Bonus (₹1,500 per member)</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Accelerated Matrix Level Earnings</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Level 5 Auto-Reserves: ₹15,000 Phase 2 & ₹36,000 Gold Scheme</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Full 3-Matrix Auto-Placement Support</li>
                     <li class="flex items-center"><i class="fas fa-check-circle text-goldlight mr-3"></i> Dedicated Priority Support</li>
                 </ul>

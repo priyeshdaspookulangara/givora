@@ -161,7 +161,7 @@ require_once __DIR__ . '/includes/header.php';
                     <td class="px-4 py-3 font-semibold text-white">Level 5</td>
                     <td class="px-4 py-3">243</td>
                     <td class="px-4 py-3 font-bold text-gold">₹800</td>
-                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2)</span></td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2 & ₹36,000 for Gold Scheme)</span></td>
                     <td class="px-4 py-3 font-bold text-white">₹1,94,400</td>
                 </tr>
                 <tr>
