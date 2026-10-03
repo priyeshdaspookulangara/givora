@@ -28,7 +28,7 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
                 <div class="p-4 bg-darkbg rounded-xl border border-gold/20 space-y-2 text-xs text-gray-300">
                     <div class="flex items-center text-gold font-bold"><i class="fas fa-check-circle mr-2"></i> Unilevel Distribution (Up to 6 Levels)</div>
-                    <div class="flex items-center text-green-400 font-bold"><i class="fas fa-check-circle mr-2"></i> Credited directly to User Wallet (Net 95% after 5% TDS)</div>
+                    <div class="flex items-center text-green-400 font-bold"><i class="fas fa-check-circle mr-2"></i> Credited directly to User Wallet (Net 90% after 10% TDS)</div>
                     <div class="flex items-center text-amber-300 font-bold"><i class="fas fa-check-circle mr-2"></i> Operates independently of 3-matrix tree positions</div>
                 </div>
             </div>
@@ -161,7 +161,7 @@ require_once __DIR__ . '/includes/header.php';
                     <td class="px-4 py-3 font-semibold text-white">Level 5</td>
                     <td class="px-4 py-3">243</td>
                     <td class="px-4 py-3 font-bold text-gold">₹800</td>
-                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2)</span></td>
+                    <td class="px-4 py-3 text-green-400 font-semibold">₹480 <span class="text-[10px] text-purple-400 block">(Auto-reserves ₹15,000 for Phase 2 & ₹36,000 for GLC 36 BULLION ADVANCED SCHEME of Corejem Exports LLP — Corj.co.in / info@webcoretrade.in)</span></td>
                     <td class="px-4 py-3 font-bold text-white">₹1,94,400</td>
                 </tr>
                 <tr>
