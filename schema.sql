@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS wallets (
     user_wallet_60 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     company_wallet_40 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     p2_reserve_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    gold_reserve_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 

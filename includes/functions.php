@@ -245,7 +245,14 @@ function generateEpinCode() {
 
 // Wallet initialization & Dynamic Sync Helper
 function ensureWalletExists($pdo, $member_id) {
-    $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
+    try {
+        // Defensive check: Ensure gold_reserve_wallet column exists
+        $pdo->exec("ALTER TABLE wallets ADD COLUMN IF NOT EXISTS gold_reserve_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
+    } catch (Exception $e) {
+        // Ignore if already exists
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40, p2_reserve_wallet, gold_reserve_wallet) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00) ON DUPLICATE KEY UPDATE id=id");
     $stmt->execute([$member_id]);
     syncMemberWallet($pdo, $member_id);
 }
@@ -403,48 +410,55 @@ function distributeCommissions($pdo, $new_member_id, $sponsor_id, $package_type)
 
         ensureWalletExists($pdo, $curr_parent);
 
-        // Level 5 Phase 1 matrix commission ($level_num === 5): Reserve for Phase 2 Joining Fee (p2_reserve_wallet) up to ₹15,000
+        // Level 5 Phase 1 matrix commission ($level_num === 5): Reserve for Phase 2 Joining Fee (p2_reserve_wallet) up to ₹15,000, then Gold Scheme Reserve (gold_reserve_wallet) up to ₹36,000
         if ($level_num === 5) {
-            $stmt = $pdo->prepare("SELECT p2_reserve_wallet FROM wallets WHERE member_id = ?");
+            $stmt = $pdo->prepare("SELECT p2_reserve_wallet, gold_reserve_wallet FROM wallets WHERE member_id = ?");
             $stmt->execute([$curr_parent]);
-            $curr_reserve = (float)($stmt->fetchColumn() ?: 0.00);
+            $res_row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $curr_p2_res = (float)($res_row['p2_reserve_wallet'] ?? 0.00);
+            $curr_gold_res = (float)($res_row['gold_reserve_wallet'] ?? 0.00);
 
-            if ($curr_reserve < 15000.00 && $curr_parent !== 'GT100000') {
-                $needed = 15000.00 - $curr_reserve;
-                $reserve_amt = min($commission_amount, $needed);
-                $excess_amt = $commission_amount - $reserve_amt;
+            $rem_comm = $commission_amount;
+
+            if ($curr_p2_res < 15000.00 && $curr_parent !== 'GT100000') {
+                $p2_needed = 15000.00 - $curr_p2_res;
+                $p2_reserve_amt = min($rem_comm, $p2_needed);
+                $rem_comm -= $p2_reserve_amt;
 
                 // Credit Phase 2 reserve
                 $stmt = $pdo->prepare("UPDATE wallets SET p2_reserve_wallet = p2_reserve_wallet + ? WHERE member_id = ?");
-                $stmt->execute([$reserve_amt, $curr_parent]);
+                $stmt->execute([$p2_reserve_amt, $curr_parent]);
 
                 $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Phase_2_Reserve', ?, 'Main', 'Credit', ?)");
-                $stmt->execute([$curr_parent, $reserve_amt, "Phase 2 Joining Fee Reserved from Level 5 downline " . $new_member_id]);
+                $stmt->execute([$curr_parent, $p2_reserve_amt, "Phase 2 Joining Fee Reserved from Level 5 downline " . $new_member_id]);
+            }
 
-                // Any excess above ₹15,000 reserve target goes to standard 60:40 split
-                if ($excess_amt > 0) {
-                    $user_part_ex = $excess_amt * 0.60;
-                    $company_part_ex = $excess_amt * 0.40;
+            if ($rem_comm > 0 && $curr_gold_res < 36000.00 && $curr_parent !== 'GT100000') {
+                $gold_needed = 36000.00 - $curr_gold_res;
+                $gold_reserve_amt = min($rem_comm, $gold_needed);
+                $rem_comm -= $gold_reserve_amt;
 
-                    $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
-                    $stmt->execute([$excess_amt, $user_part_ex, $company_part_ex, $curr_parent]);
+                // Credit Gold Scheme reserve
+                $stmt = $pdo->prepare("UPDATE wallets SET gold_reserve_wallet = gold_reserve_wallet + ? WHERE member_id = ?");
+                $stmt->execute([$gold_reserve_amt, $curr_parent]);
 
-                    $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
-                    $stmt->execute([$curr_parent, $user_part_ex, "Phase 1 Matrix L5 Commission (60%) from " . $new_member_id]);
+                $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Gold_Scheme_Reserve', ?, 'Main', 'Credit', ?)");
+                $stmt->execute([$curr_parent, $gold_reserve_amt, "Gold Scheme Reserved from Level 5 downline " . $new_member_id]);
+            }
 
-                    $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
-                    $stmt->execute([$curr_parent, $company_part_ex, "Phase 1 Matrix L5 Commission (40%) from " . $new_member_id]);
-                }
-            } else {
-                // Reserve target reached or is Root
+            // Any remaining excess above Phase 2 (₹15,000) and Gold Scheme (₹36,000) targets goes to standard 60:40 split
+            if ($rem_comm > 0) {
+                $user_part_ex = $rem_comm * 0.60;
+                $company_part_ex = $rem_comm * 0.40;
+
                 $stmt = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ?, company_wallet_40 = company_wallet_40 + ? WHERE member_id = ?");
-                $stmt->execute([$commission_amount, $user_part, $company_part, $curr_parent]);
+                $stmt->execute([$rem_comm, $user_part_ex, $company_part_ex, $curr_parent]);
 
                 $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'User_Wallet', 'Credit', ?)");
-                $stmt->execute([$curr_parent, $user_part, "Phase 1 Matrix L{$level_num} Commission (60%) from " . $new_member_id]);
+                $stmt->execute([$curr_parent, $user_part_ex, "Phase 1 Matrix L5 Commission (60%) from " . $new_member_id]);
 
                 $stmt = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Matrix_Income_P1', ?, 'Company_Wallet', 'Credit', ?)");
-                $stmt->execute([$curr_parent, $company_part, "Phase 1 Matrix L{$level_num} Commission (40%) from " . $new_member_id]);
+                $stmt->execute([$curr_parent, $company_part_ex, "Phase 1 Matrix L5 Commission (40%) from " . $new_member_id]);
             }
         } else {
             // Levels 1-4 & 6: Regular 60:40 wallet split

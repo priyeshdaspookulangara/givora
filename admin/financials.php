@@ -24,8 +24,34 @@ $total_company_wallet_balance = (float)($stmt->fetchColumn() ?: 0.00);
 $stmt = $pdo->query("SELECT SUM(p2_reserve_wallet) FROM wallets");
 $total_p2_reserve_balance = (float)($stmt->fetchColumn() ?: 0.00);
 
+$stmt = $pdo->query("SELECT SUM(gold_reserve_wallet) FROM wallets");
+$total_gold_reserve_balance = (float)($stmt->fetchColumn() ?: 0.00);
+
 $stmt = $pdo->query("SELECT SUM(amount) FROM withdrawals WHERE status = 'Approved'");
 $total_payouts_approved = (float)($stmt->fetchColumn() ?: 0.00);
+
+// Fetch Gold Scheme Breakdown (Individual member contributions)
+$gold_breakdown_query = "
+    SELECT
+        m.member_id,
+        m.name,
+        m.phone,
+        w.p2_reserve_wallet,
+        w.gold_reserve_wallet,
+        COALESCE(gs.last_tx_date, '-') as last_contribution_date
+    FROM members m
+    INNER JOIN wallets w ON m.member_id = w.member_id
+    LEFT JOIN (
+        SELECT member_id, MAX(created_at) as last_tx_date
+        FROM transactions
+        WHERE type = 'Gold_Scheme_Reserve'
+        GROUP BY member_id
+    ) gs ON m.member_id = gs.member_id
+    WHERE w.gold_reserve_wallet > 0 OR w.p2_reserve_wallet >= 15000
+    ORDER BY w.gold_reserve_wallet DESC, m.name ASC
+";
+$stmt_gold = $pdo->query($gold_breakdown_query);
+$gold_scheme_breakdown = $stmt_gold->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch Member-by-Member Breakdown for User Wallets Pool Modal (Includes Direct Ref, Matrix Income, & Unilevel Level Income)
 $breakdown_query = "
@@ -108,44 +134,59 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Central Accounting Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div class="bg-darkcard p-5 rounded-2xl gold-border-glow">
             <span class="text-xs font-semibold text-gray-400 uppercase">Total Gross Inflow</span>
-            <div class="text-3xl font-extrabold gold-gradient-text mt-2">₹<?php echo number_format($total_inflow, 2); ?></div>
-            <p class="text-xs text-gray-500 mt-2">All-time credited commissions across matrix & level income</p>
+            <div class="text-2xl font-extrabold gold-gradient-text mt-2">₹<?php echo number_format($total_inflow, 2); ?></div>
+            <p class="text-[11px] text-gray-500 mt-2">All-time credited commissions</p>
         </div>
 
         <!-- CLICKABLE USER WALLETS POOL CARD -->
-        <div onclick="openUserWalletModal()" class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-green-500 cursor-pointer hover:scale-105 hover:border-green-400 transition transform shadow-lg group relative">
+        <div onclick="openUserWalletModal()" class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-green-500 cursor-pointer hover:scale-105 hover:border-green-400 transition transform shadow-lg group relative">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-green-400 uppercase">User Wallets Pool</span>
-                <span class="text-[10px] bg-green-500/20 text-green-300 font-bold px-2 py-0.5 rounded-full border border-green-500/30 group-hover:bg-green-500 group-hover:text-darkbg transition">
-                    <i class="fas fa-search-plus mr-1"></i> View Breakdown
+                <span class="text-xs font-semibold text-green-400 uppercase">User Wallets</span>
+                <span class="text-[10px] bg-green-500/20 text-green-300 font-bold px-1.5 py-0.5 rounded border border-green-500/30 group-hover:bg-green-500 group-hover:text-darkbg transition">
+                    View
                 </span>
             </div>
-            <div class="text-3xl font-extrabold text-green-400 mt-2">₹<?php echo number_format($total_user_wallet_balance, 2); ?></div>
-            <p class="text-xs text-green-500/80 mt-2 flex items-center justify-between">
-                <span>Currently available in member wallets</span>
+            <div class="text-2xl font-extrabold text-green-400 mt-2">₹<?php echo number_format($total_user_wallet_balance, 2); ?></div>
+            <p class="text-[11px] text-green-500/80 mt-2 flex items-center justify-between">
+                <span>Available in member wallets</span>
                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
             </p>
         </div>
 
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
-            <span class="text-xs font-semibold text-amber-400 uppercase">Company Reserves Pool (40%)</span>
-            <div class="text-3xl font-extrabold text-amber-400 mt-2">₹<?php echo number_format($total_company_wallet_balance, 2); ?></div>
-            <p class="text-xs text-amber-500/80 mt-2">Retention reserve for corporate & inventory</p>
+        <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-amber-500">
+            <span class="text-xs font-semibold text-amber-400 uppercase">Company Reserves (40%)</span>
+            <div class="text-2xl font-extrabold text-amber-400 mt-2">₹<?php echo number_format($total_company_wallet_balance, 2); ?></div>
+            <p class="text-[11px] text-amber-500/80 mt-2">Corporate & operations pool</p>
         </div>
 
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
-            <span class="text-xs font-semibold text-purple-400 uppercase">Phase 2 Joining Reserves</span>
-            <div class="text-3xl font-extrabold text-purple-300 mt-2">₹<?php echo number_format($total_p2_reserve_balance, 2); ?></div>
-            <p class="text-xs text-purple-400/80 mt-2">Reserved L5 matrix income for Phase 2 entry</p>
+        <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-purple-500">
+            <span class="text-xs font-semibold text-purple-400 uppercase">Phase 2 Reserves</span>
+            <div class="text-2xl font-extrabold text-purple-300 mt-2">₹<?php echo number_format($total_p2_reserve_balance, 2); ?></div>
+            <p class="text-[11px] text-purple-400/80 mt-2">L5 Reserved Phase 2 fees</p>
         </div>
 
-        <div class="bg-darkcard p-6 rounded-2xl gold-border-glow border-l-4 border-l-blue-500">
-            <span class="text-xs font-semibold text-blue-400 uppercase">Total Approved Payouts</span>
-            <div class="text-3xl font-extrabold text-blue-400 mt-2">₹<?php echo number_format($total_payouts_approved, 2); ?></div>
-            <p class="text-xs text-blue-500/80 mt-2">Successfully disbursed member withdrawals</p>
+        <!-- CLICKABLE GOLD SCHEME WALLET CARD -->
+        <div onclick="openGoldSchemeModal()" class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-yellow-400 cursor-pointer hover:scale-105 hover:border-yellow-300 transition transform shadow-lg group relative">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-yellow-400 uppercase">Gold Scheme Pool</span>
+                <span class="text-[10px] bg-yellow-400/20 text-yellow-300 font-bold px-1.5 py-0.5 rounded border border-yellow-400/30 group-hover:bg-yellow-400 group-hover:text-darkbg transition">
+                    View
+                </span>
+            </div>
+            <div class="text-2xl font-extrabold text-yellow-400 mt-2">₹<?php echo number_format($total_gold_reserve_balance, 2); ?></div>
+            <p class="text-[11px] text-yellow-400/80 mt-2 flex items-center justify-between">
+                <span>L5 Gold Scheme Reserves</span>
+                <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
+            </p>
+        </div>
+
+        <div class="bg-darkcard p-5 rounded-2xl gold-border-glow border-l-4 border-l-blue-500">
+            <span class="text-xs font-semibold text-blue-400 uppercase">Approved Payouts</span>
+            <div class="text-2xl font-extrabold text-blue-400 mt-2">₹<?php echo number_format($total_payouts_approved, 2); ?></div>
+            <p class="text-[11px] text-blue-500/80 mt-2">Disbursed withdrawals</p>
         </div>
     </div>
 </div>
@@ -252,6 +293,100 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
+<!-- GOLD SCHEME POOL INDIVIDUAL CONTRIBUTIONS MODAL -->
+<div id="goldSchemeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-darkcard border border-yellow-500/40 rounded-2xl max-w-5xl w-full p-6 shadow-2xl relative gold-border-glow my-8">
+        <!-- Close Button -->
+        <button onclick="closeGoldSchemeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold p-1">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Header -->
+        <div class="border-b border-yellow-500/20 pb-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xl border border-yellow-500/40">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Gold Scheme Wallet & Individual Contributions</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Detailed audit log of member individual contributions auto-reserved from Phase 1 Level 5 Matrix Commissions (Target: ₹36,000 per member after ₹15,000 Phase 2 reserve).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Banner -->
+        <div class="bg-darkbg p-4 rounded-xl border border-yellow-500/30 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="text-xs text-gray-400 uppercase font-semibold">Total Gold Scheme Pool Reserve</span>
+                <div class="text-2xl font-extrabold text-yellow-400 mt-0.5">₹<?php echo number_format($total_gold_reserve_balance, 2); ?></div>
+            </div>
+            <div class="text-xs text-right text-gray-400">
+                <div>Members Contributing: <span class="text-white font-bold"><?php echo count($gold_scheme_breakdown); ?></span></div>
+                <div>Target Reserve per Member: <span class="text-yellow-400 font-bold">₹36,000.00</span></div>
+            </div>
+        </div>
+
+        <!-- Detailed Contributions Table -->
+        <div class="overflow-x-auto max-h-[400px] overflow-y-auto border border-yellow-500/20 rounded-xl">
+            <table class="w-full text-left text-xs text-gray-300">
+                <thead class="bg-yellow-500/10 text-yellow-400 uppercase sticky top-0 bg-darkcard border-b border-yellow-500/20">
+                    <tr>
+                        <th class="p-3">Member Details</th>
+                        <th class="p-3 text-right">Phase 2 Reserve (Target ₹15k)</th>
+                        <th class="p-3 text-right">Gold Reserve Amount</th>
+                        <th class="p-3 text-center">Gold Target Progress (₹36k)</th>
+                        <th class="p-3 text-right">Last Contribution Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-yellow-500/10">
+                    <?php if (empty($gold_scheme_breakdown)): ?>
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-gray-500">No Gold Scheme contributions recorded yet. (Auto-reserves when Phase 1 Level 5 downline activates).</td>
+                        </tr>
+                    <?php else: foreach ($gold_scheme_breakdown as $g_row):
+                        $gold_bal = (float)$g_row['gold_reserve_wallet'];
+                        $pct = min(100, round(($gold_bal / 36000) * 100));
+                    ?>
+                        <tr class="hover:bg-yellow-500/5 transition">
+                            <td class="p-3">
+                                <div class="font-bold text-white"><?php echo htmlspecialchars($g_row['name']); ?></div>
+                                <div class="font-mono text-[11px] text-yellow-400"><?php echo htmlspecialchars($g_row['member_id']); ?></div>
+                                <div class="text-gray-400 text-[10px]"><?php echo htmlspecialchars($g_row['phone']); ?></div>
+                            </td>
+                            <td class="p-3 text-right font-mono text-purple-300">
+                                ₹<?php echo number_format((float)$g_row['p2_reserve_wallet'], 2); ?>
+                            </td>
+                            <td class="p-3 text-right font-mono font-extrabold text-yellow-400 text-sm">
+                                ₹<?php echo number_format($gold_bal, 2); ?>
+                            </td>
+                            <td class="p-3 text-center">
+                                <div class="w-full bg-darkbg rounded-full h-2.5 border border-yellow-500/30 overflow-hidden my-1">
+                                    <div class="bg-yellow-400 h-2.5 rounded-full" style="width: <?php echo $pct; ?>%"></div>
+                                </div>
+                                <span class="text-[10px] text-gray-400 font-mono"><?php echo $pct; ?>% (₹<?php echo number_format($gold_bal, 0); ?> / ₹36,000)</span>
+                            </td>
+                            <td class="p-3 text-right font-mono text-gray-400">
+                                <?php echo $g_row['last_contribution_date'] !== '-' ? date('d M Y, H:i', strtotime($g_row['last_contribution_date'])) : '-'; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="mt-4 pt-3 border-t border-yellow-500/10 text-[11px] text-gray-400 flex justify-between items-center">
+            <div>
+                <i class="fas fa-info-circle text-yellow-400 mr-1"></i>
+                <span>All Phase 1 Level 5 commissions are automatically routed first to Phase 2 reserve (₹15,000) and then to Gold Scheme reserve (₹36,000).</span>
+            </div>
+            <button onclick="closeGoldSchemeModal()" class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 px-4 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-darkbg transition font-semibold">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 function openUserWalletModal() {
     document.getElementById('userWalletModal').classList.remove('hidden');
@@ -261,10 +396,19 @@ function closeUserWalletModal() {
     document.getElementById('userWalletModal').classList.add('hidden');
 }
 
+function openGoldSchemeModal() {
+    document.getElementById('goldSchemeModal').classList.remove('hidden');
+}
+
+function closeGoldSchemeModal() {
+    document.getElementById('goldSchemeModal').classList.add('hidden');
+}
+
 // Close modal on escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
         closeUserWalletModal();
+        closeGoldSchemeModal();
     }
 });
 </script>
