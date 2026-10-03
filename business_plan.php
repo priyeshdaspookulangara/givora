@@ -28,7 +28,7 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
                 <div class="p-4 bg-darkbg rounded-xl border border-gold/20 space-y-2 text-xs text-gray-300">
                     <div class="flex items-center text-gold font-bold"><i class="fas fa-check-circle mr-2"></i> Unilevel Distribution (Up to 6 Levels)</div>
-                    <div class="flex items-center text-green-400 font-bold"><i class="fas fa-check-circle mr-2"></i> Credited directly to User Wallet (Net 95% after 5% TDS)</div>
+                    <div class="flex items-center text-green-400 font-bold"><i class="fas fa-check-circle mr-2"></i> Credited directly to User Wallet (Net 90% after 10% TDS)</div>
                     <div class="flex items-center text-amber-300 font-bold"><i class="fas fa-check-circle mr-2"></i> Operates independently of 3-matrix tree positions</div>
                 </div>
             </div>

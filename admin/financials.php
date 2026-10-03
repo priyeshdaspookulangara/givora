@@ -38,8 +38,8 @@ $breakdown_query = "
         COALESCE(dr.dr_gross, 0.00) * 0.90 as dr_net,
         COALESCE(dr.dr_gross, 0.00) * 0.10 as dr_tds,
         COALESCE(li.li_gross, 0.00) as li_gross,
-        COALESCE(li.li_gross, 0.00) * 0.95 as li_net,
-        COALESCE(li.li_gross, 0.00) * 0.05 as li_tds,
+        COALESCE(li.li_gross, 0.00) * 0.90 as li_net,
+        COALESCE(li.li_gross, 0.00) * 0.10 as li_tds,
         COALESCE(mi.mi_gross_user, 0.00) as mi_gross_user,
         COALESCE(mi.mi_gross_user, 0.00) * 0.95 as mi_net_user,
         COALESCE(mi.mi_gross_user, 0.00) * 0.05 as mi_tds,
@@ -181,7 +181,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
                 <span class="text-gray-400 block">Gross Level Income</span>
                 <span class="text-sm font-bold text-gold">₹<?php echo number_format($sum_li_gross, 2); ?></span>
-                <span class="text-[10px] text-red-400 block mt-0.5">(5% TDS: -₹<?php echo number_format($sum_li_tds, 2); ?>)</span>
+                <span class="text-[10px] text-red-400 block mt-0.5">(10% TDS: -₹<?php echo number_format($sum_li_tds, 2); ?>)</span>
             </div>
             <div class="bg-darkbg p-3 rounded-xl border border-gold/20">
                 <span class="text-gray-400 block">Gross Matrix (60% Share)</span>
@@ -243,7 +243,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="mt-4 pt-3 border-t border-gold/10 text-[11px] text-gray-400 flex flex-col md:flex-row justify-between items-center gap-2">
             <div>
                 <i class="fas fa-info-circle text-gold mr-1"></i>
-                <span class="font-semibold text-gray-300">Formula:</span> Net User Wallet = (Direct Ref Gross − 10% TDS) + (Level Income − 5% TDS) + (Matrix User Share − 5% TDS) − Withdrawals.
+                <span class="font-semibold text-gray-300">Formula:</span> Net User Wallet = (Direct Ref Gross − 10% TDS) + (Level Income − 10% TDS) + (Matrix User Share − 5% TDS) − Withdrawals.
             </div>
             <button onclick="closeUserWalletModal()" class="bg-gold/20 text-gold border border-gold/40 px-4 py-1.5 rounded-lg hover:bg-gold hover:text-darkbg transition font-semibold">
                 Close Breakdown
