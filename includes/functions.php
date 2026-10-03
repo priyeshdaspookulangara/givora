@@ -252,7 +252,7 @@ function ensureWalletExists($pdo, $member_id) {
 
 // Sync member wallet balance dynamically based on ledger transactions with TDS deductions:
 // - Direct Referral Bonus: 10% TDS deduction (Net 90% credited to User Wallet)
-// - Level Income (Non-Matrix Utility/Charity): 5% TDS deduction (Net 95% credited to User Wallet)
+// - Level Income (Non-Matrix Utility/Charity): 10% TDS deduction (Net 90% credited to User Wallet)
 // - Matrix Level Income: 5% TDS deduction on 60% User Wallet share (Net 57% of Matrix Income)
 function syncMemberWallet($pdo, $member_id) {
     if (empty($member_id)) return;
@@ -263,11 +263,11 @@ function syncMemberWallet($pdo, $member_id) {
     $dr_gross = (float)($stmt_dr->fetchColumn() ?: 0.00);
     $dr_net_user = $dr_gross * 0.90; // 10% TDS deduction
 
-    // 2. Level Income credits (Non-Matrix Utility/Charity: 5% TDS deduction => 95% Net to User Wallet)
+    // 2. Level Income credits (Non-Matrix Utility/Charity: 10% TDS deduction => 90% Net to User Wallet)
     $stmt_li = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type = 'Level_Income' AND status = 'Credit'");
     $stmt_li->execute([$member_id]);
     $li_gross = (float)($stmt_li->fetchColumn() ?: 0.00);
-    $li_net_user = $li_gross * 0.95; // 5% TDS deduction
+    $li_net_user = $li_gross * 0.90; // 10% TDS deduction
 
     // 3. Matrix Level Income User Wallet credits (5% TDS deduction on 60% share => 57% Net to User Wallet)
     $stmt_m60 = $pdo->prepare("SELECT SUM(amount) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND wallet_type = 'User_Wallet' AND status = 'Credit'");
